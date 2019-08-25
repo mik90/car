@@ -14,8 +14,8 @@ namespace Car
         const unsigned long PI_4_B_BCM2708_PERI_BASE    = 0xfe000000;
         const unsigned long GPIO_BASE = PI_3_B_BCM2708_PERI_BASE + 0x200000;
         
-    };
+    }
 
 
-};
+}
 #endif

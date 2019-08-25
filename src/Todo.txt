@@ -20,8 +20,9 @@ Additions needed in CPP code:
 GoogleTest unit testing framework
 Documentation
 Simple API
+Somehow get rid of all the raw pointer usage
 
 Modules:
 Control
 Comms
-Util (Hardware interfacing)
+Sensors (Hardware interfacing)

@@ -1,23 +1,25 @@
-
+#include "sensors.hpp"
 
 int main(int argc, char** argv)
 {
-    // Init GPIO
+    // Creates memory mapped GPIO 
+    Car::Sensors sensors;
+    sensors.init_pan_tilt();
+    sensors.init_ultrasonic();
+    sensors.init_line_reader();
+    sensors.init_beep();
+    sensors.init_infrared();
+    sensors.init_pwm();
 
-    // Init pan/tilt servos
+    // Allocates matrix for LED data
+    Car::RGB lights;
 
-    // Init ultrasonic sensor
+    // TODO Run the servos a bit during init? unsure if needed
 
-    // Init PWM
+    // TODO Init socket
 
-    // Init Infrared sensor 
+    // TODO Communicate with client, perform commands
 
-    // Init RGB
 
-    // Init line tracking sensor
-
-    // Init socket
-
-    // Communicate with client, perform commands
     return 0;
 }

@@ -1,16 +1,32 @@
 project(car)
 cmake_minimum_required (VERSION 3.1)
 
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_COMPILER "/usr/bin/clang")
+include(${CMAKE_CURRENT_SOURCE_DIR}/toolchain-rpi.cmake)
+
+set(CMAKE_CROSSCOMPILING TRUE)
+# TODO Find newer cross-compiler
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
-set(CMAKE_GENERATOR "Ninja")
 
-include(GoogleTest)
+#include(GoogleTest)
+
+# Grab the cross-compiled wiringPi and ws2811 libraries
+# Do not grab the system versions
+find_library(arm_wiringPi_LIB wiringPi PATHS deps/wiringPi/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+if(NOT arm_wiringPi_LIB)
+    message(FATAL_ERROR "Could not find arm wiringPi library")
+endif()
+find_library(arm_ws2811_LIB ws2811 PATHS deps/ws2811/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+if(NOT arm_ws2811_LIB)
+    message(FATAL_ERROR "Could not find arm ws2811 library")
+endif()
+# Wiring Pi includes
+set(wiringPi_INCLUDE_DIR deps/wiringPi/include)
+# ws2811 includes
+set(ws2811_INCLUDE_DIR deps/ws2811/include)
+
 
 ### Doxygen Logic ####
 find_package(Doxygen)
@@ -31,49 +47,54 @@ endif (DOXYGEN_FOUND)
 
 add_compile_options(-pedantic -Werror)
 
+# Comms directory and sources
+set(comms_DIR "src/comms")
+file(GLOB comms_SRC "${comms_DIR}/*.cpp")
+
+# Control directory and sources
+set(control_DIR "src/control")
+file(GLOB control_SRC "${control_DIR}/*.cpp")
+
+# Gtest directory and sources
+#set(gtest_DIR "src/gtest")
+#file(GLOB gtest_SRC "${gtest_DIR}/*.cpp")
+
 # Util directory and sources
 set(util_DIR "src/util")
 file(GLOB util_SRC "${util_DIR}/*.cpp")
 
-# Gtest directory and sources
-set(gtest_DIR "src/gtest")
-file(GLOB gtest_SRC "${gtest_DIR}/*.cpp")
-
-# Dependencies
+# Dependency headers
 set(deps_DIR "deps")
 
 # Main source
-file(GLOB main_SRC "src/main.cpp")
+set(main_SRC "src/main.cpp")
+
+set(car_SRC ${control_SRC} ${comms_SRC} ${util_SRC})
+set(car_INCLUDE_DIRS ${control_DIR} ${comms_DIR} ${util_DIR} ${deps_DIR})
 
 # Roll up sources and includes for driver binary
-set(driver_SRC ${main_SRC} ${util_SRC})
-set(driver_include_dirs ${util_DIR} ${deps_DIR})
+set(driver_SRC ${main_SRC} ${car_SRC})
 
-include_directories(BEFORE ${driver_include_dirs})
+# Add internal includes as well as includes of dependencies
+include_directories(BEFORE ${car_INCLUDE_DIRS} ${wiringPi_INCLUDE_DIR} ${ws2811_INCLUDE_DIR})
 
 # Create our executables
-add_executable(driver ${driver_SRC})
+add_executable(driver       ${driver_SRC})
 add_executable(debug_driver ${driver_SRC})
-add_executable(gtest_driver ${gtest_SRC} ${util_SRC})
-gtest_add_tests(TARGET       gtest_driver
-                TEST_SUFFIX .noArgs
-                TEST_LIST    noArgsTests)
-set_tests_properties(${noArgsTests} PROPERTIES TIMEOUT 10)
 
+# Disabling gtest for now
+#add_executable(gtest_driver ${gtest_SRC} ${car_SRC})
+#gtest_add_tests(TARGET       gtest_driver
+#                TEST_SUFFIX .noArgs
+#                TEST_LIST    noArgsTests)
+#set_tests_properties(${noArgsTests} PROPERTIES TIMEOUT 10)
 
 # Adjust compile options
-target_compile_options(driver PUBLIC -O2)
+target_compile_options(driver       PUBLIC -O2)
 target_compile_options(debug_driver PUBLIC -g)
 
-target_link_libraries(gtest_driver gtest gtest_main)
 
-# Adjust permissions
-set(permissions_default
-    OWNER_WRITE OWNER_READ OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE)
-# Install with "ninja install"
-install(TARGETS driver debug_driver gtest_driver
-        CONFIGURATIONS Release Debug
-        RUNTIME DESTINATION bin
-        PERMISSIONS ${permissions_default})
+target_link_libraries(driver       ${arm_wiringPi_LIB} ${arm_ws2811_LIB})
+target_link_libraries(debug_driver ${arm_wiringPi_LIB} ${arm_ws2811_LIB})
+
+#target_link_libraries(gtest_driver gtest gtest_main)
