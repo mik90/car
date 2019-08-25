@@ -1,0 +1,27 @@
+Functionality in current C code:
+-----------------------------------
+Control server
+Mailbox interface
+
+ws2811 LED interface
+
+Motor drivers
+Pulse code modulation
+Pulse width modulation
+Clock
+
+GPIO header
+Direct Memory access
+Rpi hardware interface
+
+
+Additions needed in CPP code:
+-----------------------------------
+GoogleTest unit testing framework
+Documentation
+Simple API
+
+Modules:
+Control
+Comms
+Util (Hardware interfacing)
