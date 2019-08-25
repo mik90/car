@@ -5,4 +5,3 @@ Rewrite of repository: https://github.com/UCTRONICS/UCTRONICS_Smart_Robot_Car_Ra
 
 Currently depends on headers from:
 https://github.com/WiringPi/WiringPi
-https://github.com/bhagman/SoftPWM
