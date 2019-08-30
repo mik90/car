@@ -54,6 +54,14 @@ Sensors::Sensors() : m_gpio_mmap(nullptr, delete_GPIO_map)
     // Cast the gpio pointer to a volatile uint32_t
     // Sensors's shared ptr now points to the memory mapped GPIO
     m_gpio_mmap.reset(static_cast<volatile uint32_t*>(gpio_mmap));
+
+    // Once the memroy is mapped, we can init all of our periphials
+    this->init_pan_tilt();
+    this->init_ultrasonic();
+    this->init_line_reader();
+    this->init_beep();
+    this->init_infrared();
+    this->init_pwm();
 }
 
 

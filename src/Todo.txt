@@ -25,4 +25,5 @@ Somehow get rid of all the raw pointer usage
 Modules:
 Control
 Comms
-Sensors (Hardware interfacing)
+Sensors (parsing input)
+LEDS
