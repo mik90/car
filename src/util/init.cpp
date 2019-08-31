@@ -26,6 +26,7 @@ void delete_GPIO_map(volatile uint32_t* gpio_mmap_ptr)
  *  @note Only works on target (Raspberry PI 3)  **/
 Sensors::Sensors() : m_gpio_mmap(nullptr, delete_GPIO_map)
 {
+    std::cout << "Initializing sensors..." << std::endl;
     void* gpio_mmap = nullptr;
 
     int dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
@@ -57,11 +58,19 @@ Sensors::Sensors() : m_gpio_mmap(nullptr, delete_GPIO_map)
 
     // Once the memroy is mapped, we can init all of our periphials
     this->init_pan_tilt();
+    std::cout << "Pan/tilt servos initialized\n";
     this->init_ultrasonic();
+    std::cout << "Ultrasonic sensor initialized\n";
     this->init_line_reader();
+    std::cout << "Line reader initialized\n";
     this->init_beep();
+    std::cout << "Beeper initialized\n";
     this->init_infrared();
+    std::cout << "Infrared sensor initialized\n";
     this->init_pwm();
+    std::cout << "Pulse width modulation initialized\n";
+    
+    std::cout << "Sensor initializion successful." << std::endl;
 }
 
 
@@ -134,6 +143,8 @@ void Sensors::init_pwm()
 /** @brief Allocates memory for RGB light matrix. */
 RGB::RGB()
 {
+    std::cout << "Initializing LEDs..." << std::endl;
+
     std::size_t matrix_size = sizeof(ws2811_led_t) * RGB::LedCount;
     ws2811_return_t status;
     void* mem_block;
@@ -168,6 +179,8 @@ RGB::RGB()
     m_led_data.channel[1].count      = 0;
     m_led_data.channel[1].invert     = 0;
     m_led_data.channel[1].brightness = 0;
+    
+    std::cout << "Led initialization successful." << std::endl;
 }
 
 

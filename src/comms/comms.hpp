@@ -14,7 +14,7 @@ class Comms
         struct sockaddr_in m_client_addr;
         int m_socket_fd;
     public:
-        /** @brief This is the port that the car will get
+        /** @brief This is the port that the car will be
          * getting instructions from */
         static const int ControlPortNumber = 2001;
         Comms();

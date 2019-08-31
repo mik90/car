@@ -14,6 +14,12 @@ int main(int argc, char** argv)
 
     // TODO Communicate with client, perform commands
 
+    // Async threads:
+    // Get input from ultrasonic sensor
+    // Get input from infrared sensor
+
+    // Trigger car motion
+
 
     return 0;
 }
