@@ -1,9 +1,18 @@
-#include <sys/types.h>
 
+#include <iostream>
+#include <cerrno>
 #include <cstring>
 
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+#include <wiringPi.h>
+#include <softPwm.h>
+
 #include "sensors.hpp"
-#include "constants.hpp"
+#include "common_rpi.hpp"
 
 namespace Car
 {
@@ -20,207 +29,60 @@ void delete_GPIO_map(volatile uint32_t* gpio_mmap_ptr)
     }
 }
 
-/** @brief Inits pointer to a shared memory-mapped space used
- *  for general purpose Input/output. Assigns custom delter to the
- *  shared pointer.
- *  @note Only works on target (Raspberry PI 3)  **/
-Sensors::Sensors() : m_gpio_mmap(nullptr, delete_GPIO_map)
+Sensors::Sensors() : m_gpio_mmap(nullptr)
 {
+}
+
+explicit void Sensors::setMemoryMap(std::shared_ptr<volatile uint32_t> gpio_ptr)
+{
+    m_gpio_mmap = gpio_ptr;
+
+     // Once the memroy is mapped, we can init all of our periphials
     std::cout << "Initializing sensors..." << std::endl;
-    void* gpio_mmap = nullptr;
 
-    int dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
-    if (dev_mem_fd < 0)
-    {
-        std::cerr << "open(/dev/mem) failure. errorno: " << std::strerror(errno) << '\n';
-        m_gpio_mmap = nullptr;
-        return;
-    }
-
-    gpio_mmap = mmap(NULL,                   // Kernel can use whatever address
-                    BLOCK_SIZE,             // Length of memory section
-                    PROT_READ | PROT_WRITE, // Enable R/W
-                    MAP_SHARED,             // For use by other processes
-                    dev_mem_fd,             // We are mapping /dev/mem to this
-                    GPIO::GPIO_BASE);       // Base offset for GPIO
-    // Done mapping the memory
-    close(dev_mem_fd);
-
-    if (gpio_mmap == MAP_FAILED)
-    {
-        std::cerr << "mmap() failure. errorno: " << std::strerror(errno) << '\n';
-        m_gpio_mmap = nullptr;
-        return;
-    }
-    // Cast the gpio pointer to a volatile uint32_t
-    // Sensors's shared ptr now points to the memory mapped GPIO
-    m_gpio_mmap.reset(static_cast<volatile uint32_t*>(gpio_mmap));
-
-    // Once the memroy is mapped, we can init all of our periphials
-    this->init_pan_tilt();
-    std::cout << "Pan/tilt servos initialized\n";
-    this->init_ultrasonic();
+    this->initUltrasonic();
     std::cout << "Ultrasonic sensor initialized\n";
-    this->init_line_reader();
+    this->initLineReader();
     std::cout << "Line reader initialized\n";
-    this->init_beep();
-    std::cout << "Beeper initialized\n";
-    this->init_infrared();
+    this->initInfrared();
     std::cout << "Infrared sensor initialized\n";
-    this->init_pwm();
-    std::cout << "Pulse width modulation initialized\n";
     
     std::cout << "Sensor initializion successful." << std::endl;
 }
 
 
 /** @brief Sets ultrasonic sensor pins **/
-void Sensors::init_ultrasonic()
+void Sensors::initUltrasonic()
 {
     // This needs to be more clear than "Echo" and "Trig"
     pinMode(BCM::Echo, INPUT);
     pinMode(BCM::Trig, OUTPUT);
 }
 
-/** @brief Sets pins for pan/tilt servos **/
-void Sensors::init_pan_tilt()
-{
-    set_pin_input(BCM::Servo_1, m_gpio_mmap);
-    set_pin_output(BCM::Servo_1, m_gpio_mmap);
-
-    set_pin_input(BCM::Servo_2, m_gpio_mmap);
-    set_pin_output(BCM::Servo_2, m_gpio_mmap);
-}
 
 /** @brief Sets pins for line reader sensors */
 void Sensors::init_line_reader()
 {
-    volatile uint32_t* gpio_pull_ptr = get_gpio_pull_ptr(m_gpio_mmap);
+    volatile uint32_t* gpio_pull_ptr = getGpioPullPtr(m_gpio_mmap.get());
 
-    set_pin_input(BCM::LineTrackLeft, m_gpio_mmap);
+    setPinInput(BCM::LineTrackLeft, m_gpio_mmap);
     *gpio_pull_ptr = 1 << BCM::LineTrackLeft;
 
-    set_pin_input(BCM::LineTrackMiddle, m_gpio_mmap);
+    setPinInput(BCM::LineTrackMiddle, m_gpio_mmap);
     *gpio_pull_ptr = 1 << BCM::LineTrackMiddle;
 
-    set_pin_input(BCM::LineTrackRight, m_gpio_mmap);
+    setPinInput(BCM::LineTrackRight, m_gpio_mmap);
     *gpio_pull_ptr = 1 << BCM::LineTrackRight;
-}
-
-/** @brief Sets pin for the beeper as output and writes it low **/
-void Sensors::init_beep()
-{
-    pinMode(BCM::Beep, OUTPUT);
-    digitalWrite(BCM::Beep, LOW);
 }
 /** @brief Sets pin for the infrared sensor as input. Sets the pull
  * up/down resistor as up, and sets ISR for falling edge. **/
-void Sensors::init_infrared()
+void Sensors::initInfrared()
 {
     pinMode(BCM::InfraredIn, INPUT);
     pullUpDnControl(BCM::InfraredIn, PUD_UP);
     // TODO This ISR can't even be doing anything, maybe we don't need it.
     //wiringPiISR(BCM::InfraredIn, INT_EDGE_FALLING, infrared_ISR);
 }
-
-/** @brief Sets pins for all the PWM motor controllers as outputs **/
-void Sensors::init_pwm()
-{
-    set_pin_input (BCM::MotorPWM_1, m_gpio_mmap);
-    set_pin_output(BCM::MotorPWM_1, m_gpio_mmap);
-    
-    set_pin_input (BCM::MotorPWM_2, m_gpio_mmap);
-    set_pin_output(BCM::MotorPWM_2, m_gpio_mmap);
-    
-    set_pin_input (BCM::MotorPWM_3, m_gpio_mmap);
-    set_pin_output(BCM::MotorPWM_3, m_gpio_mmap);
-    
-    set_pin_input (BCM::MotorPWM_4, m_gpio_mmap);
-    set_pin_output(BCM::MotorPWM_4, m_gpio_mmap);
-}
-
-/** @brief Sets up motor controller **/
-void Sensors::init_motor_controller()
-{
-    wiringPiSetup();
-    pinMode(BCM::MOTOR_LATCH, OUTPUT);
-    pinMode(BCM::MOTOR_DATA,  OUTPUT);
-    pinMode(BCM::MOTOR_CLK,   OUTPUT);
-}
-
-void Sensors::write_to_shift_reg(uint8_t latch_data)
-{
-    digitalWrite(BCM::MOTOR_LATCH, LOW);
-    digitalWrite(BCM::MOTOR_DATA, LOW);
-
-    for (int i = 0; i < 8; i++)
-    {
-        delayMicroseconds(1);
-
-        digitalWrite(BCM::MOTOR_CLK, LOW);
-
-        if (latch_data & (1 << (7 - i)))
-        {
-            digitalWrite(BCM::MOTOR_DATA, HIGH);
-        }
-        else
-        {
-            digitalWrite(BCM::MOTOR_DATA, LOW);
-        }
-
-        delayMicroseconds(1);
-        digitalWrite(BCM::MOTOR_CLK, HIGH);
-    }
-        
-    digitalWrite(BCM::MOTOR_LATCH, HIGH);
-}
-
-
-/** --------------------------------------------------------- */
-
-/** @brief Allocates memory for RGB light matrix. */
-RGB::RGB()
-{
-    std::cout << "Initializing LEDs..." << std::endl;
-
-    std::size_t matrix_size = sizeof(ws2811_led_t) * RGB::LedCount;
-    ws2811_return_t status;
-    void* mem_block;
-    
-    status = ws2811_init(&m_led_data);
-    if(status != WS2811_SUCCESS)
-    {
-        std::cerr << "ws2811_init failed:" << ws2811_get_return_t_str(status) << std::endl;
-        return;
-    }
-
-    // Allocate a block of memory but don't throw an exception
-    mem_block = new (std::nothrow) uint8_t[matrix_size];
-
-    if (mem_block == nullptr)
-        std::cerr << "Allocation of LED matrix failed\n";
-    else
-        // Copy over pointer due to success
-        m_led.reset((ws2811_led_t*) mem_block);
-
-    // Setup the configured LED data
-    m_led_data.freq   = WS2811_TARGET_FREQ;
-    m_led_data.dmanum = 10;
-
-    m_led_data.channel[0].gpionum    = 18;
-    m_led_data.channel[0].count      = LedCount;
-    m_led_data.channel[0].invert     = 0;
-    m_led_data.channel[0].brightness = 255;
-    m_led_data.channel[0].strip_type = WS2811_STRIP_RGB;
-
-    m_led_data.channel[1].gpionum    = 0;
-    m_led_data.channel[1].count      = 0;
-    m_led_data.channel[1].invert     = 0;
-    m_led_data.channel[1].brightness = 0;
-    
-    std::cout << "Led initialization successful." << std::endl;
-}
-
 
 }
 

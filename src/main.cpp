@@ -1,12 +1,9 @@
-#include "sensors.hpp"
+#include "car.hpp"
 
 int main(int argc, char** argv)
 {
     // Creates memory mapped GPIO 
-    Car::Sensors sensors;
-
-    // Allocates matrix for LED data
-    Car::RGB lights;
+    Car::Car someCar;
 
     // TODO Run the servos a bit during init? unsure if needed
 
