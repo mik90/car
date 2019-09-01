@@ -17,11 +17,11 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # Do not grab the system versions
 find_library(arm_wiringPi_LIB wiringPi HINTS deps/wiringPi/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 if(NOT arm_wiringPi_LIB)
-    message(FATAL_ERROR "Could not find arm wiringPi library")
+#    message(FATAL_ERROR "Could not find arm wiringPi library")
 endif()
 find_library(arm_ws2811_LIB ws2811 HINTS deps/ws2811/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 if(NOT arm_ws2811_LIB)
-    message(FATAL_ERROR "Could not find arm ws2811 library")
+#    message(FATAL_ERROR "Could not find arm ws2811 library")
 endif()
 # Wiring Pi includes
 set(wiringPi_INCLUDE_DIR deps/wiringPi/include)
@@ -48,6 +48,10 @@ endif (DOXYGEN_FOUND)
 
 add_compile_options(-pedantic -Werror)
 
+# Car directory and sources
+set(car_DIR "src/car")
+file(GLOB car_SRC "${car_DIR}/*.cpp")
+
 # Comms directory and sources
 set(comms_DIR "src/comms")
 file(GLOB comms_SRC "${comms_DIR}/*.cpp")
@@ -60,24 +64,29 @@ file(GLOB control_SRC "${control_DIR}/*.cpp")
 #set(gtest_DIR "src/gtest")
 #file(GLOB gtest_SRC "${gtest_DIR}/*.cpp")
 
-# Util directory and sources
+# Sensors directory and sources
 set(sensors_DIR "src/sensors")
 file(GLOB sensors_SRC "${sensors_DIR}/*.cpp")
 
-# Dependency headers
-set(deps_DIR "deps")
+# Util directory and sources
+set(util_DIR "src/util")
+file(GLOB util_SRC "${util_DIR}/*.cpp")
 
 # Main source
 set(main_SRC "src/main.cpp")
 
-set(car_SRC ${control_SRC} ${comms_SRC} ${sensors_SRC})
-set(car_INCLUDE_DIRS ${control_DIR} ${comms_DIR} ${sensors_DIR} ${deps_DIR})
+set(car_SRC
+  ${cars_SRC} ${comms_SRC} ${control_SRC} ${sensors_SRC} ${util_SRC})
+set(car_INCLUDE_DIRS
+  ${cars_DIR} ${comms_DIR} ${control_DIR} ${sensors_DIR} ${util_DIR})
 
 # Roll up sources and includes for driver binary
 set(driver_SRC ${main_SRC} ${car_SRC})
 
 # Add internal includes as well as includes of dependencies
-include_directories(BEFORE ${car_INCLUDE_DIRS} ${wiringPi_INCLUDE_DIR} ${ws2811_INCLUDE_DIR})
+include_directories(BEFORE ${car_INCLUDE_DIRS}
+                           ${wiringPi_INCLUDE_DIR}
+                           ${ws2811_INCLUDE_DIR})
 
 # Create our executables
 add_executable(driver       ${driver_SRC})

@@ -1,6 +1,8 @@
 #include <sys/types.h>
 #include <iostream>
 
+#include "wiringPi.h"
+
 #include "motors.hpp"
 #include "common_rpi.hpp"
 
@@ -39,19 +41,19 @@ void Motors::initPanTilt()
 }
 
 /** @brief Sets pins for all the PWM motor controllers as outputs **/
-void Motors::initPWM()
+void Motors::initPwm()
 {
-    setPinInput (BCM::MotorPWM_1, m_gpio_mmap);
-    setPinOutput(BCM::MotorPWM_1, m_gpio_mmap);
+    setPinInput (BCM::MotorPWM_RR, m_gpio_mmap);
+    setPinOutput(BCM::MotorPWM_RR, m_gpio_mmap);
     
-    setPinInput (BCM::MotorPWM_2, m_gpio_mmap);
-    setPinOutput(BCM::MotorPWM_2, m_gpio_mmap);
+    setPinInput (BCM::MotorPWM_RL, m_gpio_mmap);
+    setPinOutput(BCM::MotorPWM_RL, m_gpio_mmap);
     
-    setPinInput (BCM::MotorPWM_3, m_gpio_mmap);
-    setPinOutput(BCM::MotorPWM_3, m_gpio_mmap);
+    setPinInput (BCM::MotorPWM_FR, m_gpio_mmap);
+    setPinOutput(BCM::MotorPWM_FR, m_gpio_mmap);
     
-    setPinInput (BCM::MotorPWM_4, m_gpio_mmap);
-    setPinOutput(BCM::MotorPWM_4, m_gpio_mmap);
+    setPinInput (BCM::MotorPWM_FL, m_gpio_mmap);
+    setPinOutput(BCM::MotorPWM_FL, m_gpio_mmap);
 }
 
 /** @brief Sets up motor controller **/
@@ -61,33 +63,6 @@ void Motors::initMotorController()
     pinMode(BCM::MOTOR_LATCH, OUTPUT);
     pinMode(BCM::MOTOR_DATA,  OUTPUT);
     pinMode(BCM::MOTOR_CLK,   OUTPUT);
-}
-
-void Motors::writeToShiftRegister(uint8_t latch_data)
-{
-    digitalWrite(BCM::MOTOR_LATCH, LOW);
-    digitalWrite(BCM::MOTOR_DATA, LOW);
-
-    for (int i = 0; i < 8; i++)
-    {
-        delayMicroseconds(1);
-
-        digitalWrite(BCM::MOTOR_CLK, LOW);
-
-        if (latch_data & (1 << (7 - i)))
-        {
-            digitalWrite(BCM::MOTOR_DATA, HIGH);
-        }
-        else
-        {
-            digitalWrite(BCM::MOTOR_DATA, LOW);
-        }
-
-        delayMicroseconds(1);
-        digitalWrite(BCM::MOTOR_CLK, HIGH);
-    }
-        
-    digitalWrite(BCM::MOTOR_LATCH, HIGH);
 }
 
 

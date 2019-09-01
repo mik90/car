@@ -48,15 +48,16 @@ namespace Car
 
 
         // PWM Motor controllers
-        // These needs better labels wow. Im guessing FR FL RR RL?
+        // These needs better labels
+        // It might be RR, RL, FR, FL
         /** @brief Drive motor controller **/
-        const bcm_pin_t MotorPWM_1 = 5;
+        const bcm_pin_t MotorPWM_RR = 5;
         /** @brief Drive motor controller **/
-        const bcm_pin_t MotorPWM_2 = 6;
+        const bcm_pin_t MotorPWM_RL = 6;
         /** @brief Drive motor controller **/
-        const bcm_pin_t MotorPWM_3 = 13;
+        const bcm_pin_t MotorPWM_FR = 13;
         /** @brief Drive motor controller **/
-        const bcm_pin_t MotorPWM_4 = 19;
+        const bcm_pin_t MotorPWM_FL = 19;
         
         const bcm_pin_t MOTOR_LATCH = 29;
         const bcm_pin_t MOTOR_CLK   = 28;
