@@ -1,11 +1,12 @@
 project(car)
 cmake_minimum_required (VERSION 3.1)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/toolchain-rpi.cmake)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/toolchain-rpi.cmake)
 
-set(CMAKE_CROSSCOMPILING TRUE)
+#set(CMAKE_CROSSCOMPILING TRUE)
 # TODO Find newer cross-compiler
-set(CMAKE_CXX_STANDARD 14)
+# TODO use system host if on Pi, have some type of debug mode for x86
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -14,11 +15,11 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Grab the cross-compiled wiringPi and ws2811 libraries
 # Do not grab the system versions
-find_library(arm_wiringPi_LIB wiringPi PATHS deps/wiringPi/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+find_library(arm_wiringPi_LIB wiringPi HINTS deps/wiringPi/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 if(NOT arm_wiringPi_LIB)
     message(FATAL_ERROR "Could not find arm wiringPi library")
 endif()
-find_library(arm_ws2811_LIB ws2811 PATHS deps/ws2811/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+find_library(arm_ws2811_LIB ws2811 HINTS deps/ws2811/arm_lib NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 if(NOT arm_ws2811_LIB)
     message(FATAL_ERROR "Could not find arm ws2811 library")
 endif()
@@ -60,8 +61,8 @@ file(GLOB control_SRC "${control_DIR}/*.cpp")
 #file(GLOB gtest_SRC "${gtest_DIR}/*.cpp")
 
 # Util directory and sources
-set(util_DIR "src/util")
-file(GLOB util_SRC "${util_DIR}/*.cpp")
+set(sensors_DIR "src/sensors")
+file(GLOB sensors_SRC "${sensors_DIR}/*.cpp")
 
 # Dependency headers
 set(deps_DIR "deps")
@@ -69,8 +70,8 @@ set(deps_DIR "deps")
 # Main source
 set(main_SRC "src/main.cpp")
 
-set(car_SRC ${control_SRC} ${comms_SRC} ${util_SRC})
-set(car_INCLUDE_DIRS ${control_DIR} ${comms_DIR} ${util_DIR} ${deps_DIR})
+set(car_SRC ${control_SRC} ${comms_SRC} ${sensors_SRC})
+set(car_INCLUDE_DIRS ${control_DIR} ${comms_DIR} ${sensors_DIR} ${deps_DIR})
 
 # Roll up sources and includes for driver binary
 set(driver_SRC ${main_SRC} ${car_SRC})

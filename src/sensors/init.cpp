@@ -139,6 +139,44 @@ void Sensors::init_pwm()
     set_pin_output(BCM::MotorPWM_4, m_gpio_mmap);
 }
 
+/** @brief Sets up motor controller **/
+void Sensors::init_motor_controller()
+{
+    wiringPiSetup();
+    pinMode(BCM::MOTOR_LATCH, OUTPUT);
+    pinMode(BCM::MOTOR_DATA,  OUTPUT);
+    pinMode(BCM::MOTOR_CLK,   OUTPUT);
+}
+
+void Sensors::write_to_shift_reg(uint8_t latch_data)
+{
+    digitalWrite(BCM::MOTOR_LATCH, LOW);
+    digitalWrite(BCM::MOTOR_DATA, LOW);
+
+    for (int i = 0; i < 8; i++)
+    {
+        delayMicroseconds(1);
+
+        digitalWrite(BCM::MOTOR_CLK, LOW);
+
+        if (latch_data & (1 << (7 - i)))
+        {
+            digitalWrite(BCM::MOTOR_DATA, HIGH);
+        }
+        else
+        {
+            digitalWrite(BCM::MOTOR_DATA, LOW);
+        }
+
+        delayMicroseconds(1);
+        digitalWrite(BCM::MOTOR_CLK, HIGH);
+    }
+        
+    digitalWrite(BCM::MOTOR_LATCH, HIGH);
+}
+
+
+/** --------------------------------------------------------- */
 
 /** @brief Allocates memory for RGB light matrix. */
 RGB::RGB()

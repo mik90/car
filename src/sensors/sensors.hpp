@@ -4,11 +4,11 @@
 #include <iostream>
 #include <cstdlib>
 #include <memory>
+#include <cerrno>
 
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include <errno.h>
 
 #include <wiringPi.h>
 #include <softPwm.h>
@@ -18,7 +18,6 @@
 
 namespace Car
 {
-    using bcm_pin_t = unsigned int;
 
     // Custom deleter for m_gpio_map
     void delete_GPIO_map(volatile uint32_t* gpio_mmap_ptr);
@@ -40,6 +39,8 @@ namespace Car
             void init_beep();
             void init_infrared();
             void init_pwm();
+            void init_motor_controller();
+            void write_to_shift_reg(uint8_t latch_data)
     };
 
     /** @brief Controls the LED lights **/
@@ -86,6 +87,7 @@ namespace Car
         /** @brief Rightmost line tracker sensor **/
         const bcm_pin_t LineTrackRight = 22;
 
+
         // PWM Motor controllers
         // These needs better labels wow. Im guessing FR FL RR RL?
         /** @brief Drive motor controller **/
@@ -96,6 +98,10 @@ namespace Car
         const bcm_pin_t MotorPWM_3 = 13;
         /** @brief Drive motor controller **/
         const bcm_pin_t MotorPWM_4 = 19;
+        
+        const bcm_pin_t MOTOR_LATCH = 29;
+        const bcm_pin_t MOTOR_CLK   = 28;
+        const bcm_pin_t MOTOR_DATA  = 27;
     }
 
 
