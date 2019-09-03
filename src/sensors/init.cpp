@@ -19,23 +19,24 @@ namespace Car
 
 
 /** @brief Custom deleter. Unmaps the mapped memory pointer to by
- *  gpio_mmap_ptr
- *  @param[in] gpio_mmap - Pointer to base of memory-mapped GPIO **/
-void delete_GPIO_map(volatile uint32_t* gpio_mmap_ptr)
+ *  gpioMmap_ptr
+ *  @param[in] gpioMmap - Pointer to base of memory-mapped GPIO **/
+void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr)
 {
-    if (munmap((void*) gpio_mmap_ptr, BLOCK_SIZE) != 0)
+    if (munmap((void*) gpioMmap_ptr, BLOCK_SIZE) != 0)
     {
-        std::cerr << "Cannot unmap GPIO map. errno:" << errno << std::endl;
+        std::cerr << "Cannot unmap GPIO map. errno:" << errno << '\n';
     }
 }
 
-Sensors::Sensors() : m_gpio_mmap(nullptr)
+Sensors::Sensors() : m_gpioMmap(nullptr)
 {
 }
 
-explicit void Sensors::setMemoryMap(std::shared_ptr<volatile uint32_t> gpio_ptr)
+void Sensors::setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr)
 {
-    m_gpio_mmap = gpio_ptr;
+    // Copy the shared_ptr
+    m_gpioMmap = gpioMmap_ptr;
 
      // Once the memroy is mapped, we can init all of our periphials
     std::cout << "Initializing sensors..." << std::endl;
@@ -61,17 +62,17 @@ void Sensors::initUltrasonic()
 
 
 /** @brief Sets pins for line reader sensors */
-void Sensors::init_line_reader()
+void Sensors::initLineReader()
 {
-    volatile uint32_t* gpio_pull_ptr = getGpioPullPtr(m_gpio_mmap.get());
+    volatile uint32_t* gpio_pull_ptr = getGpioPullPtr(m_gpioMmap.get());
 
-    setPinInput(BCM::LineTrackLeft, m_gpio_mmap);
+    setPinInput(BCM::LineTrackLeft, m_gpioMmap);
     *gpio_pull_ptr = 1 << BCM::LineTrackLeft;
 
-    setPinInput(BCM::LineTrackMiddle, m_gpio_mmap);
+    setPinInput(BCM::LineTrackMiddle, m_gpioMmap);
     *gpio_pull_ptr = 1 << BCM::LineTrackMiddle;
 
-    setPinInput(BCM::LineTrackRight, m_gpio_mmap);
+    setPinInput(BCM::LineTrackRight, m_gpioMmap);
     *gpio_pull_ptr = 1 << BCM::LineTrackRight;
 }
 /** @brief Sets pin for the infrared sensor as input. Sets the pull
@@ -80,6 +81,7 @@ void Sensors::initInfrared()
 {
     pinMode(BCM::InfraredIn, INPUT);
     pullUpDnControl(BCM::InfraredIn, PUD_UP);
+
     // TODO This ISR can't even be doing anything, maybe we don't need it.
     //wiringPiISR(BCM::InfraredIn, INT_EDGE_FALLING, infrared_ISR);
 }

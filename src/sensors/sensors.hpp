@@ -11,20 +11,20 @@ namespace Car
 {
 
     // Custom deleter for m_gpio_map
-    void delete_GPIO_map(volatile uint32_t* gpio_mmap_ptr);
+    void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr);
 
     /** @brief All of the functions and data types relating to sensor usage **/
     class Sensors
     {
         private:
             static const unsigned char InfraredBufferLimit = 64;
-            std::shared_ptr<volatile uint32_t> m_gpio_mmap;
+            std::shared_ptr<volatile uint32_t> m_gpioMmap;
         public:
             // shared_ptr is assigned a customer deleter here where the
             // mapped memory is unmapped
             Sensors();
 
-            void setMemoryMap(std::shared_ptr<volatile uint32_t> m_gpio_mmap);
+            void setMemoryMap(const std::shared_ptr<volatile uint32_t>& m_gpioMmap);
             void initUltrasonic();
             void initLineReader();
             void initInfrared();

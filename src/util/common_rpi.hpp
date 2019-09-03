@@ -1,6 +1,7 @@
 #ifndef COMMON_RPI_HPP_
 #define COMMON_RPI_HPP_
 
+#include <memory>
 #include <cstdint>
 
 namespace Car
@@ -68,19 +69,19 @@ namespace Car
     // all over the pi/arduino world
     inline void
     setPinInput(const bcm_pin_t pin,
-                const std::shared_ptr<volatile uint32_t>& gpio_mmap_ptr)
+                const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr)
     {
         // TODO - Explain this bit shifting
-        auto adjusted_ptr = (gpio_mmap_ptr + ((pin) / 10));
+        auto adjusted_ptr = (gpioMmap_ptr.get() + ((pin) / 10));
         auto adjusted_pin = 7 << (((pin) % 10 ) * 3);
         *adjusted_ptr &= ~(adjusted_pin);
     }
     
     inline void
     setPinOutput(const bcm_pin_t pin,
-                 const std::shared_ptr<volatile uint32_t>& gpio_mmap_ptr)
+                 const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr)
     {
-        auto adjusted_ptr = (gpio_mmap_ptr.get() + ((pin) / 10));
+        auto adjusted_ptr = (gpioMmap_ptr.get() + ((pin) / 10));
         auto adjusted_pin = 1 << (((pin) % 10 ) * 3);
         *adjusted_ptr |= adjusted_pin;
     }
@@ -90,9 +91,9 @@ namespace Car
      *  @return pointer to pull up/down. Used in order to modify
      *  the underlying memory content.**/
     inline volatile uint32_t*
-    getGpioPullPtr(volatile uint32_t* gpio_mmap_ptr)
+    getGpioPullPtr(volatile uint32_t* gpioMmap_ptr)
     {
-        return gpio_mmap_ptr + 37;
+        return gpioMmap_ptr + 37;
     }
     
     /** @brief Gets offset for the pull up/down clock in memmory map
@@ -100,9 +101,9 @@ namespace Car
      *  @return pointer to pull up/down clock. Used in order to modify
      *  the underlying memory content.**/
     inline volatile uint32_t*
-    getGpioPullClk0Ptr(volatile uint32_t* gpio_mmap_ptr)
+    getGpioPullClk0Ptr(volatile uint32_t* gpioMmap_ptr)
     {
-        return gpio_mmap_ptr + 38;
+        return gpioMmap_ptr + 38;
     }
 
 

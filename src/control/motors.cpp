@@ -10,23 +10,33 @@ namespace Car
 {
 
 
-void Motors::writeToMotorRegister(uint8_t latch_data)
+void Motors::writeToMotorRegister(uint8_t registerData)
 {
     digitalWrite(BCM::MOTOR_LATCH, LOW);
     digitalWrite(BCM::MOTOR_DATA, LOW);
 
-    for (int i = 0; i < 8; i++)
+    // bitmask is a bit that shifts right every iteration.
+    // starts at the leftmost bit and ends at the rightmost bit
+    for (uint8_t bitmask = 0b1000000; bitmask > 0b00000000; bitmask >>= 1)
     {
         delayMicroseconds(1);
 
         digitalWrite(BCM::MOTOR_CLK, LOW);
 
-        if (latch_data & (1 << (7 - i)))
+        // We can only tell one motor to turn at a time via the
+        // MOTOR_DATA signal.
+
+        // At this index of the bitmask, check if we're supposed to
+        // make this motor turn (registerData will have that bit as 1 if so)
+        if (registerData & bitmask)
         {
+            // Both bits are 1 so this motor needs to turn
             digitalWrite(BCM::MOTOR_DATA, HIGH);
         }
         else
         {
+            // Either the motor is not supposed to turn or it's not the motor's
+            // turn to write to MOTOR_DATA
             digitalWrite(BCM::MOTOR_DATA, LOW);
         }
 
@@ -37,7 +47,7 @@ void Motors::writeToMotorRegister(uint8_t latch_data)
     digitalWrite(BCM::MOTOR_LATCH, HIGH);
 }
 
-void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t dir)
+void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
 {
     // The motor has two inputs, each motor will correspond to
     // to two bits in the motor register.
@@ -69,7 +79,7 @@ void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t dir)
     }
 
     uint8_t register_data = 0;
-    switch (dir)
+    switch (motorDir)
     {
         case MotorDir_t::FORWARD:
             register_data |= outputA;
@@ -84,8 +94,8 @@ void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t dir)
             register_data &= ~outputB;
             break;
         default:
-            std::cerr << "turnMotor() invalid direction:"
-                      << static_cast<uint8_t>(dir) << std::endl;
+            std::cerr << "turnMotor() invalid motor direction:"
+                      << static_cast<uint8_t>(motorDir) << std::endl;
             return;
     }
 
@@ -93,20 +103,20 @@ void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t dir)
 }
 
 
-void Motors::moveCar(Direction_t dir)
+void Motors::moveCar(Direction_t carDir)
 {
-    auto turnLeftSide = [this](MotorDir_t dir)
+    auto turnLeftSide = [this](MotorDir_t motorDir)
     {
-        turnWheelMotor(BCM::MotorPWM_FL, dir);
-        turnWheelMotor(BCM::MotorPWM_RL, dir);
+        turnWheelMotor(BCM::MotorPWM_FL, motorDir);
+        turnWheelMotor(BCM::MotorPWM_RL, motorDir);
     };
-    auto turnRightSide = [this](MotorDir_t dir)
+    auto turnRightSide = [this](MotorDir_t motorDir)
     {
-        turnWheelMotor(BCM::MotorPWM_FR, dir);
-        turnWheelMotor(BCM::MotorPWM_RR, dir);
+        turnWheelMotor(BCM::MotorPWM_FR, motorDir);
+        turnWheelMotor(BCM::MotorPWM_RR, motorDir);
     };
 
-    switch(dir)
+    switch(carDir)
     {
         FORWARD:
             turnLeftSide(MotorDir_t::FORWARD);
@@ -141,8 +151,8 @@ void Motors::moveCar(Direction_t dir)
             turnRightSide(MotorDir_t::REVERSE);
             break;
         default:
-            std::cerr << "moveCar() Invalid dir:" <<
-            static_cast<uint8_t>(dir) << std::endl;
+            std::cerr << "moveCar() Invalid car direction:" 
+                      << static_cast<uint8_t>(carDir) << std::endl;
             return;
     }
 }

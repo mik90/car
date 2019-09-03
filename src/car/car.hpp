@@ -12,7 +12,7 @@ namespace Car
     class Car
     {
         private:
-            std::shared_ptr<volatile uint32_t> m_gpio_mmap;
+            std::shared_ptr<volatile uint32_t> m_gpioMmap;
             Sensors m_sensors;
             Motors  m_motors;
         public:

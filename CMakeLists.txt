@@ -76,9 +76,9 @@ file(GLOB util_SRC "${util_DIR}/*.cpp")
 set(main_SRC "src/main.cpp")
 
 set(car_SRC
-  ${cars_SRC} ${comms_SRC} ${control_SRC} ${sensors_SRC} ${util_SRC})
+  ${car_SRC} ${comms_SRC} ${control_SRC} ${sensors_SRC} ${util_SRC})
 set(car_INCLUDE_DIRS
-  ${cars_DIR} ${comms_DIR} ${control_DIR} ${sensors_DIR} ${util_DIR})
+  ${car_DIR} ${comms_DIR} ${control_DIR} ${sensors_DIR} ${util_DIR})
 
 # Roll up sources and includes for driver binary
 set(driver_SRC ${main_SRC} ${car_SRC})

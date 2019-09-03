@@ -5,6 +5,7 @@
 #include <cerrno>
 #include <cstdint>
 
+#include "common_rpi.hpp"
 #include "message.hpp"
 
 // Note: Old code has DCMotorInit(), is this needed?;
@@ -27,7 +28,7 @@ namespace Car
     class Motors
     {
         private:
-            std::shared_ptr<volatile uint32_t> m_gpio_mmap;
+            std::shared_ptr<volatile uint32_t> m_gpioMmap;
             
             // Init motors/servos
             void initPanTilt();
@@ -35,14 +36,14 @@ namespace Car
             void initMotorController();
 
             // Control motors
-            void writeToMotorRegister(uint8_t register_data);
-            void turnWheelMotor(bcm_pin_t motorPin, MotorDir_t dir);
+            void writeToMotorRegister(uint8_t registerData);
+            void turnWheelMotor(bcm_pin_t motorPin, MotorDir_t motorDir);
         public:
             Motors();
             ~Motors();
 
-            void setMemoryMap(std::shared_ptr<volatile uint32_t> gpio_ptr);
-            void moveCar(Direction_t dir);
+            void setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr);
+            void moveCar(Direction_t carDir);
     };
 
 }
