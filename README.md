@@ -10,6 +10,10 @@ Currently depends on:
 
 * ws2811 library: https://github.com/jgarff/rpi_ws281x
 
+Useful references:
+
+* modern-cmake: https://gitlab.com/CLIUtils/modern-cmake/
+
 
 Todo right now:
 -----------------------------------

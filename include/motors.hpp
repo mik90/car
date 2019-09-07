@@ -40,7 +40,6 @@ namespace Car
             void turnWheelMotor(bcm_pin_t motorPin, MotorDir_t motorDir);
         public:
             Motors();
-            ~Motors();
 
             void setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr);
             void moveCar(Direction_t carDir);

@@ -1,6 +1,9 @@
 # Cmake build
 build/
 
+# External git-submodules 
+extern/
+
 # Doxygen output
 docs/html
 docs/latex

@@ -8,26 +8,14 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include <wiringPi.h>
-#include <softPwm.h>
+#include "wiringPi.h"
+#include "softPwm.h"
 
 #include "sensors.hpp"
 #include "common_rpi.hpp"
 
 namespace Car
 {
-
-
-/** @brief Custom deleter. Unmaps the mapped memory pointer to by
- *  gpioMmap_ptr
- *  @param[in] gpioMmap - Pointer to base of memory-mapped GPIO **/
-void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr)
-{
-    if (munmap((void*) gpioMmap_ptr, BLOCK_SIZE) != 0)
-    {
-        std::cerr << "Cannot unmap GPIO map. errno:" << errno << '\n';
-    }
-}
 
 Sensors::Sensors() : m_gpioMmap(nullptr)
 {
