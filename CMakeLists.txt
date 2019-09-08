@@ -33,7 +33,6 @@ FetchContent_Declare(
   # Note: there is a typo in the Scons buildscript
   # where 0755 needs to be "0755"
 )
-FetchContent_MakeAvailable(wiringPi ws2811)
 
 FetchContent_GetProperties(wiringPi)
 if(NOT wiringpi_POPULATED)
@@ -50,10 +49,11 @@ if(NOT ws2811_POPULATED)
   file (READ ${ws2811_SOURCE_DIR}/SConscript filedata)
   string(REGEX REPLACE ", 0755" ", \"0755\"" filedata "${filedata}")
   file (WRITE ${ws2811_SOURCE_DIR}/SConscript ${filedata})
+  # Build the library
   execute_process(COMMAND scons
                   WORKING_DIRECTORY ${ws2811_SOURCE_DIR})
-endif()
 
+endif()
 
 
 # Car implementation is here
