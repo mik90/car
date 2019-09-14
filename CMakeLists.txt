@@ -24,6 +24,14 @@ FetchContent_Declare(
   # There are no available tags for WiringPi
   GIT_TAG        origin/master
 )
+FetchContent_GetProperties(wiringPi)
+if(NOT wiringpi_POPULATED)
+  FetchContent_Populate(wiringPi)
+  # Build the library
+  execute_process(COMMAND make
+                  WORKING_DIRECTORY ${wiringpi_SOURCE_DIR}/wiringPi)
+endif()
+
 
 FetchContent_Declare(
   ws2811 
@@ -33,15 +41,6 @@ FetchContent_Declare(
   # Note: there is a typo in the Scons buildscript
   # where 0755 needs to be "0755"
 )
-
-FetchContent_GetProperties(wiringPi)
-if(NOT wiringpi_POPULATED)
-  FetchContent_Populate(wiringPi)
-  # Build the library
-  execute_process(COMMAND make
-                  WORKING_DIRECTORY ${wiringpi_SOURCE_DIR}/wiringPi)
-endif()
-
 FetchContent_GetProperties(ws2811)
 if(NOT ws2811_POPULATED)
   FetchContent_Populate(ws2811)
@@ -55,11 +54,19 @@ if(NOT ws2811_POPULATED)
 
 endif()
 
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.8.1 
+)
+FetchContent_MakeAvailable(googletest)
+
 
 # Car implementation is here
 add_subdirectory(src)
 
 # Add testing if this is the main project and BUILD_TESTING is true
 if (BUILD_TESTING AND(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME))
+  enable_testing()
   add_subdirectory(tests)
 endif()
