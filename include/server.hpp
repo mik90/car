@@ -3,8 +3,6 @@
 
 #include <netinet/in.h>
 
-#include "message.hpp"
-
 namespace Car
 {
 /** @brief Manages communications between user and car **/

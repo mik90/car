@@ -20,7 +20,7 @@ void Motors::setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr
     std::cout << "Pan/tilt servos initialized\n";
     this->initPwm();
     std::cout << "Pulse width modulation initialized\n";
-    this->initMotorController();
+    this->initDcMotorController();
     std::cout << "Motor controller initialized\n";
     
     std::cout << "Motor initializion successful." << std::endl;
@@ -58,9 +58,8 @@ void Motors::initPwm()
 }
 
 /** @brief Sets up motor controller **/
-void Motors::initMotorController()
+void Motors::initDcMotorController()
 {
-    wiringPiSetup();
     pinMode(BCM::MOTOR_LATCH, OUTPUT);
     pinMode(BCM::MOTOR_DATA,  OUTPUT);
     pinMode(BCM::MOTOR_CLK,   OUTPUT);

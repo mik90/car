@@ -18,7 +18,7 @@ namespace Car
 /** @brief Custom deleter. Unmaps the mapped memory pointer to by
  *  gpioMmap_ptr
  *  @param[in] gpioMmap - Pointer to base of memory-mapped GPIO **/
-void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr)
+static void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr)
 {
     if (munmap((void*) gpioMmap_ptr, BLOCK_SIZE) != 0)
     {
@@ -30,7 +30,7 @@ void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr)
  *  for general purpose Input/output. Assigns custom delter to the
  *  shared pointer.
  *  @note Only works on target (Raspberry PI 3)  **/
-Car::Car() : m_gpioMmap(nullptr, delete_GPIO_map)
+Car::Car() : m_gpioMmap(nullptr)
 {
     std::cout << "Initializing sensors..." << std::endl;
     void* gpioMmap = nullptr;
@@ -59,8 +59,11 @@ Car::Car() : m_gpioMmap(nullptr, delete_GPIO_map)
         return;
     }
     // Cast the gpio pointer to a volatile uint32_t
-    // Car's shared ptr now points to the memory mapped GPIO
-    m_gpioMmap.reset(static_cast<volatile uint32_t*>(gpioMmap));
+    // Car's shared ptr now points to the memory mapped GPIO with a custom deleter
+    m_gpioMmap.reset(static_cast<volatile uint32_t*>(gpioMmap), delete_GPIO_map);
+
+    // Initialize the wiringPi library
+    wiringPiSetup();
 
     // Copy the shared pointer over to the sensor and motor managers
     m_sensors.setMemoryMap(m_gpioMmap); 

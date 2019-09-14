@@ -47,10 +47,10 @@ void Motors::writeToMotorRegister(uint8_t registerData)
     digitalWrite(BCM::MOTOR_LATCH, HIGH);
 }
 
-void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
+void Motors::turnDcMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
 {
-    // The motor has two inputs, each motor will correspond to
-    // to two bits in the motor register.
+    // The motor has two inputs, these values will both be put into
+    // the motor register
     uint8_t outputA  = 0;
     uint8_t outputB  = 0;
 
@@ -103,17 +103,17 @@ void Motors::turnWheelMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
 }
 
 
-void Motors::moveCar(Direction_t carDir)
+void Motors::moveCar(CarDirection_t carDir)
 {
     auto turnLeftSide = [this](MotorDir_t motorDir)
     {
-        turnWheelMotor(BCM::MotorPWM_FL, motorDir);
-        turnWheelMotor(BCM::MotorPWM_RL, motorDir);
+        turnDcMotor(BCM::MotorPWM_FL, motorDir);
+        turnDcMotor(BCM::MotorPWM_RL, motorDir);
     };
     auto turnRightSide = [this](MotorDir_t motorDir)
     {
-        turnWheelMotor(BCM::MotorPWM_FR, motorDir);
-        turnWheelMotor(BCM::MotorPWM_RR, motorDir);
+        turnDcMotor(BCM::MotorPWM_FR, motorDir);
+        turnDcMotor(BCM::MotorPWM_RR, motorDir);
     };
 
     switch(carDir)

@@ -10,9 +10,6 @@
 
 namespace Car
 {
-    // Custom deleter for m_gpio_map
-    void delete_GPIO_map(volatile uint32_t* gpioMmap_ptr);
-
     class Car
     {
         private:
