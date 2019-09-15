@@ -54,19 +54,5 @@ if(NOT ws2811_POPULATED)
 
 endif()
 
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.8.1 
-)
-FetchContent_MakeAvailable(googletest)
-
-
 # Car implementation is here
 add_subdirectory(src)
-
-# Add testing if this is the main project and BUILD_TESTING is true
-if (BUILD_TESTING AND(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME))
-  enable_testing()
-  add_subdirectory(tests)
-endif()

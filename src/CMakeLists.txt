@@ -22,6 +22,13 @@ add_executable(car_controller main.cpp
     $<TARGET_OBJECTS:obj_sensors>
     $<TARGET_OBJECTS:obj_util>)
 
+# Allow control through the command line
+add_executable(car_cli main.cpp
+    $<TARGET_OBJECTS:obj_car>
+    $<TARGET_OBJECTS:obj_comms>
+    $<TARGET_OBJECTS:obj_control>
+    $<TARGET_OBJECTS:obj_sensors>
+    $<TARGET_OBJECTS:obj_util>)
 
 
 target_compile_features(car_controller PRIVATE cxx_std_17)

@@ -1,22 +1,45 @@
+#include <iostream>
+#include <string>
+
 #include "car.hpp"
+
+
+void runCliInput()
+{
+    using namespace std;
+    string input;
+    Car::Car c;
+    c.initBeep();
+    while (1)
+    {
+        cin >> input;
+        if (input == "w")
+        {
+            c.moveCar(Car::CarDirection_t::FORWARD);
+        }
+        else if (input == "a")
+        {
+            c.moveCar(Car::CarDirection_t::LEFT);
+        }
+        else if (input == "s")
+        {
+            c.moveCar(Car::CarDirection_t::RIGHT);
+        }
+        else if (input == "d")
+        {
+
+            c.moveCar(Car::CarDirection_t::REVERSE);
+        }
+        else
+        {
+            cerr << "Invalid input:" << input << endl;
+            return;
+        }
+    }
+}
 
 int main(int argc, char** argv)
 {
-    // Creates memory mapped GPIO 
-    Car::Car someCar;
-
-    // TODO Run the servos a bit during init? unsure if needed
-
-    // TODO Init socket
-
-    // TODO Communicate with client, perform commands
-
-    // Async threads:
-    // Get input from ultrasonic sensor
-    // Get input from infrared sensor
-
-    // Trigger car motion
-
 
     return 0;
 }

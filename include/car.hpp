@@ -18,6 +18,7 @@ namespace Car
             Motors  m_motors;
         public:
             Car();
+            void moveCar(CarDirection_t carDir);
             void initBeep();
 
     };

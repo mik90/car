@@ -19,6 +19,33 @@ namespace Car
         const unsigned long GPIO_BASE = PI_3_B_BCM2708_PERI_BASE + 0x200000;
         
     }
+
+    enum class MotorDir_t {FORWARD, REVERSE, RELEASE};
+    // These values correspond to bit numbers in the physical register
+    enum class MotorBit_t : uint8_t {MOTOR_RR_A = 0b00001000,  // Bit 3
+                                     MOTOR_RR_B = 0b00001000,  // Bit 2
+                                     MOTOR_RL_A = 0b00010000,  // Bit 4
+                                     MOTOR_RL_B = 0b00000010,  // Bit 1
+                                     MOTOR_FR_A = 0b00000001,  // Bit 0
+                                     MOTOR_FR_B = 0b01000000,  // Bit 6
+                                     MOTOR_FL_A = 0b00100000,  // Bit 5
+                                     MOTOR_FL_B = 0b10000000}; // Bit 7
+
+    enum class CarDirection_t : std::uint8_t {FORWARD       = 0,
+                                              FORWARD_RIGHT = 1,
+                                              FORWARD_LEFT  = 2,
+                                              REVERSE       = 3,
+                                              REVERSE_LEFT  = 4,
+                                              REVERSE_RIGHT = 5,
+                                              LEFT          = 6,
+                                              RIGHT         = 7};
+
+    enum class Acceleration_t : std::uint8_t {ZERO = 0,
+                                              HALF = 50,
+                                              FULL = 100};
+
+
+
     
     /** @brief Commons place for all of the Pin identities **/
     namespace BCM

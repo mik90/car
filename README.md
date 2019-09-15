@@ -25,7 +25,7 @@ Todo right now:
 
 Todo in general:
 -----------------------------------
-* GoogleTest unit testing framework
+* Find a lightweight unit testing framework
 * Replace raw pointer usage with smart pointers where possible
 * Create host-side client to send commands in common message format
 * Use something cleaner than C's socket api. Can use Boost ASIO or find some socket wrapper library
@@ -33,7 +33,7 @@ Todo in general:
 they get triggered
 
 ### Async actions
-* Use the C++ STL's future library. 
+* Use the C++ futures. 
 * Client-side message handler should run on its own. Just wait for input and act on it.
 * Server-side should either send in commands manually put in by user or switch the client to an autonomous mode.
 * Each affector (pan/tilt and wheels) can have their own threads and run their control loops independently.

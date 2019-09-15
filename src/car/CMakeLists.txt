@@ -8,6 +8,7 @@ include(FetchContent)
 
 set (car_src_files
     init.cpp
+    car.cpp
 )
 
 # We aren't building a full blown library with this folder,
