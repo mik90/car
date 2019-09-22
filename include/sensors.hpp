@@ -16,15 +16,21 @@ namespace Car
         private:
             static const unsigned char InfraredBufferLimit = 64;
             std::shared_ptr<volatile uint32_t> m_gpioMmap;
-        public:
-            // shared_ptr is assigned a customer deleter here where the
-            // mapped memory is unmapped
-            Sensors();
+            float m_ultasonicDist_cm = 0.0;
+            
+            float getDistanceUltrasonic();
 
-            void setMemoryMap(const std::shared_ptr<volatile uint32_t>& m_gpioMmap);
+            // TODO Ensure that measurements are at least 60ms between invocations
+            void readSensors();
+            float calcDistanceUltrasonic();
+
             void initUltrasonic();
             void initLineReader();
             void initInfrared();
+        public:
+            Sensors();
+            void setMemoryMap(const std::shared_ptr<volatile uint32_t>& m_gpioMmap);
+            
     };
 
 

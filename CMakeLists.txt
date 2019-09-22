@@ -18,6 +18,7 @@ endif()
 
 include(FetchContent)
 
+###################################
 FetchContent_Declare(
   wiringPi
   GIT_REPOSITORY https://github.com/WiringPi/WiringPi.git
@@ -32,7 +33,7 @@ if(NOT wiringpi_POPULATED)
                   WORKING_DIRECTORY ${wiringpi_SOURCE_DIR}/wiringPi)
 endif()
 
-
+###################################
 FetchContent_Declare(
   ws2811 
   GIT_REPOSITORY https://github.com/jgarff/rpi_ws281x.git
@@ -53,6 +54,8 @@ if(NOT ws2811_POPULATED)
                   WORKING_DIRECTORY ${ws2811_SOURCE_DIR})
 
 endif()
+###################################
+
 
 # Car implementation is here
 add_subdirectory(src)

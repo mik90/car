@@ -6,6 +6,7 @@ endif()
 
 set (sensors_src_files
     init.cpp
+    sensors.cpp
 )
 
 # We aren't building a full blown library with this folder,

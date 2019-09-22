@@ -31,6 +31,10 @@ Motors::Motors() : m_gpioMmap(nullptr)
 {
 }
 
+Motors::~Motors() 
+{
+}
+
 /** @brief Sets pins for pan/tilt servos **/
 void Motors::initPanTilt()
 {
