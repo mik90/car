@@ -3,10 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/include",
+                "${workspaceFolder}/include"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/gcc",
             "configurationProvider": "vector-of-bool.cmake-tools",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }

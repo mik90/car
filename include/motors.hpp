@@ -17,17 +17,16 @@ namespace Car
             
             // Init motor and servo pins
             void initPanTilt();
-            void initPwm();
             void initDcMotorController();
 
             // Control motors
             void writeToMotorRegister(uint8_t registerData);
         public:
             Motors();
-            virtual ~Motors();
+            ~Motors();
 
             void setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr);
-            virtual void turnDcMotor(bcm_pin_t motorPin, MotorDir_t motorDir);
+            void turnDcMotor(pin_t motorPin, MotorDir_t motorDir);
     };
 
 }

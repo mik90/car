@@ -43,8 +43,8 @@ void Sensors::setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_pt
 void Sensors::initUltrasonic()
 {
     // This needs to be more clear than "Echo" and "Trig"
-    pinMode(BCM::Echo, INPUT);
-    pinMode(BCM::Trig, OUTPUT);
+    pinMode(wPiPins::Echo, INPUT);
+    pinMode(wPiPins::Trig, OUTPUT);
 }
 
 
@@ -53,24 +53,24 @@ void Sensors::initLineReader()
 {
     volatile uint32_t* gpio_pull_ptr = getGpioPullPtr(m_gpioMmap.get());
 
-    setPinInput(BCM::LineTrackLeft, m_gpioMmap);
-    *gpio_pull_ptr = 1 << BCM::LineTrackLeft;
+    setPinInput(wPiPins::LineTrackLeft, m_gpioMmap);
+    *gpio_pull_ptr = 1 << wPiPins::LineTrackLeft;
 
-    setPinInput(BCM::LineTrackMiddle, m_gpioMmap);
-    *gpio_pull_ptr = 1 << BCM::LineTrackMiddle;
+    setPinInput(wPiPins::LineTrackMiddle, m_gpioMmap);
+    *gpio_pull_ptr = 1 << wPiPins::LineTrackMiddle;
 
-    setPinInput(BCM::LineTrackRight, m_gpioMmap);
-    *gpio_pull_ptr = 1 << BCM::LineTrackRight;
+    setPinInput(wPiPins::LineTrackRight, m_gpioMmap);
+    *gpio_pull_ptr = 1 << wPiPins::LineTrackRight;
 }
 /** @brief Sets pin for the infrared sensor as input. Sets the pull
  * up/down resistor as up, and sets ISR for falling edge. **/
 void Sensors::initInfrared()
 {
-    pinMode(BCM::InfraredIn, INPUT);
-    pullUpDnControl(BCM::InfraredIn, PUD_UP);
+    pinMode(wPiPins::InfraredIn, INPUT);
+    pullUpDnControl(wPiPins::InfraredIn, PUD_UP);
 
     // TODO This ISR can't even be doing anything, maybe we don't need it.
-    //wiringPiISR(BCM::InfraredIn, INT_EDGE_FALLING, infrared_ISR);
+    //wiringPiISR(wPiPins::InfraredIn, INT_EDGE_FALLING, infrared_ISR);
 }
 
 }

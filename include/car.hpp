@@ -20,6 +20,7 @@ namespace Car
             Car();
             void moveCar(CarDirection_t carDir);
             void initBeep();
+            void beepSeconds(unsigned int sec);
 
     };
 

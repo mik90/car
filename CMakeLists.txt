@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required (VERSION 3.13)
 project(Car
         VERSION 0.0.1
         DESCRIPTION "Raspberry-pi powered toy car"

@@ -13,19 +13,19 @@ namespace Car
     {
 
         // Pull ultrasonic sensor high for at least 10 us
-        digitalWrite(BCM::Trig, HIGH);
+        digitalWrite(wPiPins::Trig, HIGH);
         delayMicroseconds(10);
         //  Pull ultrasonic trigger low again
-        digitalWrite(BCM::Trig, LOW);
+        digitalWrite(wPiPins::Trig, LOW);
         
         // Keep reading the echo pin until it is high
-        while (digitalRead(BCM::Echo) == 0);
+        while (digitalRead(wPiPins::Echo) == 0);
 
         // Get wall clock time in microseconds
         unsigned long start_us = micros();
 
         // Keep reading the echo pin until it is low
-        while (digitalRead(BCM::Echo) == 1);
+        while (digitalRead(wPiPins::Echo) == 1);
         
         unsigned long pulseWidth_us = micros() - start_us;
 

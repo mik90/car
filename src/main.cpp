@@ -33,6 +33,11 @@ void runCliInput()
             cout << "Reverse" << endl;
             c.moveCar(Car::CarDirection_t::REVERSE);
         }
+        else if (input.find("b") != string::npos)
+        {
+            cout << "Beep for 1 sec" << endl;
+            c.beepSeconds(1);
+        }
         else
         {
             cerr << "Invalid input:" << input << endl;

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <bitset>
+
 #include <cstddef>
 
 #include "wiringPi.h"
@@ -12,16 +14,18 @@ namespace Car
 
 void Motors::writeToMotorRegister(uint8_t registerData)
 {
-    digitalWrite(BCM::MOTOR_LATCH, LOW);
-    digitalWrite(BCM::MOTOR_DATA, LOW);
+    digitalWrite(wPiPins::MOTOR_LATCH, LOW);
+    digitalWrite(wPiPins::MOTOR_DATA, LOW);
 
+    std::cout << "Writing to motor register...\n";
+    std::cout << "Register data:" << std::bitset<8>(registerData) << std::endl;
     // bitmask is a bit that shifts right every iteration.
     // starts at the leftmost bit and ends at the rightmost bit
     for (uint8_t bitmask = 0b1000000; bitmask > 0b00000000; bitmask >>= 1)
     {
         delayMicroseconds(1);
 
-        digitalWrite(BCM::MOTOR_CLK, LOW);
+        digitalWrite(wPiPins::MOTOR_CLK, LOW);
 
         // We can only tell one motor to turn at a time via the
         // MOTOR_DATA signal.
@@ -31,23 +35,25 @@ void Motors::writeToMotorRegister(uint8_t registerData)
         if (registerData & bitmask)
         {
             // Both bits are 1 so this motor needs to turn
-            digitalWrite(BCM::MOTOR_DATA, HIGH);
+            std::cout << "Writing high. bitmask:" << std::bitset<8>(bitmask) << std::endl;
+            digitalWrite(wPiPins::MOTOR_DATA, HIGH);
         }
         else
         {
             // Either the motor is not supposed to turn or it's not the motor's
             // turn to write to MOTOR_DATA
-            digitalWrite(BCM::MOTOR_DATA, LOW);
+            std::cout << "Writing low. bitmask:" << std::bitset<8>(bitmask) << std::endl;
+            digitalWrite(wPiPins::MOTOR_DATA, LOW);
         }
 
         delayMicroseconds(1);
-        digitalWrite(BCM::MOTOR_CLK, HIGH);
+        digitalWrite(wPiPins::MOTOR_CLK, HIGH);
     }
-        
-    digitalWrite(BCM::MOTOR_LATCH, HIGH);
+
+    digitalWrite(wPiPins::MOTOR_LATCH, HIGH);
 }
 
-void Motors::turnDcMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
+void Motors::turnDcMotor(pin_t motorPin, MotorDir_t motorDir)
 {
     // The motor has two inputs, these values will both be put into
     // the motor register
@@ -56,19 +62,19 @@ void Motors::turnDcMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
 
     switch (motorPin)
     {
-        case BCM::MotorPWM_RR:
+        case wPiPins::MotorPWM_RR:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_RR_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_RR_B);
             break;
-        case BCM::MotorPWM_RL:
+        case wPiPins::MotorPWM_RL:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_RL_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_RL_B);
             break;
-        case BCM::MotorPWM_FR:
+        case wPiPins::MotorPWM_FR:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_FR_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_FR_B);
             break;
-        case BCM::MotorPWM_FL:
+        case wPiPins::MotorPWM_FL:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_FL_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_FL_B);
             break;
@@ -77,21 +83,23 @@ void Motors::turnDcMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
                       << motorPin << std::endl;
             return;
     }
+    std::cout << "outputA:" << std::bitset<8>(outputA) << std::endl;
+    std::cout << "outputB:" << std::bitset<8>(outputB) << std::endl;
 
-    uint8_t register_data = 0;
+    uint8_t registerData = 0;
     switch (motorDir)
     {
         case MotorDir_t::FORWARD:
-            register_data |= outputA;
-            register_data &= ~outputB;
+            registerData |= outputA;
+            registerData &= ~outputB;
             break;
         case MotorDir_t::REVERSE:
-            register_data &= ~outputA;
-            register_data |= outputB;
+            registerData &= ~outputA;
+            registerData |= outputB;
             break;
         case MotorDir_t::RELEASE:
-            register_data &= ~outputA;
-            register_data &= ~outputB;
+            registerData &= ~outputA;
+            registerData &= ~outputB;
             break;
         default:
             std::cerr << "turnMotor() invalid motor direction:"
@@ -99,7 +107,7 @@ void Motors::turnDcMotor(bcm_pin_t motorPin, MotorDir_t motorDir)
             return;
     }
 
-    writeToMotorRegister(register_data);
+    writeToMotorRegister(registerData);
 }
 
 

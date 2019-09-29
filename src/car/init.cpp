@@ -66,7 +66,11 @@ Car::Car() : m_gpioMmap(nullptr)
     wiringPiSetup();
 
     // Copy the shared pointer over to the sensor and motor managers
+
+    /*
+    Only using the motors for now
     m_sensors.setMemoryMap(m_gpioMmap); 
+    */
     m_motors.setMemoryMap(m_gpioMmap); 
 
     this->initBeep();
@@ -78,8 +82,8 @@ Car::Car() : m_gpioMmap(nullptr)
 /** @brief Sets pin for the beeper as output and writes it low **/
 void Car::initBeep()
 {
-    pinMode(BCM::Beep, OUTPUT);
-    digitalWrite(BCM::Beep, LOW);
+    pinMode(wPiPins::Beep, OUTPUT);
+    digitalWrite(wPiPins::Beep, LOW);
 }
 
 }
