@@ -20,13 +20,13 @@ void Car::moveCar(CarDirection_t carDir)
 {
     auto turnLeftSide = [this](MotorDir_t motorDir)
     {
-        m_motors.turnDcMotor(wPiPins::MotorPWM_FL, motorDir);
-        m_motors.turnDcMotor(wPiPins::MotorPWM_RL, motorDir);
+        m_motors.turnDcMotor(wPiPins::MotorPwmFL, motorDir);
+        m_motors.turnDcMotor(wPiPins::MotorPwmRL, motorDir);
     };
     auto turnRightSide = [this](MotorDir_t motorDir)
     {
-        m_motors.turnDcMotor(wPiPins::MotorPWM_FR, motorDir);
-        m_motors.turnDcMotor(wPiPins::MotorPWM_RR, motorDir);
+        m_motors.turnDcMotor(wPiPins::MotorPwmFR, motorDir);
+        m_motors.turnDcMotor(wPiPins::MotorPwmRR, motorDir);
     };
 
     switch(carDir)

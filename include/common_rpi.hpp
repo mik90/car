@@ -2,6 +2,7 @@
 #define COMMON_RPI_HPP_
 
 #include <memory>
+#include <bitset>
 #include <iostream>
 #include <cstdint>
 
@@ -10,14 +11,14 @@ namespace Car
     using pin_t = unsigned int;
 
     // Conventional size of memory block
-    const std::size_t BLOCK_SIZE = 4096;
+    constexpr std::size_t BLOCK_SIZE = 4096;
 
     namespace GPIO
     {
-        const unsigned long PI_ZERO_W_BCM2708_PERI_BASE = 0x20000000;
-        const unsigned long PI_3_B_BCM2708_PERI_BASE    = 0x3f000000;
-        const unsigned long PI_4_B_BCM2708_PERI_BASE    = 0xfe000000;
-        const unsigned long GPIO_BASE = PI_3_B_BCM2708_PERI_BASE + 0x200000;
+        constexpr unsigned long PI_ZERO_W_BCM2708_PERI_BASE = 0x20000000;
+        constexpr unsigned long PI_3_B_BCM2708_PERI_BASE    = 0x3f000000;
+        constexpr unsigned long PI_4_B_BCM2708_PERI_BASE    = 0xfe000000;
+        constexpr unsigned long GPIO_BASE = PI_3_B_BCM2708_PERI_BASE + 0x200000;
         
     }
 
@@ -47,47 +48,44 @@ namespace Car
                                               HALF = 50,
                                               FULL = 100};
 
-
-
     /** @brief Common place for all of the WiringPi Pin identities **/
     namespace wPiPins 
     {
         // CONFLICT
         /** @brief Ultrasonic sensor input **/
-        const pin_t Echo = 4;
+        constexpr pin_t Echo = 4;
         /** @brief Pan or tilt servo **/
-        const pin_t Servo_1 = 4;
+        constexpr pin_t Servo_1 = 4;
 
         // CONFLICT
         /** @brief Infrared sensor input **/
-        const pin_t InfraredIn = 5;
+        constexpr pin_t InfraredIn = 5;
 
         /** @brief Leftmost line tracker sensor **/
-        const pin_t LineTrackLeft = 17;
+        constexpr pin_t LineTrackLeft = 17;
         /** @brief Rightmost line tracker sensor **/
-        const pin_t LineTrackRight = 22;
+        constexpr pin_t LineTrackRight = 22;
         
         // CONFLICT
         /** @brief Ultrasonic sensor output **/
-        const pin_t Trig = 25;
+        constexpr pin_t Trig = 25;
         /** @brief Pan or tilt servo **/
-        const pin_t Servo_2 = 25;
+        constexpr pin_t Servo_2 = 25;
        
         /** @brief Beeper **/
-        const pin_t Beep = 26;
+        constexpr pin_t Beep = 26;
         /** @brief Middle line tracker sensor **/
-        const pin_t LineTrackMiddle = 27;
+        constexpr pin_t LineTrackMiddle = 27;
 
 
-        const pin_t MOTOR_DATA  = 27;
-        const pin_t MOTOR_CLK   = 28;
-        const pin_t MOTOR_LATCH = 29;
+        constexpr pin_t MotorData  = 27;
+        constexpr pin_t MotorClock = 28;
+        constexpr pin_t MotorLatch = 29;
 
-        const pin_t MotorPWM_RR = 5;
-        const pin_t MotorPWM_RL = 6;
-        const pin_t MotorPWM_FR = 13;
-        const pin_t MotorPWM_FL = 19;
-
+        constexpr pin_t MotorPwmRR = 5;
+        constexpr pin_t MotorPwmRL = 6;
+        constexpr pin_t MotorPwmFR = 13;
+        constexpr pin_t MotorPwmFL = 19;
     }
 
     // Attempt to refactor INP_GPIO, OUT_GPIO and other weird macros that seem to be
@@ -111,7 +109,7 @@ namespace Car
     }
 
     /** @brief Gets offset for the pull up/down in memmory map
-     *  @param[in] gpio_mmap - Points to base of memory mapped GPIO
+     *  @param[in] gpioMmap_ptr - Points to base of memory mapped GPIO
      *  @return pointer to pull up/down. Used in order to modify
      *  the underlying memory content.**/
     inline volatile uint32_t*
@@ -121,7 +119,7 @@ namespace Car
     }
     
     /** @brief Gets offset for the pull up/down clock in memory map
-     *  @param[in] gpio_mmap - Points to base of memory mapped GPIO
+     *  @param[in] gpioMmap_ptr - Points to base of memory mapped GPIO
      *  @return pointer to pull up/down clock. Used in order to modify
      *  the underlying memory content.**/
     inline volatile uint32_t*
@@ -130,6 +128,21 @@ namespace Car
         return gpioMmap_ptr + 38;
     }
 
+    /** @brief Sets bits which are 1, ignores bits tha are 0
+     *  @param[in] gpioMmap_ptr - Points to base of memory mapped GPIO
+     *  @param[in] bits - Bitset where some bits are 1  **/
+    inline void setGpioBits(std::bitset<32> bits, volatile uint32_t* gpioMmap_ptr)
+    {
+        *(gpioMmap_ptr + 7) = bits.to_ulong();
+    }
+
+    /** @brief clears bits which are 1, ignores bits that are 0.
+     *  @param[in] gpioMmap_ptr - Points to base of memory mapped GPIO
+     *  @param[in] bits - Bitset where some bits are 1  **/
+    inline void clearGpioBits(std::bitset<32> bits, volatile uint32_t* gpioMmap_ptr)
+    {
+        *(gpioMmap_ptr + 10) = bits.to_ulong();
+    }
 
 }
 #endif

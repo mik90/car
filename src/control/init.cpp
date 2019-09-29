@@ -51,21 +51,21 @@ void Motors::initPanTilt()
 /** @brief Sets up motor controller **/
 void Motors::initDcMotorController()
 {
-    pinMode(wPiPins::MOTOR_LATCH, OUTPUT);
-    pinMode(wPiPins::MOTOR_DATA,  OUTPUT);
-    pinMode(wPiPins::MOTOR_CLK,   OUTPUT);
+    pinMode(wPiPins::MotorLatch, OUTPUT);
+    pinMode(wPiPins::MotorData,  OUTPUT);
+    pinMode(wPiPins::MotorClock,   OUTPUT);
     
-    setPinInput (wPiPins::MotorPWM_RR, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPWM_RR, m_gpioMmap);
+    setPinInput (wPiPins::MotorPwmRR, m_gpioMmap);
+    setPinOutput(wPiPins::MotorPwmRR, m_gpioMmap);
     
-    setPinInput (wPiPins::MotorPWM_RL, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPWM_RL, m_gpioMmap);
+    setPinInput (wPiPins::MotorPwmRL, m_gpioMmap);
+    setPinOutput(wPiPins::MotorPwmRL, m_gpioMmap);
     
-    setPinInput (wPiPins::MotorPWM_FR, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPWM_FR, m_gpioMmap);
+    setPinInput (wPiPins::MotorPwmFR, m_gpioMmap);
+    setPinOutput(wPiPins::MotorPwmFR, m_gpioMmap);
     
-    setPinInput (wPiPins::MotorPWM_FL, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPWM_FL, m_gpioMmap);
+    setPinInput (wPiPins::MotorPwmFL, m_gpioMmap);
+    setPinOutput(wPiPins::MotorPwmFL, m_gpioMmap);
 
 
     // Clear out the register

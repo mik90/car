@@ -11,11 +11,35 @@
 namespace Car
 {
 
+struct pwmTimestamp
+{
+    unsigned long start = 0;
+    // Update 'start' once the PWM period ends
+    bool periodExpired = false;
+};
+
+void pwmWrite(pin_t motorPin, pwmTimestamp& time)
+{
+    // Timestamp management, check prev time vs now
+
+
+    // Find delta T
+
+    // min       half     full
+    //  |        |        |
+    //  |    <set>        |<clear>
+
+    // Set value if within the range, clear it if not, if we're above
+    // the full period, we'll redo the timestamp on the next cycle
+
+    // setGpio if deltaT is less than 'value'
+    // Otherwise, clearGpio
+}
 
 void Motors::writeToMotorRegister(uint8_t registerData)
 {
-    digitalWrite(wPiPins::MOTOR_LATCH, LOW);
-    digitalWrite(wPiPins::MOTOR_DATA, LOW);
+    digitalWrite(wPiPins::MotorLatch, LOW);
+    digitalWrite(wPiPins::MotorData, LOW);
 
     std::cout << "Writing to motor register...\n";
     std::cout << "Register data:" << std::bitset<8>(registerData) << std::endl;
@@ -25,10 +49,10 @@ void Motors::writeToMotorRegister(uint8_t registerData)
     {
         delayMicroseconds(1);
 
-        digitalWrite(wPiPins::MOTOR_CLK, LOW);
+        digitalWrite(wPiPins::MotorClock, LOW);
 
         // We can only tell one motor to turn at a time via the
-        // MOTOR_DATA signal.
+        // MotorData signal.
 
         // At this index of the bitmask, check if we're supposed to
         // make this motor turn (registerData will have that bit as 1 if so)
@@ -36,21 +60,21 @@ void Motors::writeToMotorRegister(uint8_t registerData)
         {
             // Both bits are 1 so this motor needs to turn
             std::cout << "Writing high. bitmask:" << std::bitset<8>(bitmask) << std::endl;
-            digitalWrite(wPiPins::MOTOR_DATA, HIGH);
+            digitalWrite(wPiPins::MotorData, HIGH);
         }
         else
         {
             // Either the motor is not supposed to turn or it's not the motor's
-            // turn to write to MOTOR_DATA
+            // turn to write to MotorData
             std::cout << "Writing low. bitmask:" << std::bitset<8>(bitmask) << std::endl;
-            digitalWrite(wPiPins::MOTOR_DATA, LOW);
+            digitalWrite(wPiPins::MotorData, LOW);
         }
 
         delayMicroseconds(1);
-        digitalWrite(wPiPins::MOTOR_CLK, HIGH);
+        digitalWrite(wPiPins::MotorClock, HIGH);
     }
 
-    digitalWrite(wPiPins::MOTOR_LATCH, HIGH);
+    digitalWrite(wPiPins::MotorLatch, HIGH);
 }
 
 void Motors::turnDcMotor(pin_t motorPin, MotorDir_t motorDir)
@@ -62,19 +86,19 @@ void Motors::turnDcMotor(pin_t motorPin, MotorDir_t motorDir)
 
     switch (motorPin)
     {
-        case wPiPins::MotorPWM_RR:
+        case wPiPins::MotorPwmRR:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_RR_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_RR_B);
             break;
-        case wPiPins::MotorPWM_RL:
+        case wPiPins::MotorPwmRL:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_RL_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_RL_B);
             break;
-        case wPiPins::MotorPWM_FR:
+        case wPiPins::MotorPwmFR:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_FR_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_FR_B);
             break;
-        case wPiPins::MotorPWM_FL:
+        case wPiPins::MotorPwmFL:
             outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_FL_A);
             outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_FL_B);
             break;
