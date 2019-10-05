@@ -1,12 +1,12 @@
 #include <iostream>
 #include <bitset>
+#include <thread>
 
 #include <cstddef>
 
 #include "wiringPi.h"
 
-#include "common_rpi.hpp"
-#include "motors.hpp"
+#include "effectors.hpp"
 
 namespace Car
 {
@@ -38,7 +38,7 @@ void PwmMotor::pwmWrite(PWM::pulseLength pulseLen)
     {
         if (tDelta <= pulseLen)
             // We are within the pulse range, set the bits
-            RpiInterface::setGpioBits(m_motorBitset);
+            RpiInterface::writeGpioBits(m_motorBitset);
         else
             // We are past the pulse range, clear the bits
             RpiInterface::clearGpioBits(m_motorBitset);
@@ -118,7 +118,15 @@ void PwmMotor::turnMotor(MotorDir_t motorDir)
 }
 
 
-void Motors::turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength)
+void Effectors::beepSeconds(std::chrono::seconds duration)
+{
+    digitalWrite(wPiPins::Beep, HIGH);
+    std::this_thread::sleep_for(duration);
+    digitalWrite(wPiPins::Beep, LOW);
+}
+
+
+void Effectors::turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength)
 {
     m_RearLeft.turnMotor(motorDir);
     m_RearLeft.pwmWrite(pLength);
@@ -127,7 +135,7 @@ void Motors::turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength)
     m_FrontRight.pwmWrite(pLength);
 }
 
-void Motors::turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength)
+void Effectors::turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength)
 {
     m_RearRight.turnMotor(motorDir);
     m_RearRight.pwmWrite(pLength);

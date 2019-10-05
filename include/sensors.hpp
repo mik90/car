@@ -20,12 +20,8 @@ namespace Car
             float getDistanceUltrasonic();
 
             // TODO Ensure that measurements are at least 60ms between invocations
-            void readSensors();
+            // TODO Use a centimeter type
             float calcDistanceUltrasonic();
-
-            void initUltrasonic();
-            void initLineReader();
-            void initInfrared();
         public:
             Sensors();
             

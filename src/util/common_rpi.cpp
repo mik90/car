@@ -70,7 +70,7 @@ void RpiInterface::writeToPullUpDownClock(uint32_t data)
 
 /** @brief Sets bits which are 1, ignores bits tha are 0
  *  @param[in] bits - Bitset where some bits are 1  **/
-void RpiInterface::setGpioBits(std::bitset<32> bits)
+void RpiInterface::writeGpioBits(std::bitset<32> bits)
 {
     *(m_gpioMmapPtr.get() + 7) = bits.to_ulong();
 }

@@ -7,7 +7,6 @@ endif()
 include(FetchContent)
 
 set (car_src_files
-    init.cpp
     car.cpp
 )
 

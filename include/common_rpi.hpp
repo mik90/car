@@ -47,7 +47,7 @@ class RpiInterface
 
         static void writeToPullUpDownClock(uint32_t data);
 
-        static void setGpioBits(std::bitset<32> bits);
+        static void writeGpioBits(std::bitset<32> bits);
 
         static void clearGpioBits(std::bitset<32> bits);
 };
@@ -61,6 +61,7 @@ namespace GPIO
     
 }
 
+// TODO Move these types to the modules they belong
 enum class MotorDir_t {FORWARD, REVERSE, RELEASE};
 
 enum class CarDirection_t : std::uint8_t {FORWARD       = 0,

@@ -3,9 +3,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <chrono>
 
 #include "sensors.hpp"
-#include "motors.hpp"
+#include "effectors.hpp"
 #include "common_rpi.hpp"
 
 
@@ -16,14 +17,11 @@ class Car
 {
     private:
         Sensors m_sensors;
-        Motors  m_motors;
+        Effectors  m_effectors;
         RpiInterface m_rpi;
     public:
-        Car();
         void moveCar(CarDirection_t carDir);
-        void initBeep();
-        void beepSeconds(unsigned int sec);
-
+        void beepSeconds(std::chrono::seconds duration);
 };
 
 }

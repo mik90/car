@@ -1,5 +1,5 @@
-#ifndef MOTORS_HPP_
-#define MOTORS_HPP_
+#ifndef EFFECTORS_HPP_
+#define EFFECTORS_HPP_
 
 #include <memory>
 #include <bitset>
@@ -58,12 +58,14 @@ namespace Car
     };
 
     /** @brief All of the functions and data types relating to motor usage **/
-    class Motors
+    class Effectors
     {
         public:
-            Motors();
+            Effectors();
             void turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength);
             void turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength);
+            void beepSeconds(std::chrono::seconds duration);
+
 
         private:
             PwmMotor m_RearRight {wPiPins::MotorPwmRR};

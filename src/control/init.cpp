@@ -3,7 +3,7 @@
 
 #include "wiringPi.h"
 
-#include "motors.hpp"
+#include "effectors.hpp"
 #include "common_rpi.hpp"
 
 namespace Car
@@ -47,12 +47,14 @@ PwmMotor::PwmMotor(pin_t pin) : m_gpioPin{pin},
     writeToMotorRegister(0b00000000);
 }
 
-Motors::Motors()
+Effectors::Effectors()
 {
+    // Set pins for the UCTronics motor register
     pinMode(wPiPins::MotorLatch, OUTPUT);
     pinMode(wPiPins::MotorData,  OUTPUT);
-    pinMode(wPiPins::MotorClock,   OUTPUT);
-    
+    pinMode(wPiPins::MotorClock, OUTPUT);
+
+    // Set pins for the GPIO PWM motor controls
     RpiInterface::setPinInput (wPiPins::MotorPwmRR);
     RpiInterface::setPinOutput(wPiPins::MotorPwmRR);
     
@@ -65,12 +67,16 @@ Motors::Motors()
     RpiInterface::setPinInput (wPiPins::MotorPwmFL);
     RpiInterface::setPinOutput(wPiPins::MotorPwmFL);
 
-    /** Set pins for pan/tilt servos **/
-    RpiInterface::setPinInput(wPiPins::Servo_1);
+    // Set pins for pan/tilt servos
+    RpiInterface::setPinInput (wPiPins::Servo_1);
     RpiInterface::setPinOutput(wPiPins::Servo_1);
 
-    RpiInterface::setPinInput(wPiPins::Servo_2);
+    RpiInterface::setPinInput (wPiPins::Servo_2);
     RpiInterface::setPinOutput(wPiPins::Servo_2);
+
+    // Set pins/write low for the beeper/buzzer
+    pinMode(wPiPins::Beep, OUTPUT);
+    digitalWrite(wPiPins::Beep, LOW);
 }
 
 

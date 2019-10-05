@@ -9,7 +9,6 @@ void runCliInput()
     using namespace std;
     string input;
     Car::Car c;
-    c.initBeep();
     while (1)
     {
         cin >> input;
@@ -36,7 +35,7 @@ void runCliInput()
         else if (input.find("b") != string::npos)
         {
             cout << "Beep for 1 sec" << endl;
-            c.beepSeconds(1);
+            c.beepSeconds(1s);
         }
         else
         {

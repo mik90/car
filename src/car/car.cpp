@@ -1,20 +1,11 @@
 #include <iostream>
-#include <thread>
-#include <chrono>
+
+#include "wiringPi.h"
 
 #include "car.hpp"
-#include "wiringPi.h"
 
 namespace Car
 {
-
-void Car::beepSeconds(unsigned int sec)
-{
-    digitalWrite(wPiPins::Beep, HIGH);
-    std::this_thread::sleep_for(std::chrono::seconds(sec));
-    digitalWrite(wPiPins::Beep, LOW);
-}
-
 
 void Car::moveCar(CarDirection_t carDir)
 {
@@ -24,42 +15,47 @@ void Car::moveCar(CarDirection_t carDir)
     switch(carDir)
     {
         case CarDirection_t::FORWARD:
-            m_motors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
             break;
         case CarDirection_t::FORWARD_LEFT:
-            m_motors.turnLeftSide(MotorDir_t::RELEASE, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::RELEASE, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
             break;
         case CarDirection_t::FORWARD_RIGHT:
-            m_motors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::RELEASE, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::RELEASE, halfSpeed);
             break;
         case CarDirection_t::REVERSE:
-            m_motors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
             break;
         case CarDirection_t::REVERSE_LEFT:
-            m_motors.turnLeftSide(MotorDir_t::RELEASE, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::RELEASE, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
             break;
         case CarDirection_t::REVERSE_RIGHT:
-            m_motors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
             break;
         case CarDirection_t::LEFT:
-            m_motors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
             break;
         case CarDirection_t::RIGHT:
-            m_motors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
-            m_motors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
             break;
         default:
             std::cerr << "moveCar() Invalid car direction:" 
                       << carDir << std::endl;
             return;
     }
+}
+
+void Car::beepSeconds(std::chrono::seconds duration)
+{
+    m_effectors.beepSeconds(duration);
 }
 
 std::ostream& operator<<(std::ostream& out, CarDirection_t dir)
