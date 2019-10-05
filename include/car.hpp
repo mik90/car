@@ -6,23 +6,25 @@
 
 #include "sensors.hpp"
 #include "motors.hpp"
+#include "common_rpi.hpp"
 
 
 namespace Car
 {
-    class Car
-    {
-        private:
-            std::shared_ptr<volatile uint32_t> m_gpioMmap;
-            Sensors m_sensors;
-            Motors  m_motors;
-        public:
-            Car();
-            void moveCar(CarDirection_t carDir);
-            void initBeep();
-            void beepSeconds(unsigned int sec);
 
-    };
+class Car
+{
+    private:
+        Sensors m_sensors;
+        Motors  m_motors;
+        RpiInterface m_rpi;
+    public:
+        Car();
+        void moveCar(CarDirection_t carDir);
+        void initBeep();
+        void beepSeconds(unsigned int sec);
+
+};
 
 }
 

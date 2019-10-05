@@ -74,7 +74,8 @@
         "variant": "cpp",
         "future": "cpp",
         "bitset": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "forward_list": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled",
     "C_Cpp.errorSquiggles": "Enabled"

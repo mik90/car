@@ -6,6 +6,7 @@ endif()
 
 set (util_src_files
     led.cpp
+    common_rpi.cpp
 )
 
 # We aren't building a full blown library with this folder,

@@ -11,41 +11,56 @@
 namespace Car
 {
 
-struct pwmTimestamp
+void PwmMotor::pwmWrite(PWM::pulseLength pulseLen)
 {
-    unsigned long start = 0;
-    // Update 'start' once the PWM period ends
-    bool periodExpired = false;
-};
+    using namespace std::chrono;
 
-void pwmWrite(pin_t motorPin, pwmTimestamp& time)
-{
+    if (!m_time.inPulsePeriod)
+    {
+        // Start new pulse period
+        m_time.inPulsePeriod = true;
+        m_time.tStart = static_cast<microseconds>(micros());
+    }
+
     // Timestamp management, check prev time vs now
+    microseconds tNow = static_cast<microseconds>(micros());
+    microseconds tDelta = tNow - m_time.tStart;
 
-
-    // Find delta T
-
-    // min       half     full
-    //  |        |        |
-    //  |    <set>        |<clear>
-
-    // Set value if within the range, clear it if not, if we're above
-    // the full period, we'll redo the timestamp on the next cycle
-
-    // setGpio if deltaT is less than 'value'
-    // Otherwise, clearGpio
+    /**
+     *
+     * min      half     full
+     *  |        |        |
+     *  |<------set------>|<clear>
+     * Set value if within the range, clear it if not, if we're above
+     * the full period, we'll redo the timestamp for the next cycle
+     **/
+    if (tDelta < PWM::fullPwmPeriod)
+    {
+        if (tDelta <= pulseLen)
+            // We are within the pulse range, set the bits
+            RpiInterface::setGpioBits(m_motorBitset);
+        else
+            // We are past the pulse range, clear the bits
+            RpiInterface::clearGpioBits(m_motorBitset);
+    }
+    else
+    {
+        // We've passed the full period, will need to start the timestamp
+        m_time.inPulsePeriod = false;
+    }
 }
 
-void Motors::writeToMotorRegister(uint8_t registerData)
+void PwmMotor::writeToMotorRegister(std::bitset<8> registerData)
 {
     digitalWrite(wPiPins::MotorLatch, LOW);
     digitalWrite(wPiPins::MotorData, LOW);
 
     std::cout << "Writing to motor register...\n";
-    std::cout << "Register data:" << std::bitset<8>(registerData) << std::endl;
+    std::cout << "Register data:" << registerData << std::endl;
+
     // bitmask is a bit that shifts right every iteration.
     // starts at the leftmost bit and ends at the rightmost bit
-    for (uint8_t bitmask = 0b1000000; bitmask > 0b00000000; bitmask >>= 1)
+    for (std::bitset<8> bitmask{0b1000000}; !bitmask.none(); bitmask >>= 1)
     {
         delayMicroseconds(1);
 
@@ -54,9 +69,8 @@ void Motors::writeToMotorRegister(uint8_t registerData)
         // We can only tell one motor to turn at a time via the
         // MotorData signal.
 
-        // At this index of the bitmask, check if we're supposed to
-        // make this motor turn (registerData will have that bit as 1 if so)
-        if (registerData & bitmask)
+        // Check if any of the bits are 1
+        if ((registerData & bitmask).any())
         {
             // Both bits are 1 so this motor needs to turn
             std::cout << "Writing high. bitmask:" << std::bitset<8>(bitmask) << std::endl;
@@ -77,53 +91,22 @@ void Motors::writeToMotorRegister(uint8_t registerData)
     digitalWrite(wPiPins::MotorLatch, HIGH);
 }
 
-void Motors::turnDcMotor(pin_t motorPin, MotorDir_t motorDir)
+void PwmMotor::turnMotor(MotorDir_t motorDir)
 {
-    // The motor has two inputs, these values will both be put into
-    // the motor register
-    uint8_t outputA  = 0;
-    uint8_t outputB  = 0;
-
-    switch (motorPin)
-    {
-        case wPiPins::MotorPwmRR:
-            outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_RR_A);
-            outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_RR_B);
-            break;
-        case wPiPins::MotorPwmRL:
-            outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_RL_A);
-            outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_RL_B);
-            break;
-        case wPiPins::MotorPwmFR:
-            outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_FR_A);
-            outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_FR_B);
-            break;
-        case wPiPins::MotorPwmFL:
-            outputA = static_cast<uint8_t>(MotorBit_t::MOTOR_FL_A);
-            outputB = static_cast<uint8_t>(MotorBit_t::MOTOR_FL_B);
-            break;
-        default:
-            std::cerr << "turnMotor() invalid motor pin:"
-                      << motorPin << std::endl;
-            return;
-    }
-    std::cout << "outputA:" << std::bitset<8>(outputA) << std::endl;
-    std::cout << "outputB:" << std::bitset<8>(outputB) << std::endl;
-
-    uint8_t registerData = 0;
+    std::bitset<8> registerData{0b00000000};
     switch (motorDir)
     {
         case MotorDir_t::FORWARD:
-            registerData |= outputA;
-            registerData &= ~outputB;
+            registerData |= m_motorRegisterA;
+            registerData &= ~m_motorRegisterB;
             break;
         case MotorDir_t::REVERSE:
-            registerData &= ~outputA;
-            registerData |= outputB;
+            registerData &= ~m_motorRegisterA;
+            registerData |= m_motorRegisterB;
             break;
         case MotorDir_t::RELEASE:
-            registerData &= ~outputA;
-            registerData &= ~outputB;
+            registerData &= ~m_motorRegisterA;
+            registerData &= ~m_motorRegisterB;
             break;
         default:
             std::cerr << "turnMotor() invalid motor direction:"
@@ -135,5 +118,22 @@ void Motors::turnDcMotor(pin_t motorPin, MotorDir_t motorDir)
 }
 
 
+void Motors::turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength)
+{
+    m_RearLeft.turnMotor(motorDir);
+    m_RearLeft.pwmWrite(pLength);
+    
+    m_FrontLeft.turnMotor(motorDir);
+    m_FrontRight.pwmWrite(pLength);
+}
+
+void Motors::turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength)
+{
+    m_RearRight.turnMotor(motorDir);
+    m_RearRight.pwmWrite(pLength);
+
+    m_FrontRight.turnMotor(motorDir);
+    m_FrontRight.pwmWrite(pLength);
+}
 
 } // End of namespace

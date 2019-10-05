@@ -22,7 +22,7 @@ add_executable(car_controller main.cpp
     $<TARGET_OBJECTS:obj_sensors>
     $<TARGET_OBJECTS:obj_util>)
 
-target_compile_features(car_controller PRIVATE cxx_std_17)
+target_compile_features(car_controller PUBLIC cxx_std_17)
 
 target_include_directories(car_controller PRIVATE ${PROJECT_SOURCE_DIR}/include
                                                   ${wiringpi_SOURCE_DIR}/wiringPi 

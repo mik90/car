@@ -9,67 +9,68 @@
 namespace Car
 {
 
-
-void Motors::setMemoryMap(const std::shared_ptr<volatile uint32_t>& gpioMmap_ptr) 
+PwmMotor::PwmMotor(pin_t pin) : m_gpioPin{pin},
+                                m_time{std::chrono::microseconds{0}, false}
 {
-    // Copy the shared_ptr
-    m_gpioMmap = gpioMmap_ptr;
+    // The motor bit is the pin-th index in the bitset set to 1 while all
+    // others are set to 0
+    m_motorBitset = 1 << pin;
 
-    // Once the memory is mapped, we can init all of our periphials
-
-    /*
-    Only use the the DC motors for nwo
-    this->initPanTilt();
-    std::cout << "Pan/tilt servos initialized\n";
-    */
-
-    this->initDcMotorController();
-    std::cout << "Motor controller initialized\n";
+    // These values are kind of arbitrary, they're pulled from
+    // the UCTRONICS codebase and have no explanation
+    switch(pin)
+    {
+        case wPiPins::MotorPwmRR:
+            m_motorRegisterA = 0b00001000;  // Bit 3
+            m_motorRegisterB = 0b00000100;  // Bit 2
+            break;
+        case wPiPins::MotorPwmRL:
+            m_motorRegisterA = 0b00010000;  // Bit 4
+            m_motorRegisterB = 0b00000010;  // Bit 1
+            break;
+        case wPiPins::MotorPwmFR:
+            m_motorRegisterA = 0b00000001;  // Bit 0
+            m_motorRegisterB = 0b01000000;  // Bit 6
+            break;
+        case wPiPins::MotorPwmFL:
+            m_motorRegisterA = 0b00100000;  // Bit 5
+            m_motorRegisterB = 0b10000000; // Bit 7
+            break;
+        default:
+            std::cerr << "PwmMotor() invalid pin\n";
+            m_motorRegisterA = 0b00000000;
+            m_motorRegisterB = 0b00000000;
+            break;
+    }
     
-    std::cout << "Motor initializion successful." << std::endl;
+    // Clear out register on init
+    writeToMotorRegister(0b00000000);
 }
 
-
-Motors::Motors() : m_gpioMmap(nullptr)
-{
-}
-
-Motors::~Motors() 
-{
-}
-
-/** @brief Sets pins for pan/tilt servos **/
-void Motors::initPanTilt()
-{
-    setPinInput(wPiPins::Servo_1, m_gpioMmap);
-    setPinOutput(wPiPins::Servo_1, m_gpioMmap);
-
-    setPinInput(wPiPins::Servo_2, m_gpioMmap);
-    setPinOutput(wPiPins::Servo_2, m_gpioMmap);
-}
-
-/** @brief Sets up motor controller **/
-void Motors::initDcMotorController()
+Motors::Motors()
 {
     pinMode(wPiPins::MotorLatch, OUTPUT);
     pinMode(wPiPins::MotorData,  OUTPUT);
     pinMode(wPiPins::MotorClock,   OUTPUT);
     
-    setPinInput (wPiPins::MotorPwmRR, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPwmRR, m_gpioMmap);
+    RpiInterface::setPinInput (wPiPins::MotorPwmRR);
+    RpiInterface::setPinOutput(wPiPins::MotorPwmRR);
     
-    setPinInput (wPiPins::MotorPwmRL, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPwmRL, m_gpioMmap);
+    RpiInterface::setPinInput (wPiPins::MotorPwmRL);
+    RpiInterface::setPinOutput(wPiPins::MotorPwmRL);
     
-    setPinInput (wPiPins::MotorPwmFR, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPwmFR, m_gpioMmap);
+    RpiInterface::setPinInput (wPiPins::MotorPwmFR);
+    RpiInterface::setPinOutput(wPiPins::MotorPwmFR);
     
-    setPinInput (wPiPins::MotorPwmFL, m_gpioMmap);
-    setPinOutput(wPiPins::MotorPwmFL, m_gpioMmap);
+    RpiInterface::setPinInput (wPiPins::MotorPwmFL);
+    RpiInterface::setPinOutput(wPiPins::MotorPwmFL);
 
+    /** Set pins for pan/tilt servos **/
+    RpiInterface::setPinInput(wPiPins::Servo_1);
+    RpiInterface::setPinOutput(wPiPins::Servo_1);
 
-    // Clear out the register
-    writeToMotorRegister(0);
+    RpiInterface::setPinInput(wPiPins::Servo_2);
+    RpiInterface::setPinOutput(wPiPins::Servo_2);
 }
 
 

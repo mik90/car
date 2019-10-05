@@ -1,4 +1,7 @@
 cmake_minimum_required (VERSION 3.13)
+# Make sure that Cmake's default mode includes C++17
+# Otherwise it complains about some feature availabilities
+set(CMAKE_CXX_FLAGS -std=c++17)
 project(Car
         VERSION 0.0.1
         DESCRIPTION "Raspberry-pi powered toy car"

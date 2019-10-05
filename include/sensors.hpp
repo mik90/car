@@ -15,7 +15,6 @@ namespace Car
     {
         private:
             static const unsigned char InfraredBufferLimit = 64;
-            std::shared_ptr<volatile uint32_t> m_gpioMmap;
             float m_ultasonicDist_cm = 0.0;
             
             float getDistanceUltrasonic();
@@ -29,7 +28,6 @@ namespace Car
             void initInfrared();
         public:
             Sensors();
-            void setMemoryMap(const std::shared_ptr<volatile uint32_t>& m_gpioMmap);
             
     };
 
