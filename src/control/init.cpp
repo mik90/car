@@ -8,9 +8,9 @@
 
 namespace Car
 {
-
 PwmMotor::PwmMotor(pin_t pin) : m_gpioPin{pin},
-                                m_time{std::chrono::microseconds{0}, false}
+                                m_time{std::chrono::microseconds{0},
+                                       false}
 {
     // The motor bit is the pin-th index in the bitset set to 1 while all
     // others are set to 0
@@ -34,7 +34,7 @@ PwmMotor::PwmMotor(pin_t pin) : m_gpioPin{pin},
             break;
         case wPiPins::MotorPwmFL:
             m_motorRegisterA = 0b00100000;  // Bit 5
-            m_motorRegisterB = 0b10000000; // Bit 7
+            m_motorRegisterB = 0b10000000;  // Bit 7
             break;
         default:
             std::cerr << "PwmMotor() invalid pin\n";
@@ -43,6 +43,9 @@ PwmMotor::PwmMotor(pin_t pin) : m_gpioPin{pin},
             break;
     }
     
+    // Default speed is medium
+    setSpeed(PWM::Speed::Medium);
+
     // Clear out register on init
     writeToMotorRegister(0b00000000);
 }

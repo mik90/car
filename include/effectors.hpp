@@ -16,6 +16,7 @@ namespace Car
 
     namespace PWM
     {
+        using namespace std::chrono_literals;
         using pulseLength = std::chrono::microseconds;
 
         // These are some hardcoded values from the old code. They are
@@ -30,11 +31,21 @@ namespace Car
         // 19th index in the bitstring is 1. 2^19 = 524,288
         constexpr std::bitset<32> bitFL{1 << wPiPins::MotorPwmFL};
 
-        // Same as 10 milliseconds
-        constexpr std::chrono::microseconds fullPwmPeriod{10000};
+        // 1000 microseconds is the same as 10 milliseconds
+        constexpr std::chrono::microseconds fullPwmPeriod{10ms};
         
-        constexpr std::chrono::microseconds halfPwmPeriod{fullPwmPeriod / 2};
+        namespace Speed
+        {
+            // Full cycle
+            constexpr PWM::pulseLength Fast{fullPwmPeriod};
+            // Half cycle
+            constexpr PWM::pulseLength Medium{fullPwmPeriod / 2};
+            // Quarter cycle
+            constexpr PWM::pulseLength Slow{fullPwmPeriod / 4};
+        }
     }
+
+    enum class MotorDir_t {FORWARD, REVERSE, RELEASE};
 
     struct pwmTimestamp
     {
@@ -47,9 +58,10 @@ namespace Car
         public:
             PwmMotor(pin_t const pin);
             void turnMotor(MotorDir_t motorDir);
-            void writeToMotorRegister(std::bitset<8> registerData);
-            void pwmWrite(PWM::pulseLength pulseLen);
+            void setSpeed(PWM::pulseLength pulseLen);
         private:
+            void writeToMotorRegister(std::bitset<8> registerData);
+
             pin_t           m_gpioPin;
             std::bitset<32> m_motorBitset;
             std::bitset<8>  m_motorRegisterA;
@@ -57,16 +69,16 @@ namespace Car
             pwmTimestamp    m_time;
     };
 
-    /** @brief All of the functions and data types relating to motor usage **/
+    /** @brief API for controlling motors and other enviornment-affecting periphials **/
     class Effectors
     {
         public:
             Effectors();
+            void turnLeftSide (MotorDir_t motorDir);
             void turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength);
+            void turnRightSide(MotorDir_t motorDir);
             void turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength);
             void beepSeconds(std::chrono::seconds duration);
-
-
         private:
             PwmMotor m_RearRight {wPiPins::MotorPwmRR};
             PwmMotor m_RearLeft  {wPiPins::MotorPwmRL};

@@ -61,25 +61,6 @@ namespace GPIO
     
 }
 
-// TODO Move these types to the modules they belong
-enum class MotorDir_t {FORWARD, REVERSE, RELEASE};
-
-enum class CarDirection_t : std::uint8_t {FORWARD       = 0,
-                                            FORWARD_RIGHT = 1,
-                                            FORWARD_LEFT  = 2,
-                                            REVERSE       = 3,
-                                            REVERSE_LEFT  = 4,
-                                            REVERSE_RIGHT = 5,
-                                            LEFT          = 6,
-                                            RIGHT         = 7};
-
-// For printing out car directions
-std::ostream& operator<<(std::ostream& out, CarDirection_t dir);
-
-enum class Acceleration_t : std::uint8_t {ZERO = 0,
-                                            HALF = 50,
-                                            FULL = 100};
-
 /** @brief Common place for all of the WiringPi Pin identities **/
 namespace wPiPins 
 {

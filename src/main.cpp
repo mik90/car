@@ -1,45 +1,48 @@
 #include <iostream>
 #include <string>
+#include <future>
 
 #include "car.hpp"
 
 
 void runCliInput()
 {
-    using namespace std;
-    string input;
+    using namespace Car;
+    using namespace std::chrono_literals;
+
+    std::string input;
     Car::Car c;
     while (1)
     {
-        cin >> input;
-        if (input.find("w") != string::npos)
+        std::cin >> input;
+        if (input.find("w") != std::string::npos)
         {
-            cout << "Forward" << endl;
-            c.moveCar(Car::CarDirection_t::FORWARD);
+            std::cout << "Forward" << std::endl;
+            c.moveCar(CarDirection_t::FORWARD);
         }
-        else if (input.find("a") != string::npos)
+        else if (input.find("a") != std::string::npos)
         {
-            cout << "Left" << endl;
-            c.moveCar(Car::CarDirection_t::LEFT);
+            std::cout << "Left" << std::endl;
+            c.moveCar(CarDirection_t::LEFT);
         }
-        else if (input.find("d") != string::npos)
+        else if (input.find("d") != std::string::npos)
         {
-            cout << "Right" << endl;
-            c.moveCar(Car::CarDirection_t::RIGHT);
+            std::cout << "Right" << std::endl;
+            c.moveCar(CarDirection_t::RIGHT);
         }
-        else if (input.find("s") != string::npos)
+        else if (input.find("s") != std::string::npos)
         {
-            cout << "Reverse" << endl;
-            c.moveCar(Car::CarDirection_t::REVERSE);
+            std::cout << "Reverse" << std::endl;
+            c.moveCar(CarDirection_t::REVERSE);
         }
-        else if (input.find("b") != string::npos)
+        else if (input.find("b") != std::string::npos)
         {
-            cout << "Beep for 1 sec" << endl;
+            std::cout << "Beep for 1 sec" << std::endl;
             c.beepSeconds(1s);
         }
         else
         {
-            cerr << "Invalid input:" << input << endl;
+            std::cerr << "Invalid input:" << input << std::endl;
             return;
         }
     }
