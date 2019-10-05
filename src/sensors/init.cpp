@@ -1,4 +1,5 @@
 #include <iostream>
+#include <future>
 
 #include "wiringPi.h"
 
@@ -30,7 +31,13 @@ Sensors::Sensors()
     pullUpDnControl(wPiPins::InfraredIn, PUD_UP);
     std::cout << "Infrared sensor initialized\n";
     
-    std::cout << "Sensor initializion done." << std::endl;
+    std::cout << "Sensor initializion done.\n";
+
+    std::cout << "Starting ultrasonic update loop..." << std::endl;
+
+    // Update the ultrasonic sensor every 300ms
+    std::async(std::launch::async, &Sensors::updateLoopUltrasonic,
+               this, ultrasonicInterval);
 }
 
 }

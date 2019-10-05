@@ -3,26 +3,27 @@
 
 #include <cstdlib>
 #include <memory>
-
+#include <chrono>
 
 #include "common_rpi.hpp"
 
 namespace Car
 {
+    using centimeters = int; 
+    using cm = centimeters;
+
+    constexpr std::chrono::milliseconds ultrasonicInterval{300};
 
     /** @brief All of the functions and data types relating to sensor usage **/
     class Sensors
     {
         private:
-            static const unsigned char InfraredBufferLimit = 64;
-            float m_ultasonicDist_cm = 0.0;
-            
-            float getDistanceUltrasonic();
+            cm m_ultrasonicDist{0};
+            cm calcDistanceUltrasonic();
+            void updateLoopUltrasonic(std::chrono::milliseconds loopInterval);
 
-            // TODO Ensure that measurements are at least 60ms between invocations
-            // TODO Use a centimeter type
-            float calcDistanceUltrasonic();
         public:
+            cm getDistanceUltrasonic();
             Sensors();
             
     };

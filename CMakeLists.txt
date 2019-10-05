@@ -11,13 +11,13 @@ project(Car
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-# Making the main project
+# This is the project-level CMakeLists.txt that pulls in dependencies and
+# sets meta-information about the project 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  set (CXX_EXTENSIONS OFF)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 endif()
 
+find_package(Threads REQUIRED)
 
 include(FetchContent)
 
@@ -35,7 +35,6 @@ if(NOT wiringpi_POPULATED)
   execute_process(COMMAND make
                   WORKING_DIRECTORY ${wiringpi_SOURCE_DIR}/wiringPi)
 endif()
-
 ###################################
 FetchContent_Declare(
   ws2811 
@@ -59,6 +58,5 @@ if(NOT ws2811_POPULATED)
 endif()
 ###################################
 
-
-# Car implementation is here
+# The car_controller implementation is in here
 add_subdirectory(src)

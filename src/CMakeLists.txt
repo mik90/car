@@ -4,6 +4,9 @@ if(EXISTS "${LOC_PATH}")
     message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 endif()
 
+# This is the src/ level CMakeLists.txt that pulls together all the modules
+# to build the car controller binary
+
 set(HEADER_LIST "${PROJECT_SOURCE_DIR}/include/*.hpp")
 
 add_subdirectory(car)
@@ -16,11 +19,11 @@ include(CMakePrintHelpers)
 
 # Add the object files from each folder
 add_executable(car_controller main.cpp
-    $<TARGET_OBJECTS:obj_car>
-    $<TARGET_OBJECTS:obj_comms>
-    $<TARGET_OBJECTS:obj_control>
-    $<TARGET_OBJECTS:obj_sensors>
-    $<TARGET_OBJECTS:obj_util>)
+               $<TARGET_OBJECTS:obj_car>
+               $<TARGET_OBJECTS:obj_comms>
+               $<TARGET_OBJECTS:obj_control>
+               $<TARGET_OBJECTS:obj_sensors>
+               $<TARGET_OBJECTS:obj_util>)
 
 target_compile_features(car_controller PUBLIC cxx_std_17)
 
@@ -38,7 +41,9 @@ if(NOT ws2811_LIB)
     message(FATAL_ERROR "Could not find libws2811 in ${ws2811_SOURCE_DIR}")
 endif()
 
-target_link_libraries(car_controller PRIVATE ${wiringPi_LIB} ${ws2811_LIB})
+target_link_libraries(car_controller PRIVATE Threads::Threads
+                                             ${wiringPi_LIB}
+                                             ${ws2811_LIB})
 
 set_target_properties(car_controller PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")

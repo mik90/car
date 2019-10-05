@@ -1,18 +1,14 @@
-#include "sensors.hpp"
+#include <cmath>
+#include <thread>
+#include <chrono>
 #include "wiringPi.h"
+#include "sensors.hpp"
 
 namespace Car
 {
 
-float Sensors::getDistanceUltrasonic()
+cm Sensors::calcDistanceUltrasonic()
 {
-    return m_ultasonicDist_cm;
-}
-
-
-float Sensors::calcDistanceUltrasonic()
-{
-
     // Pull ultrasonic sensor high for at least 10 us
     digitalWrite(wPiPins::Trig, HIGH);
     delayMicroseconds(10);
@@ -32,9 +28,27 @@ float Sensors::calcDistanceUltrasonic()
 
     // Calculate distance in centimeters
     // Assumes speed of sound in air at sea level (340 m/s)
-    float dist_cm = pulseWidth_us / 58.0;
+    cm dist = std::round(pulseWidth_us / 58.0);
 
-    return dist_cm;
+    return dist;
 }
+
+[[noreturn]] void Sensors::updateLoopUltrasonic(std::chrono::milliseconds loopInterval)
+{
+    using namespace std::chrono_literals;
+
+    // The loop interval should be quicker than 60ms
+    loopInterval = std::min(loopInterval, 60ms);
+
+    std::cout << "Updating ultrasonic sensors every " << loopInterval.count() << "ms" << "\n";
+
+    while(true)
+    {
+        std::this_thread::sleep_for(loopInterval);
+        m_ultrasonicDist = calcDistanceUltrasonic();
+    }
+
+}
+
 
 }
