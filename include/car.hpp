@@ -30,11 +30,7 @@ class Car
     private:
         // TODO Ensure order of construction
         RpiInterface m_rpi;
-        
-        /* Disabling sensors for debugging
         Sensors      m_sensors; 
-        */
-       
         Effectors    m_effectors;
     public:
         void moveCar(CarDirection_t carDir);

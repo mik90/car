@@ -38,7 +38,7 @@ cm Sensors::calcDistanceUltrasonic()
     using namespace std::chrono_literals;
 
     // The loop interval should be quicker than 60ms
-    loopInterval = std::min(loopInterval, 60ms);
+    loopInterval = std::max(loopInterval, 60ms);
 
     std::cout << "Updating ultrasonic sensors every " << loopInterval.count() << "ms" << "\n";
 
