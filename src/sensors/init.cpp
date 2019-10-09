@@ -1,5 +1,5 @@
 #include <iostream>
-#include <future>
+#include <thread>
 
 #include "wiringPi.h"
 
@@ -35,9 +35,10 @@ Sensors::Sensors()
 
     std::cout << "Starting ultrasonic update loop..." << std::endl;
 
-    // Update the ultrasonic sensor every 300ms
-    std::async(std::launch::async, &Sensors::updateLoopUltrasonic,
-               this, ultrasonicInterval);
+    // Update the ultrasonic sensor every 'ultraSonicInterval' milliseconds 
+    std::thread loopThread{&Sensors::updateLoopUltrasonic, this, ultrasonicInterval};
+    // Let this thread be independent
+    loopThread.detach();
 }
 
 }

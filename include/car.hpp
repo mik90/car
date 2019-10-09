@@ -31,9 +31,9 @@ class Car
         // TODO Ensure order of construction
         RpiInterface m_rpi;
         
-        /* Disabling sensors for debugging
+        /* Disabling sensors for debugging*/
         Sensors      m_sensors; 
-        */
+        
        
         Effectors    m_effectors;
     public:
