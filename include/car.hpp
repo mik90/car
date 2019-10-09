@@ -28,9 +28,14 @@ std::ostream& operator<<(std::ostream& out, CarDirection_t dir);
 class Car
 {
     private:
-        Sensors m_sensors;
-        Effectors  m_effectors;
+        // TODO Ensure order of construction
         RpiInterface m_rpi;
+        
+        /* Disabling sensors for debugging
+        Sensors      m_sensors; 
+        */
+       
+        Effectors    m_effectors;
     public:
         void moveCar(CarDirection_t carDir);
         void beepSeconds(std::chrono::seconds duration);

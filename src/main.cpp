@@ -12,8 +12,11 @@ void runCliInput()
 
     std::string input;
     Car::Car c;
+    std::cout << "Starting CLI loop..." << std::endl;
+    int i{0};
     while (1)
     {
+        std::cout << "Loop #" << i++ << std::endl;
         std::cin >> input;
         if (input.find("w") != std::string::npos)
         {
