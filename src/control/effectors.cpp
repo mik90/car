@@ -11,6 +11,8 @@
 namespace Car
 {
 
+// Effectors Implementation ---------------------------------------
+
 void Effectors::turnLeftSide (MotorDir_t motorDir)
 {
     m_RearLeft.turnMotor(motorDir);
@@ -116,9 +118,9 @@ void PwmMotor::writeToMotorRegister(std::bitset<8> registerData)
     std::cout << "Writing to motor register...\n";
     std::cout << "Register data:" << registerData << std::endl;
 
-    // bitmask is a bit that shifts right every iteration.
-    // starts at the leftmost bit and ends at the rightmost bit
-    for (std::bitset<8> bitmask{0b1000000}; !bitmask.none(); bitmask >>= 1)
+    // 'bitmask' is a bit that shifts right every iteration.
+    // starts at the leftmost (7th) bit and ends at the rightmost (0th) bit
+    for (std::bitset<8> bitmask{0b10000000}; !bitmask.none(); bitmask >>= 1)
     {
         delayMicroseconds(1);
 
@@ -150,7 +152,7 @@ void PwmMotor::writeToMotorRegister(std::bitset<8> registerData)
 }
 
 // Beeper/buzzer implementation -----------------------------------------
-void Effectors::beepSeconds(std::chrono::seconds duration)
+void Effectors::beep(std::chrono::seconds duration)
 {
     digitalWrite(wPiPins::Beep, HIGH);
     std::this_thread::sleep_for(duration);

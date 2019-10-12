@@ -22,37 +22,37 @@ void runCliInput()
         {
             std::cout << "Forward" << std::endl;
             // Result: FR turns forward
-            c.moveCar(CarDirection_t::FORWARD);
+            c.moveCar(CarMovement_t::FORWARD);
         }
         else if (input.find("a") != std::string::npos)
         {
             // Result: FR turns forward
             std::cout << "Left" << std::endl;
-            c.moveCar(CarDirection_t::LEFT);
+            c.moveCar(CarMovement_t::LEFT);
         }
         else if (input.find("d") != std::string::npos)
         {
             // Result: FR reverses
             std::cout << "Right" << std::endl;
-            c.moveCar(CarDirection_t::RIGHT);
+            c.moveCar(CarMovement_t::RIGHT);
         }
         else if (input.find("s") != std::string::npos)
         {
             // Result: FR reverses
             std::cout << "Reverse" << std::endl;
-            c.moveCar(CarDirection_t::REVERSE);
+            c.moveCar(CarMovement_t::REVERSE);
         }
         else if (input.find("r") != std::string::npos)
         {
             // Result: stops (at least FR does)
             std::cout << "Stop" << std::endl;
-            c.moveCar(CarDirection_t::STOP);
+            c.moveCar(CarMovement_t::STOP);
         }
         else if (input.find("b") != std::string::npos)
         {
             // Result: beeps
             std::cout << "Beep for 1 sec" << std::endl;
-            c.beepSeconds(1s);
+            c.beep(1s);
         }
         else
         {

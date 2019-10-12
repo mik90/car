@@ -57,6 +57,7 @@ namespace Car
     {
         public:
             PwmMotor(pin_t const pin);
+            ~PwmMotor();
             void turnMotor(MotorDir_t motorDir);
             void setSpeed(PWM::pulseLength pulseLen);
         private:
@@ -74,11 +75,12 @@ namespace Car
     {
         public:
             Effectors();
+            ~Effectors();
             void turnLeftSide (MotorDir_t motorDir);
             void turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength);
             void turnRightSide(MotorDir_t motorDir);
             void turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength);
-            void beepSeconds(std::chrono::seconds duration);
+            void beep(std::chrono::seconds duration);
         private:
             PwmMotor m_RearRight {wPiPins::MotorPwmRR};
             PwmMotor m_RearLeft  {wPiPins::MotorPwmRL};

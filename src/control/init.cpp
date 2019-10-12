@@ -50,6 +50,13 @@ PwmMotor::PwmMotor(pin_t pin) : m_gpioPin{pin},
     writeToMotorRegister(0b00000000);
 }
 
+PwmMotor::~PwmMotor()
+{
+    turnMotor(MotorDir_t::RELEASE);
+}
+
+// Effectors implementation
+
 Effectors::Effectors()
 {
     // Set pins for the UCTronics motor register
@@ -82,6 +89,11 @@ Effectors::Effectors()
     digitalWrite(wPiPins::Beep, LOW);
 }
 
+Effectors::~Effectors()
+{
+    // Stop beeping when destructing
+    digitalWrite(wPiPins::Beep, LOW);
+}
 
 }
 

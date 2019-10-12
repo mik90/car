@@ -13,29 +13,21 @@
 namespace Car
 {
 
-enum class CarDirection_t : std::uint8_t {FORWARD       = 0,
-                                          FORWARD_RIGHT = 1,
-                                          FORWARD_LEFT  = 2,
-                                          REVERSE       = 3,
-                                          REVERSE_LEFT  = 4,
-                                          REVERSE_RIGHT = 5,
-                                          LEFT          = 6,
-                                          RIGHT         = 7,
-                                          STOP          = 8};
+enum class CarMovement_t {FORWARD_LEFT, FORWARD, FORWARD_RIGHT,
+                          LEFT,         STOP,    RIGHT,
+                          REVERSE_LEFT, REVERSE, REVERSE_RIGHT};
 
-// For printing out car directions
-std::ostream& operator<<(std::ostream& out, CarDirection_t dir);
+// Print out car directions
+std::ostream& operator<<(std::ostream& out, CarMovement_t dir);
 
 class Car
 {
     private:
-        // TODO Ensure order of construction
-        RpiInterface m_rpi;
         Sensors      m_sensors; 
         Effectors    m_effectors;
     public:
-        void moveCar(CarDirection_t carDir);
-        void beepSeconds(std::chrono::seconds duration);
+        void moveCar(CarMovement_t carDir);
+        void beep(std::chrono::seconds duration);
 };
 
 }
