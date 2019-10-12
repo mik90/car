@@ -23,6 +23,7 @@ std::ostream& operator<<(std::ostream& out, CarMovement_t dir);
 class Car
 {
     private:
+        RpiInterface m_rpi; 
         Sensors      m_sensors; 
         Effectors    m_effectors;
     public:

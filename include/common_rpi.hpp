@@ -40,15 +40,10 @@ class RpiInterface
     public:
         RpiInterface();
         static void setPinInput(pin_t pin);
-        
         static void setPinOutput(pin_t pin);
-
         static void writeToPullUpDown(uint32_t data);
-
         static void writeToPullUpDownClock(uint32_t data);
-
         static void writeGpioBits(std::bitset<32> bits);
-
         static void clearGpioBits(std::bitset<32> bits);
 };
 
