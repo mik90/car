@@ -20,7 +20,8 @@ enum class CarDirection_t : std::uint8_t {FORWARD       = 0,
                                           REVERSE_LEFT  = 4,
                                           REVERSE_RIGHT = 5,
                                           LEFT          = 6,
-                                          RIGHT         = 7};
+                                          RIGHT         = 7,
+                                          STOP          = 8};
 
 // For printing out car directions
 std::ostream& operator<<(std::ostream& out, CarDirection_t dir);

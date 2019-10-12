@@ -46,6 +46,10 @@ void Car::moveCar(CarDirection_t carDir)
             m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
             m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
             break;
+        case CarDirection_t::STOP:
+            m_effectors.turnLeftSide(MotorDir_t::RELEASE);
+            m_effectors.turnRightSide(MotorDir_t::RELEASE);
+            break;
         default:
             std::cerr << "moveCar() Invalid car direction:" 
                       << carDir << std::endl;
