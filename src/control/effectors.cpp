@@ -13,64 +13,106 @@ namespace Car
 
 // Effectors Implementation ---------------------------------------
 
-void Effectors::turnLeftSide (MotorDir_t motorDir)
-{
-    m_RearLeft.turnMotor(motorDir);
-    m_FrontLeft.turnMotor(motorDir);
-}
-
-void Effectors::turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength)
+// Adjust speed of the motors before turning
+void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide,
+                           PWM::pulseLength pLength)
 {
     m_RearLeft.setSpeed(pLength);
-    m_RearLeft.turnMotor(motorDir);
-
     m_FrontLeft.setSpeed(pLength);
-    m_FrontLeft.turnMotor(motorDir);
-}
-
-void Effectors::turnRightSide(MotorDir_t motorDir)
-{
-    m_RearRight.turnMotor(motorDir);
-    m_FrontRight.turnMotor(motorDir);
-}
-
-void Effectors::turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength)
-{
-    m_RearRight.setSpeed(pLength);
-    m_RearRight.turnMotor(motorDir);
     
+    m_RearRight.setSpeed(pLength);
     m_FrontRight.setSpeed(pLength);
-    m_FrontRight.turnMotor(motorDir);
+
+    turnMotors(leftSide, rightSide);
 }
 
-// PWM Implementation ---------------------------------------
-
-void PwmMotor::turnMotor(MotorDir_t motorDir)
+void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide)
 {
-    std::bitset<8> registerData{0b00000000};
+    // Logical OR all of the motors together
+    std::bitset<8> motorCommand{
+                   m_RearLeft.calcMotorDirCommand(leftSide)
+                 | m_FrontLeft.calcMotorDirCommand(leftSide)
+                 | m_RearRight.calcMotorDirCommand(rightSide)
+                 | m_FrontRight.calcMotorDirCommand(rightSide)};
+
+    m_RearLeft.outputPwmCommand();
+    m_FrontLeft.outputPwmCommand();
+    m_RearRight.outputPwmCommand();
+    m_FrontRight.outputPwmCommand();
+    outputMotorCommands(motorCommand);
+}
+
+
+void Effectors::outputMotorCommands(std::bitset<8> motorCommands)
+{
+    digitalWrite(wPiPins::MotorLatch, LOW);
+    digitalWrite(wPiPins::MotorData, LOW);
+
+    std::cout << "Writing to motor register...\n";
+    std::cout << "MotorCommands:" << motorCommands << std::endl;
+
+    // 'bitmask' is a bit that shifts right every iteration.
+    // starts at the leftmost (7th) bit and ends at the rightmost (0th) bit
+    for (std::bitset<8> bitmask{0b10000000}; !bitmask.none(); bitmask >>= 1)
+    {
+        delayMicroseconds(1);
+
+        digitalWrite(wPiPins::MotorClock, LOW);
+
+        // We can only tell one motor to turn at a time via the
+        // MotorData signal.
+
+        // Write high if 1, write low if 0
+        if ((motorCommands & bitmask).any())
+            digitalWrite(wPiPins::MotorData, HIGH);
+        else
+            digitalWrite(wPiPins::MotorData, LOW);
+
+        delayMicroseconds(1);
+        digitalWrite(wPiPins::MotorClock, HIGH);
+    }
+
+    digitalWrite(wPiPins::MotorLatch, HIGH);
+}
+
+// PwmMotor Implementation ---------------------------------------
+
+// Command for turning the motor, does not adjust speed
+[[nodiscard]]
+std::bitset<8> PwmMotor::calcMotorDirCommand(MotorDir_t motorDir)
+{
+    std::bitset<8> motorCommand{0b00000000};
     switch (motorDir)
     {
         case MotorDir_t::FORWARD:
-            registerData |= m_motorRegisterA;
-            registerData &= ~m_motorRegisterB;
+            motorCommand |= m_motorForward;
+            motorCommand &= ~m_motorReverse;
             break;
         case MotorDir_t::REVERSE:
-            registerData &= ~m_motorRegisterA;
-            registerData |= m_motorRegisterB;
+            motorCommand &= ~m_motorForward;
+            motorCommand |= m_motorReverse;
             break;
         case MotorDir_t::RELEASE:
-            registerData &= ~m_motorRegisterA;
-            registerData &= ~m_motorRegisterB;
+            motorCommand &= ~m_motorForward;
+            motorCommand &= ~m_motorReverse;
             break;
         default:
-            std::cerr << "turnMotor() invalid motor direction:"
-                      << static_cast<uint8_t>(motorDir) << std::endl;
-            return;
+            std::cerr << "calcMotorCommand() invalid motor direction:"
+                      << motorDir << std::endl;
+            break;
     }
-    writeToMotorRegister(registerData);
+
+    return motorCommand;
 }
 
+// Update the speed
 void PwmMotor::setSpeed(PWM::pulseLength pulseLen)
+{
+    m_pulseLength = pulseLen;
+}
+
+// Adjust speed, does not turn the motor itself
+void PwmMotor::outputPwmCommand()
 {
     using namespace std::chrono;
 
@@ -95,12 +137,12 @@ void PwmMotor::setSpeed(PWM::pulseLength pulseLen)
      **/
     if (tDelta < PWM::fullPwmPeriod)
     {
-        if (tDelta <= pulseLen)
+        if (tDelta <= m_pulseLength)
             // We are within the pulse range, set the bits
-            RpiInterface::writeGpioBits(m_motorBitset);
+            RpiInterface::writeGpioBits(m_pwmIdentityBitset);
         else
             // We are past the pulse range, clear the bits
-            RpiInterface::clearGpioBits(m_motorBitset);
+            RpiInterface::clearGpioBits(m_pwmIdentityBitset);
     }
     else
     {
@@ -110,46 +152,6 @@ void PwmMotor::setSpeed(PWM::pulseLength pulseLen)
     }
 }
 
-void PwmMotor::writeToMotorRegister(std::bitset<8> registerData)
-{
-    digitalWrite(wPiPins::MotorLatch, LOW);
-    digitalWrite(wPiPins::MotorData, LOW);
-
-    std::cout << "Writing to motor register...\n";
-    std::cout << "Register data:" << registerData << std::endl;
-
-    // 'bitmask' is a bit that shifts right every iteration.
-    // starts at the leftmost (7th) bit and ends at the rightmost (0th) bit
-    for (std::bitset<8> bitmask{0b10000000}; !bitmask.none(); bitmask >>= 1)
-    {
-        delayMicroseconds(1);
-
-        digitalWrite(wPiPins::MotorClock, LOW);
-
-        // We can only tell one motor to turn at a time via the
-        // MotorData signal.
-
-        // Check if any of the bits are 1
-        if ((registerData & bitmask).any())
-        {
-            // Both bits are 1 so this motor needs to turn
-            std::cout << "Writing high. bitmask:" << std::bitset<8>(bitmask) << std::endl;
-            digitalWrite(wPiPins::MotorData, HIGH);
-        }
-        else
-        {
-            // Either the motor is not supposed to turn or it's not the motor's
-            // turn to write to MotorData
-            std::cout << "Writing low. bitmask:" << std::bitset<8>(bitmask) << std::endl;
-            digitalWrite(wPiPins::MotorData, LOW);
-        }
-
-        delayMicroseconds(1);
-        digitalWrite(wPiPins::MotorClock, HIGH);
-    }
-
-    digitalWrite(wPiPins::MotorLatch, HIGH);
-}
 
 // Beeper/buzzer implementation -----------------------------------------
 void Effectors::beep(std::chrono::seconds duration)
@@ -159,5 +161,17 @@ void Effectors::beep(std::chrono::seconds duration)
     digitalWrite(wPiPins::Beep, LOW);
 }
 
+// Debugging support
+std::ostream& operator<<(std::ostream& out, MotorDir_t dir)
+{
+    switch(dir)
+    {
+        case MotorDir_t::FORWARD: out << "FORWARD"; break;
+        case MotorDir_t::REVERSE: out << "REVERSE"; break;
+        case MotorDir_t::RELEASE: out << "RELEASE"; break;
+        default: out.setstate(std::ios_base::failbit);
+    }
+    return out;
+}
 
 } // End of namespace

@@ -16,6 +16,7 @@ void runCliInput()
     int i{0};
     while (1)
     {
+        std::cout << "---------------------------\n";
         std::cout << "Loop #" << i++ << std::endl;
         std::cin >> input;
         if (input.find("w") != std::string::npos)
@@ -53,6 +54,11 @@ void runCliInput()
             // Result: beeps
             std::cout << "Beep for 1 sec" << std::endl;
             c.beep(1s);
+        }
+        else if (input.find("test") != std::string::npos)
+        {
+            std::cout << "Setting motor register to all 1s" << std::endl;
+            c.m_effectors.outputMotorCommands(std::bitset<8>{0b11111111});
         }
         else
         {

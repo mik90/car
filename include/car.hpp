@@ -25,8 +25,8 @@ class Car
     private:
         RpiInterface m_rpi; 
         Sensors      m_sensors; 
-        Effectors    m_effectors;
     public:
+        Effectors    m_effectors;
         void moveCar(CarMovement_t carDir);
         void beep(std::chrono::seconds duration);
 };

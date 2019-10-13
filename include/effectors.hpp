@@ -46,6 +46,8 @@ namespace Car
     }
 
     enum class MotorDir_t {FORWARD, REVERSE, RELEASE};
+    // Print out Motor directions
+    std::ostream& operator<<(std::ostream& out, MotorDir_t dir);
 
     struct pwmTimestamp
     {
@@ -57,31 +59,30 @@ namespace Car
     {
         public:
             PwmMotor(pin_t const pin);
-            ~PwmMotor();
-            void turnMotor(MotorDir_t motorDir);
+            std::bitset<8> calcMotorDirCommand(MotorDir_t motorDir);
             void setSpeed(PWM::pulseLength pulseLen);
+            void outputPwmCommand();
         private:
-            void writeToMotorRegister(std::bitset<8> registerData);
-
-            pin_t           m_gpioPin;
-            std::bitset<32> m_motorBitset;
-            std::bitset<8>  m_motorRegisterA;
-            std::bitset<8>  m_motorRegisterB;
-            pwmTimestamp    m_time;
+            pin_t            m_pwmPin;
+            PWM::pulseLength m_pulseLength;
+            std::bitset<32>  m_pwmIdentityBitset;
+            std::bitset<8>   m_motorForward;
+            std::bitset<8>   m_motorReverse;
+            pwmTimestamp     m_time;
     };
 
-    /** @brief API for controlling motors and other enviornment-affecting periphials **/
+    /** @brief API for controlling motors and other environment-affecting periphials **/
     class Effectors
     {
         public:
             Effectors();
-            ~Effectors();
-            void turnLeftSide (MotorDir_t motorDir);
-            void turnLeftSide (MotorDir_t motorDir, PWM::pulseLength pLength);
-            void turnRightSide(MotorDir_t motorDir);
-            void turnRightSide(MotorDir_t motorDir, PWM::pulseLength pLength);
+            void turnMotors(MotorDir_t leftSide, MotorDir_t rightSide,
+                            PWM::pulseLength pLength);
+            void turnMotors(MotorDir_t leftSide, MotorDir_t rightSide);
             void beep(std::chrono::seconds duration);
+            void outputMotorCommands(std::bitset<8> motorCommands);
         private:
+            std::bitset<8> m_motorCommand;
             PwmMotor m_RearRight {wPiPins::MotorPwmRR};
             PwmMotor m_RearLeft  {wPiPins::MotorPwmRL};
             PwmMotor m_FrontRight{wPiPins::MotorPwmFR};

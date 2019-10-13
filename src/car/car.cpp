@@ -9,46 +9,35 @@ namespace Car
 
 void Car::moveCar(CarMovement_t carDir)
 {
-    // Temporarily default the speed at 5000
-    const PWM::pulseLength halfSpeed{5000};
 
     switch(carDir)
     {
         case CarMovement_t::FORWARD:
-            m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::FORWARD, MotorDir_t::FORWARD);
             break;
         case CarMovement_t::FORWARD_LEFT:
-            m_effectors.turnLeftSide(MotorDir_t::RELEASE, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::RELEASE, MotorDir_t::FORWARD);
             break;
         case CarMovement_t::FORWARD_RIGHT:
-            m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::RELEASE, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::FORWARD, MotorDir_t::RELEASE);
             break;
         case CarMovement_t::REVERSE:
-            m_effectors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::REVERSE, MotorDir_t::REVERSE);
             break;
         case CarMovement_t::REVERSE_LEFT:
-            m_effectors.turnLeftSide(MotorDir_t::RELEASE, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::RELEASE, MotorDir_t::REVERSE);
             break;
         case CarMovement_t::REVERSE_RIGHT:
-            m_effectors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::REVERSE, MotorDir_t::RELEASE);
             break;
         case CarMovement_t::LEFT:
-            m_effectors.turnLeftSide(MotorDir_t::REVERSE, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::FORWARD, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::REVERSE, MotorDir_t::FORWARD);
             break;
         case CarMovement_t::RIGHT:
-            m_effectors.turnLeftSide(MotorDir_t::FORWARD, halfSpeed);
-            m_effectors.turnRightSide(MotorDir_t::REVERSE, halfSpeed);
+            m_effectors.turnMotors(MotorDir_t::FORWARD, MotorDir_t::REVERSE);
             break;
         case CarMovement_t::STOP:
-            m_effectors.turnLeftSide(MotorDir_t::RELEASE);
-            m_effectors.turnRightSide(MotorDir_t::RELEASE);
+            m_effectors.turnMotors(MotorDir_t::RELEASE, MotorDir_t::RELEASE);
             break;
         default:
             std::cerr << "moveCar() Invalid car direction:" 
