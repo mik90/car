@@ -76,17 +76,18 @@ namespace Car
     {
         public:
             Effectors();
+            void turnMotor(PwmMotor& motor, MotorDir_t dir);
             void turnMotors(MotorDir_t leftSide, MotorDir_t rightSide,
                             PWM::pulseLength pLength);
             void turnMotors(MotorDir_t leftSide, MotorDir_t rightSide);
             void beep(std::chrono::seconds duration);
             void outputMotorCommands(std::bitset<8> motorCommands);
-        private:
-            std::bitset<8> m_motorCommand;
             PwmMotor m_RearRight {wPiPins::MotorPwmRR};
             PwmMotor m_RearLeft  {wPiPins::MotorPwmRL};
             PwmMotor m_FrontRight{wPiPins::MotorPwmFR};
             PwmMotor m_FrontLeft {wPiPins::MotorPwmFL};
+        private:
+            std::bitset<8> m_motorCommand;
     };
 
 }

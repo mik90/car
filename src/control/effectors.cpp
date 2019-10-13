@@ -11,6 +11,13 @@
 namespace Car
 {
 
+
+void Effectors::turnMotor(PwmMotor& motor, MotorDir_t dir)
+{
+    motor.outputPwmCommand();
+    this->outputMotorCommands(motor.calcMotorDirCommand(dir));
+}
+
 // Effectors Implementation ---------------------------------------
 
 // Adjust speed of the motors before turning
@@ -39,7 +46,7 @@ void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide)
     m_FrontLeft.outputPwmCommand();
     m_RearRight.outputPwmCommand();
     m_FrontRight.outputPwmCommand();
-    outputMotorCommands(motorCommand);
+    this->outputMotorCommands(motorCommand);
 }
 
 

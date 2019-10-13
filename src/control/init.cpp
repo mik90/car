@@ -32,12 +32,12 @@ PwmMotor::PwmMotor(pin_t pin) : m_pwmPin{pin},
             m_motorReverse = 0b00000010;  // Bit 1
             break;
         case wPiPins::MotorPwmFR:
-            m_motorForward = 0b00000001;  // Bit 0
-            m_motorReverse = 0b01000000;  // Bit 6
-            break;
-        case wPiPins::MotorPwmFL:
             m_motorForward = 0b00100000;  // Bit 5
             m_motorReverse = 0b10000000;  // Bit 7
+            break;
+        case wPiPins::MotorPwmFL:
+            m_motorForward = 0b00000001;  // Bit 0
+            m_motorReverse = 0b01000000;  // Bit 6
             break;
         default:
             std::cerr << "PwmMotor() invalid pin\n";
