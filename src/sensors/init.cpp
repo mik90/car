@@ -17,14 +17,14 @@ Sensors::Sensors()
     pinMode(wPiPins::Trig, OUTPUT);
     std::cout << "Ultrasonic sensor initialized\n";
 
-    RpiInterface::setPinInput(wPiPins::LineTrackLeft);
-    RpiInterface::writeToPullUpDown(1 << wPiPins::LineTrackLeft);
+    RpiInterface::setPinInput(UCTronicsPins::LineTrackLeft);
+    RpiInterface::writeToPullUpDown(1 << UCTronicsPins::LineTrackLeft);
 
-    RpiInterface::setPinInput(wPiPins::LineTrackMiddle);
-    RpiInterface::writeToPullUpDown(1 << wPiPins::LineTrackMiddle);
+    RpiInterface::setPinInput(UCTronicsPins::LineTrackMiddle);
+    RpiInterface::writeToPullUpDown(1 << UCTronicsPins::LineTrackMiddle);
 
-    RpiInterface::setPinInput(wPiPins::LineTrackRight);
-    RpiInterface::writeToPullUpDown(1 << wPiPins::LineTrackRight);
+    RpiInterface::setPinInput(UCTronicsPins::LineTrackRight);
+    RpiInterface::writeToPullUpDown(1 << UCTronicsPins::LineTrackRight);
     std::cout << "Line reader initialized\n";
 
     pinMode(wPiPins::InfraredIn, INPUT);

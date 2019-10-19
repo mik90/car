@@ -63,7 +63,10 @@ std::ostream& operator<<(std::ostream& out, CarMovement_t dir)
         case CarMovement_t::REVERSE_RIGHT: out << "REVERSE_RIGHT"; break;
         case CarMovement_t::LEFT: out << "LEFT"; break;
         case CarMovement_t::RIGHT: out << "RIGHT"; break;
-        default: out.setstate(std::ios_base::failbit);
+        default:
+            out << "Invalid CarMovement_t as uint_8:" << static_cast<uint8_t>(dir);
+            out.setstate(std::ios_base::failbit);
+            break;
     }
     return out;
 }

@@ -7,6 +7,8 @@ endif()
 set (control_src_files
     init.cpp
     effectors.cpp
+    pwmMotor.cpp
+    servo.cpp
 )
 
 # We aren't building a full blown library with this folder,

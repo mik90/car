@@ -41,15 +41,16 @@ RpiInterface::RpiInterface()
 }
 
 // Attempt to refactor INP_GPIO, OUT_GPIO and other weird macros that seem to be
-// all over the pi/arduino world
-void RpiInterface::setPinInput(const pin_t pin)
+// all over the pi/arduino world.
+// This is only used for the UCTronics motor control board
+void RpiInterface::setPinInput(const UCTronicsPins::pin_t pin)
 {
     auto adjusted_ptr = (m_gpioMmapPtr.get() + ((pin) / 10));
     auto adjusted_pin = 7 << (((pin) % 10 ) * 3);
     *adjusted_ptr &= ~(adjusted_pin);
 }
 
-void RpiInterface::setPinOutput(const pin_t pin)
+void RpiInterface::setPinOutput(const UCTronicsPins::pin_t pin)
 {
     auto adjusted_ptr = (m_gpioMmapPtr.get() + ((pin) / 10));
     auto adjusted_pin = 1 << (((pin) % 10 ) * 3);
