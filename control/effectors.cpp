@@ -12,7 +12,7 @@ namespace Car
 {
 
 // Adjust speed of the motors before turning
-void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide,
+void Effectors::turnWheels(MotorDir_t leftSide, MotorDir_t rightSide,
                            PWM::pulseLength pLength)
 {
     m_RearLeft.setSpeed(pLength);
@@ -21,10 +21,10 @@ void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide,
     m_RearRight.setSpeed(pLength);
     m_FrontRight.setSpeed(pLength);
 
-    turnMotors(leftSide, rightSide);
+    turnWheels(leftSide, rightSide);
 }
 
-void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide)
+void Effectors::turnWheels(MotorDir_t leftSide, MotorDir_t rightSide)
 {
     // Logical OR all of the commands together
     std::bitset<8> motorCommand{
@@ -37,10 +37,10 @@ void Effectors::turnMotors(MotorDir_t leftSide, MotorDir_t rightSide)
     m_FrontLeft.outputPwmCommand();
     m_RearRight.outputPwmCommand();
     m_FrontRight.outputPwmCommand();
-    this->outputMotorCommands(motorCommand);
+    this->outputWheelCommands(motorCommand);
 }
 
-void Effectors::outputMotorCommands(std::bitset<8> motorCommands)
+void Effectors::outputWheelCommands(std::bitset<8> motorCommands)
 {
     digitalWrite(wPiPins::MotorLatch, LOW);
     digitalWrite(wPiPins::MotorData, LOW);
@@ -71,7 +71,6 @@ void Effectors::outputMotorCommands(std::bitset<8> motorCommands)
 
     digitalWrite(wPiPins::MotorLatch, HIGH);
 }
-
 // Beeper/buzzer implementation -----------------------------------------
 void Effectors::beep(std::chrono::seconds duration)
 {

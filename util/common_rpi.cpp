@@ -6,7 +6,7 @@ namespace Car
 RpiInterface::RpiInterface()
 {
     std::cout << "Initializing Rpi interface..." << std::endl;
-    void* gpioMmapPtr = nullptr;
+    void* gpioMmapPtr{nullptr};
 
     int dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (dev_mem_fd < 0)

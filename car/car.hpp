@@ -25,11 +25,13 @@ class Car
     private:
         RpiInterface m_rpi; 
         Sensors      m_sensors; 
-    public:
         Effectors    m_effectors;
+        void parseIrCommand(uint16_t command);
+    public:
         void moveCar(CarMovement_t carDir);
         void beep(std::chrono::seconds duration);
 };
+
 
 }
 

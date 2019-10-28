@@ -47,9 +47,12 @@ add_executable(car_controller main.cpp
 
 target_compile_features(car_controller PUBLIC cxx_std_17)
 
+set_target_properties(car_controller PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 target_include_directories(car_controller PRIVATE ${car_include_dirs}
                                                   ${wiringpi_SOURCE_DIR}/wiringPi 
                                                   ${ws2811_SOURCE_DIR})
+
 target_link_libraries(car_controller PRIVATE Threads::Threads
                                              ${wiringPi_LIB}
                                              ${ws2811_LIB})
