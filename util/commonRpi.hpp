@@ -53,10 +53,10 @@ namespace UCTronicsPins
     /** @brief Rightmost line tracker sensor **/
     constexpr pin_t LineTrackRight = 22;
 
-    constexpr pin_t PwmMotorRR = 5;
-    constexpr pin_t PwmMotorRl = 6;
-    constexpr pin_t PwmMotorFR = 13;
-    constexpr pin_t PwmMotorFL = 19;
+    constexpr pin_t PwmWheelRR = 5;
+    constexpr pin_t PwmWheelRl = 6;
+    constexpr pin_t PwmWheelFR = 13;
+    constexpr pin_t PwmWheelFL = 19;
     
     /** @brief Camera pan servo **/
     constexpr pin_t PanServo = 4;

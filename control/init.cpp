@@ -3,12 +3,11 @@
 
 #include "wiringPi.h"
 
-#include "effectors.hpp"
-#include "common_rpi.hpp"
+#include "motorController.hpp"
 
 namespace Car
 {
-PwmMotor::PwmMotor(UCTronicsPins::pin_t pin) :
+PwmWheel::PwmWheel(UCTronicsPins::pin_t pin) :
                                        m_pwmPin{pin},
                                        m_time{std::chrono::microseconds{0},
                                        false}
@@ -24,33 +23,31 @@ PwmMotor::PwmMotor(UCTronicsPins::pin_t pin) :
     // the UCTRONICS codebase and have no explanation
     switch(pin)
     {
-        case UCTronicsPins::PwmMotorRR:
+        case UCTronicsPins::PwmWheelRR:
             m_motorForward = 0b00001000;  // Bit 3
             m_motorReverse = 0b00000100;  // Bit 2
             break;
-        case UCTronicsPins::PwmMotorRl:
+        case UCTronicsPins::PwmWheelRl:
             m_motorForward = 0b00010000;  // Bit 4
             m_motorReverse = 0b00000010;  // Bit 1
             break;
-        case UCTronicsPins::PwmMotorFR:
+        case UCTronicsPins::PwmWheelFR:
             m_motorForward = 0b00100000;  // Bit 5
             m_motorReverse = 0b10000000;  // Bit 7
             break;
-        case UCTronicsPins::PwmMotorFL:
+        case UCTronicsPins::PwmWheelFL:
             m_motorForward = 0b00000001;  // Bit 0
             m_motorReverse = 0b01000000;  // Bit 6
             break;
         default:
-            std::cerr << "PwmMotor() invalid pin\n";
+            std::cerr << "PwmWheel() invalid pin\n";
             m_motorForward = 0b00000000;
             m_motorReverse = 0b00000000;
             break;
     }
 }
 
-// Effectors implementation
-
-Effectors::Effectors()
+MotorController::MotorController()
 {
     // Set pins for the UCTronics motor register with wiringPi
     pinMode(wPiPins::MotorLatch, OUTPUT);
@@ -58,17 +55,17 @@ Effectors::Effectors()
     pinMode(wPiPins::MotorClock, OUTPUT);
 
     // Set pins for the GPIO Pulse width modulation controls
-    RpiInterface::setPinInput (UCTronicsPins::PwmMotorRR);
-    RpiInterface::setPinOutput(UCTronicsPins::PwmMotorRR);
+    RpiInterface::setPinInput (UCTronicsPins::PwmWheelRR);
+    RpiInterface::setPinOutput(UCTronicsPins::PwmWheelRR);
     
-    RpiInterface::setPinInput (UCTronicsPins::PwmMotorRl);
-    RpiInterface::setPinOutput(UCTronicsPins::PwmMotorRl);
+    RpiInterface::setPinInput (UCTronicsPins::PwmWheelRl);
+    RpiInterface::setPinOutput(UCTronicsPins::PwmWheelRl);
     
-    RpiInterface::setPinInput (UCTronicsPins::PwmMotorFR);
-    RpiInterface::setPinOutput(UCTronicsPins::PwmMotorFR);
+    RpiInterface::setPinInput (UCTronicsPins::PwmWheelFR);
+    RpiInterface::setPinOutput(UCTronicsPins::PwmWheelFR);
     
-    RpiInterface::setPinInput (UCTronicsPins::PwmMotorFL);
-    RpiInterface::setPinOutput(UCTronicsPins::PwmMotorFL);
+    RpiInterface::setPinInput (UCTronicsPins::PwmWheelFL);
+    RpiInterface::setPinOutput(UCTronicsPins::PwmWheelFL);
 
     // Set pins for pan/tilt servos
     //RpiInterface::setPinInput (UCTronicsPins::PanServo);

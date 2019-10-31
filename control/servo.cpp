@@ -3,25 +3,12 @@
 namespace Car
 {
 
-Servo::Servo(UCTronicsPins::pin_t pin, Degrees upperLimit,
-                                       Degrees lowerLimit)
+Servo::Servo(UCTronicsPins::pin_t pin)
 {
     m_pin = pin;
-    // Default angle is 1140
+    // Starting angle is 1140
     m_angle = 1140;
-    m_upperLimit = upperLimit;
-    m_lowerLimit = lowerLimit;
-}
-
-
-void panLeft(Servo& s)
-{
-    // Increase angle by 50, cap at 2300
-    if ((s.m_angle + 50) < panLeftLimit)
-    {
-        s.m_angle += 50;
-        s.turn(s.m_angle);
-    }
+    turn(m_angle);
 }
 
 void Servo::turn(Degrees rotation)

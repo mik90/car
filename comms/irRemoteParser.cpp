@@ -1,5 +1,5 @@
 #include "irRemote.hpp"
-#include "common_rpi.hpp"
+#include "commonRpi.hpp"
 
 #include "wiringPi.h"
 

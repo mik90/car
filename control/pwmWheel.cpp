@@ -1,4 +1,4 @@
-#include "effectors.hpp"
+#include "pwmWheel.hpp"
 
 namespace Car
 {
@@ -6,7 +6,7 @@ namespace Car
 // Command for turning the motor forward, reverse, or releasing,
 // does not adjust speed
 [[nodiscard]]
-std::bitset<8> PwmMotor::calcMotorDirCommand(MotorDir_t motorDir)
+std::bitset<8> PwmWheel::calcMotorDirCommand(MotorDir_t motorDir)
 {
     std::bitset<8> motorCommand{0b00000000};
     switch (motorDir)
@@ -33,13 +33,13 @@ std::bitset<8> PwmMotor::calcMotorDirCommand(MotorDir_t motorDir)
 }
 
 // Update the speed
-void PwmMotor::setSpeed(PWM::pulseLength pulseLen)
+void PwmWheel::setSpeed(PWM::pulseLength pulseLen)
 {
     m_pulseLength = pulseLen;
 }
 
 // Adjust speed, does not turn the motor itself
-void PwmMotor::outputPwmCommand()
+void PwmWheel::outputPwmCommand()
 {
     using namespace std::chrono;
 
@@ -77,6 +77,23 @@ void PwmMotor::outputPwmCommand()
         // next time around
         m_time.inPulsePeriod = false;
     }
+}
+
+
+// Debugging support ----------------------------------------------------
+std::ostream& operator<<(std::ostream& out, MotorDir_t dir)
+{
+    switch(dir)
+    {
+        case MotorDir_t::FORWARD: out << "FORWARD"; break;
+        case MotorDir_t::REVERSE: out << "REVERSE"; break;
+        case MotorDir_t::RELEASE: out << "RELEASE"; break;
+        default: 
+            out << "Invalid MotorDir_t as uint_8:" << static_cast<uint8_t>(dir);
+            out.setstate(std::ios_base::failbit);
+            break;
+    }
+    return out;
 }
 
 } // end of namespace

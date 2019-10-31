@@ -1,7 +1,7 @@
 # Build an object file from this
 add_library(obj_control OBJECT init.cpp
-                               effectors.cpp
-                               pwmMotor.cpp
+                               motorController.cpp
+                               pwmWheel.cpp
                                servo.cpp)
 
 target_include_directories(obj_control PUBLIC ${car_include_dirs}

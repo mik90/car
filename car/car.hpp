@@ -5,9 +5,11 @@
 #include <memory>
 #include <chrono>
 
+#include "commonRpi.hpp"
+
 #include "sensors.hpp"
-#include "effectors.hpp"
-#include "common_rpi.hpp"
+#include "motorController.hpp"
+
 
 
 namespace Car
@@ -23,13 +25,17 @@ std::ostream& operator<<(std::ostream& out, CarMovement_t dir);
 class Car
 {
     private:
-        RpiInterface m_rpi; 
-        Sensors      m_sensors; 
-        Effectors    m_effectors;
+        RpiInterface    m_rpi; 
+        Sensors         m_sensors; 
+        MotorController m_motors;
         void parseIrCommand(uint16_t command);
     public:
         void moveCar(CarMovement_t carDir);
         void beep(std::chrono::seconds duration);
+        void panLeft();
+        void panRight();
+        void tiltDown();
+        void tiltUp();
 };
 
 

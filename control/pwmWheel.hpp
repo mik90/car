@@ -1,5 +1,5 @@
-#ifndef EFFECTORS_HPP_
-#define EFFECTORS_HPP_
+#ifndef PWM_WHEEL_HPP_
+#define PWM_WHEEL_HPP_
 
 #include <memory>
 #include <bitset>
@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cstdint>
 
-#include "common_rpi.hpp"
+#include "commonRpi.hpp"
 
 namespace Car
 {
@@ -34,19 +34,19 @@ namespace PWM
 }
 
 enum class MotorDir_t {FORWARD, REVERSE, RELEASE};
-// Print out Motor directions
+// Printing out MotorDir_t
 std::ostream& operator<<(std::ostream& out, MotorDir_t dir);
 
 struct pwmTimestamp
 {
     std::chrono::microseconds tStart{0};
-    bool inPulsePeriod = false;
+    bool inPulsePeriod{false};
 };
 
-class PwmMotor
+class PwmWheel
 {
     public:
-        PwmMotor(UCTronicsPins::pin_t const pin);
+        PwmWheel(UCTronicsPins::pin_t pwmPin);
         std::bitset<8> calcMotorDirCommand(MotorDir_t motorDir);
         void setSpeed(PWM::pulseLength pulseLen);
         void outputPwmCommand();
@@ -57,23 +57,6 @@ class PwmMotor
         std::bitset<8>   m_motorForward;
         std::bitset<8>   m_motorReverse;
         pwmTimestamp     m_time;
-};
-
-/** @brief API for controlling motors and other environment-affecting periphials **/
-class Effectors
-{
-    public:
-        Effectors();
-        void turnWheels(MotorDir_t leftSide, MotorDir_t rightSide,
-                        PWM::pulseLength pLength);
-        void turnWheels(MotorDir_t leftSide, MotorDir_t rightSide);
-        void beep(std::chrono::seconds duration);
-    private:
-        void outputWheelCommands(std::bitset<8> motorCommands);
-        PwmMotor m_RearRight {UCTronicsPins::PwmMotorRR};
-        PwmMotor m_RearLeft  {UCTronicsPins::PwmMotorRl};
-        PwmMotor m_FrontRight{UCTronicsPins::PwmMotorFR};
-        PwmMotor m_FrontLeft {UCTronicsPins::PwmMotorFL};
 };
 
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "wiringPi.h"
 
@@ -15,31 +16,31 @@ void Car::moveCar(CarMovement_t carDir)
     switch(carDir)
     {
         case CarMovement_t::FORWARD:
-            m_effectors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::FORWARD);
+            m_motors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::FORWARD);
             break;
         case CarMovement_t::FORWARD_LEFT:
-            m_effectors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::FORWARD);
+            m_motors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::FORWARD);
             break;
         case CarMovement_t::FORWARD_RIGHT:
-            m_effectors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::RELEASE);
+            m_motors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::RELEASE);
             break;
         case CarMovement_t::REVERSE:
-            m_effectors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::REVERSE);
+            m_motors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::REVERSE);
             break;
         case CarMovement_t::REVERSE_LEFT:
-            m_effectors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::REVERSE);
+            m_motors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::REVERSE);
             break;
         case CarMovement_t::REVERSE_RIGHT:
-            m_effectors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::RELEASE);
+            m_motors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::RELEASE);
             break;
         case CarMovement_t::LEFT:
-            m_effectors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::FORWARD);
+            m_motors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::FORWARD);
             break;
         case CarMovement_t::RIGHT:
-            m_effectors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::REVERSE);
+            m_motors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::REVERSE);
             break;
         case CarMovement_t::STOP:
-            m_effectors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::RELEASE);
+            m_motors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::RELEASE);
             break;
         default:
             std::cerr << "moveCar() Invalid car direction:" 
@@ -47,7 +48,6 @@ void Car::moveCar(CarMovement_t carDir)
             return;
     }
 }
-
 
 
 void Car::parseIrCommand(uint16_t irCommand)
@@ -106,8 +106,15 @@ void Car::parseIrCommand(uint16_t irCommand)
 
 void Car::beep(std::chrono::seconds duration)
 {
-    m_effectors.beep(duration);
+    digitalWrite(wPiPins::Beep, HIGH);
+    std::this_thread::sleep_for(duration);
+    digitalWrite(wPiPins::Beep, LOW);
 }
+void Car::panLeft()  { m_motors.panLeft();  }
+void Car::panRight() { m_motors.panRight(); }
+
+void Car::tiltDown() { m_motors.tiltDown(); }
+void Car::tiltUp()   { m_motors.tiltUp();   }
 
 std::ostream& operator<<(std::ostream& out, CarMovement_t dir)
 {
