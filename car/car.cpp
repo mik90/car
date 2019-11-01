@@ -110,11 +110,8 @@ void Car::beep(std::chrono::seconds duration)
     std::this_thread::sleep_for(duration);
     digitalWrite(wPiPins::Beep, LOW);
 }
-void Car::panLeft()  { m_motors.panLeft();  }
-void Car::panRight() { m_motors.panRight(); }
-
-void Car::tiltDown() { m_motors.tiltDown(); }
-void Car::tiltUp()   { m_motors.tiltUp();   }
+void Car::pan(Degrees angle)  { m_motors.pan(angle);  }
+void Car::tilt(Degrees angle) { m_motors.tilt(angle); }
 
 std::ostream& operator<<(std::ostream& out, CarMovement_t dir)
 {

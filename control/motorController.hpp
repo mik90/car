@@ -20,10 +20,8 @@ class MotorController
         void turnWheels(MotorDir_t leftSideDir, MotorDir_t rightSideDir);
         void setWheelSpeed(PWM::pulseLength pLength);
 
-        void panLeft();
-        void panRight();
-        void tiltDown();
-        void tiltUp();
+        void pan(Degrees angle);
+        void tilt(Degrees angle);
     private:
         Servo    m_panServo  {UCTronicsPins::PanServo};
         Servo    m_tiltServo {UCTronicsPins::TiltServo};

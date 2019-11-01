@@ -3,14 +3,6 @@
 namespace Car
 {
 
-Servo::Servo(UCTronicsPins::pin_t pin)
-{
-    m_pin = pin;
-    // Starting angle is 1140
-    m_angle = 1140;
-    turn(m_angle);
-}
-
 void Servo::turn(Degrees rotation)
 {
     // TODO wtf was this supposed to be? all these values are arbitrary

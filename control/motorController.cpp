@@ -62,7 +62,19 @@ void MotorController::outputAllWheelCommands(std::bitset<8> motorCommands)
     digitalWrite(wPiPins::MotorLatch, HIGH);
 }
 
+void MotorController::pan(Degrees angle)
+{
+    m_panServo.m_angle = angle;
+    m_panServo.turn(angle);
+}
 
+void MotorController::tilt(Degrees angle)
+{
+    m_tiltServo.m_angle = angle;
+    m_tiltServo.turn(angle);
+}
+
+#if 0 //old crap 
 void MotorController::panLeft()
 {
     // Increase angle by 50, cap at 2300
@@ -88,7 +100,7 @@ void MotorController::tiltUp()
     // Increase angle by 50, cap at 1160
     if ((m_tiltServo.m_angle + 50) > tiltUpLimit)
     {
-        m_tiltServo.m_angle += 5;
+        m_tiltServo.m_angle += 50;
         m_tiltServo.turn(m_tiltServo.m_angle);
     }
 }
@@ -101,7 +113,7 @@ void MotorController::tiltDown()
         m_tiltServo.turn(m_tiltServo.m_angle);
     }
 }
-
+#endif
 
 
 } // End of namespace

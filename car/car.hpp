@@ -32,10 +32,8 @@ class Car
     public:
         void moveCar(CarMovement_t carDir);
         void beep(std::chrono::seconds duration);
-        void panLeft();
-        void panRight();
-        void tiltDown();
-        void tiltUp();
+        void pan(Degrees angle);
+        void tilt(Degrees angle);
 };
 
 

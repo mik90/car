@@ -19,61 +19,65 @@ void runCliInput()
         std::cin >> input;
 
         // Big ol if/else so i can test each motor
-        if (input.find("end") != std::string::npos)
+        if (input == "end")
         {
             std::cout << "Returning..." << std::endl;
             c.moveCar(CarMovement_t::STOP);
             return;
         }
-        else if (input.find("panl") != std::string::npos)
+
+        if (input == "pan")
         {
-            std::cout << "panning left..." << std::endl;
-            c.panLeft();
+            // pan <target_value>
+            std::cout << "panning..." << std::endl;
+            std::cin >> input;
+            std::string::size_type strSize{0};
+            unsigned int value = std::stoi(input, &strSize);
+            if  (strSize > 0)
+                c.pan(value);
+            else
+                std::cerr << "Could not parse into unsigned int:" << input << std::endl;
         }
-        else if (input.find("panr") != std::string::npos)
+        else if (input.find("tilt") != std::string::npos)
         {
-            std::cout << "panning right..." << std::endl;
-            c.panRight();
+            // tilt <target_value>
+            std::cout << "tilting..." << std::endl;
+            std::cin >> input;
+            std::string::size_type strSize{0};
+            unsigned int value = std::stoi(input, &strSize);
+            if  (strSize > 0)
+                c.tilt(value);
+            else
+                std::cerr << "Could not parse into unsigned int:" << input << std::endl;
+
         }
-        else if (input.find("tiltu") != std::string::npos)
-        {
-            std::cout << "tilting up..." << std::endl;
-            c.tiltUp();
-        }
-        else if (input.find("tiltd") != std::string::npos)
-        {
-            std::cout << "tilting down..." << std::endl;
-            c.tiltDown();
-        }
-        else if (input.find("w") != std::string::npos)
+        else if (input  == "w")
         {
             std::cout << "Forward" << std::endl;
             c.moveCar(CarMovement_t::FORWARD);
         }
-        else if (input.find("a") != std::string::npos)
+        else if (input == "a")
         {
             std::cout << "Left" << std::endl;
             c.moveCar(CarMovement_t::LEFT);
         }
-        else if (input.find("d") != std::string::npos)
+        else if (input == "d")
         {
             std::cout << "Right" << std::endl;
             c.moveCar(CarMovement_t::RIGHT);
         }
-        else if (input.find("s") != std::string::npos)
+        else if (input == "s")
         {
             std::cout << "Reverse" << std::endl;
             c.moveCar(CarMovement_t::REVERSE);
         }
-        else if (input.find("b") != std::string::npos)
+        else if (input == "b")
         {
-            // Result: beeps
             std::cout << "Beep for 1 sec" << std::endl;
             c.beep(1s);
         }
-        else if (input.find("r") != std::string::npos)
+        else if (input == "r")
         {
-            // Result: stops (at least FR does)
             std::cout << "Stop" << std::endl;
             c.moveCar(CarMovement_t::STOP);
         }
@@ -84,6 +88,8 @@ void runCliInput()
             c.moveCar(CarMovement_t::STOP);
             return;
         }
+
+        // Parse stream from stdin again
     }
 }
 

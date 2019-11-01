@@ -47,6 +47,32 @@ PwmWheel::PwmWheel(UCTronicsPins::pin_t pin) :
     }
 }
 
+
+Servo::Servo(UCTronicsPins::pin_t pin)
+{
+    m_pin = pin;
+    // Starting angle is 1140
+    m_angle = 1140;
+
+    // ---------------
+    // For pan:
+    // None of the 'angles' work
+    // There must be a problem in the servo control logic
+
+    // ---------------
+    // For tilt:
+    // every OTHER invocation of tilt up/down works
+    // 0 is flat down
+    // 1140 is flat down
+
+    // 1500 is probably as low as we should go
+    // 1700 is like 45 deg
+    // 2300 is 90 deg
+    // ---------------
+    turn(m_angle);
+}
+
+
 MotorController::MotorController()
 {
     // Set pins for the UCTronics motor register with wiringPi
