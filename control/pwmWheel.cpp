@@ -2,6 +2,40 @@
 
 namespace Car
 {
+PwmWheel::PwmWheel(wPiPins::pin_t pin) :
+                                       m_pwmPin{pin},
+                                       m_time{std::chrono::microseconds{0}, false}
+{
+    // Default speed is medium
+    m_pulseLength = PWM::Speed::Medium;
+
+    // These values are kind of arbitrary, they're pulled from
+    // the UCTRONICS codebase and have no explanation
+    switch(pin)
+    {
+        case wPiPins::PwmWheelRR:
+            m_motorForward = 0b00001000;  // Bit 3
+            m_motorReverse = 0b00000100;  // Bit 2
+            break;
+        case wPiPins::PwmWheelRl:
+            m_motorForward = 0b00010000;  // Bit 4
+            m_motorReverse = 0b00000010;  // Bit 1
+            break;
+        case wPiPins::PwmWheelFR:
+            m_motorForward = 0b00100000;  // Bit 5
+            m_motorReverse = 0b10000000;  // Bit 7
+            break;
+        case wPiPins::PwmWheelFL:
+            m_motorForward = 0b00000001;  // Bit 0
+            m_motorReverse = 0b01000000;  // Bit 6
+            break;
+        default:
+            std::cerr << "PwmWheel() invalid pin\n";
+            m_motorForward = 0b00000000;
+            m_motorReverse = 0b00000000;
+            break;
+    }
+}
 
 // Command for turning the motor forward, reverse, or releasing,
 // does not adjust speed
@@ -65,11 +99,11 @@ void PwmWheel::outputPwmCommand()
     if (tDelta < PWM::fullPwmPeriod)
     {
         if (tDelta <= m_pulseLength)
-            // We are within the pulse range, set the bits
-            RpiInterface::writeGpioBits(m_pwmIdentityBitset);
+            // We are within the pulse range, write high
+            digitalWrite(m_pwmPin, HIGH);
         else
-            // We are past the pulse range, clear the bits
-            RpiInterface::clearGpioBits(m_pwmIdentityBitset);
+            // We are past the pulse range, write low 
+            digitalWrite(m_pwmPin, LOW);
     }
     else
     {
@@ -95,5 +129,6 @@ std::ostream& operator<<(std::ostream& out, MotorDir_t dir)
     }
     return out;
 }
+
 
 } // end of namespace

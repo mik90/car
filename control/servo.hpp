@@ -28,11 +28,11 @@ static constexpr Degrees tiltUpLimit  {1160};
 class Servo
 {
     public:
-        Servo(UCTronicsPins::pin_t pin);
+        Servo(wPiPins::pin_t pin);
         void turn(Degrees rotation);
         Degrees m_angle;
     private:
-        UCTronicsPins::pin_t m_pin;
+        wPiPins::pin_t m_pin;
 };
 
 }

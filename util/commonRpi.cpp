@@ -8,6 +8,8 @@ RpiInterface::RpiInterface()
     std::cout << "Initializing Rpi interface..." << std::endl;
     void* gpioMmapPtr{nullptr};
 
+    // TODO Just open /dev/gpiomem as it does not require more permissions
+    // Better yet, does this even need to be mapped to memory?
     int dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (dev_mem_fd < 0)
     {
@@ -40,48 +42,10 @@ RpiInterface::RpiInterface()
     m_gpioMmapPtr.reset(static_cast<volatile uint32_t*>(gpioMmapPtr));
 }
 
-// Attempt to refactor INP_GPIO, OUT_GPIO and other weird macros that seem to be
-// all over the pi/arduino world.
-// This is only used for the UCTronics motor control board
-void RpiInterface::setPinInput(const UCTronicsPins::pin_t pin)
-{
-    auto adjusted_ptr = (m_gpioMmapPtr.get() + ((pin) / 10));
-    auto adjusted_pin = 7 << (((pin) % 10 ) * 3);
-    *adjusted_ptr &= ~(adjusted_pin);
-}
-
-void RpiInterface::setPinOutput(const UCTronicsPins::pin_t pin)
-{
-    auto adjusted_ptr = (m_gpioMmapPtr.get() + ((pin) / 10));
-    auto adjusted_pin = 1 << (((pin) % 10 ) * 3);
-    *adjusted_ptr |= adjusted_pin;
-}
-
 /** @brief Writes to the GPIO Pull up/down controller */
 void RpiInterface::writeToPullUpDown(uint32_t data)
 {
     *(m_gpioMmapPtr.get() + 37) = data;
 }
-
-/** @brief Writes to the GPIO Pull up/down clock */
-void RpiInterface::writeToPullUpDownClock(uint32_t data)
-{
-    *(m_gpioMmapPtr.get() + 38) = data;
-}
-
-/** @brief Sets bits which are 1, ignores bits tha are 0
- *  @param[in] bits - Bitset where some bits are 1  **/
-void RpiInterface::writeGpioBits(std::bitset<32> bits)
-{
-    *(m_gpioMmapPtr.get() + 7) = bits.to_ulong();
-}
-
-/** @brief clears bits which are 1, ignores bits that are 0.
- *  @param[in] bits - Bitset where some bits are 1  **/
-void RpiInterface::clearGpioBits(std::bitset<32> bits)
-{
-    *(m_gpioMmapPtr.get() + 10) = bits.to_ulong();
-}
-
 
 }

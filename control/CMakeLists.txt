@@ -1,6 +1,5 @@
 # Build an object file from this
-add_library(obj_control OBJECT init.cpp
-                               motorController.cpp
+add_library(obj_control OBJECT motorController.cpp
                                pwmWheel.cpp
                                servo.cpp)
 

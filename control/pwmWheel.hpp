@@ -46,14 +46,13 @@ struct pwmTimestamp
 class PwmWheel
 {
     public:
-        PwmWheel(UCTronicsPins::pin_t pwmPin);
+        PwmWheel(wPiPins::pin_t pwmPin);
         std::bitset<8> calcMotorDirCommand(MotorDir_t motorDir);
         void setSpeed(PWM::pulseLength pulseLen);
         void outputPwmCommand();
     private:
-        UCTronicsPins::pin_t m_pwmPin;
+        wPiPins::pin_t m_pwmPin;
         PWM::pulseLength m_pulseLength;
-        std::bitset<32>  m_pwmIdentityBitset;
         std::bitset<8>   m_motorForward;
         std::bitset<8>   m_motorReverse;
         pwmTimestamp     m_time;

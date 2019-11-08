@@ -23,12 +23,12 @@ class MotorController
         void pan(Degrees angle);
         void tilt(Degrees angle);
     private:
-        Servo    m_panServo  {UCTronicsPins::PanServo};
-        Servo    m_tiltServo {UCTronicsPins::TiltServo};
-        PwmWheel m_RearRight {UCTronicsPins::PwmWheelRR};
-        PwmWheel m_RearLeft  {UCTronicsPins::PwmWheelRl};
-        PwmWheel m_FrontRight{UCTronicsPins::PwmWheelFR};
-        PwmWheel m_FrontLeft {UCTronicsPins::PwmWheelFL};
+        Servo    m_panServo  {wPiPins::PanServo};
+        Servo    m_tiltServo {wPiPins::TiltServo};
+        PwmWheel m_RearRight {wPiPins::PwmWheelRR};
+        PwmWheel m_RearLeft  {wPiPins::PwmWheelRl};
+        PwmWheel m_FrontRight{wPiPins::PwmWheelFR};
+        PwmWheel m_FrontLeft {wPiPins::PwmWheelFL};
         void outputAllWheelCommands(std::bitset<8> motorCommands);
 };
 

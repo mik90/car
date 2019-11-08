@@ -9,6 +9,31 @@
 namespace Car
 {
 
+
+MotorController::MotorController()
+{
+    // Set pins for the UCTronics motor register with wiringPi
+    pinMode(wPiPins::MotorLatch, OUTPUT);
+    pinMode(wPiPins::MotorData,  OUTPUT);
+    pinMode(wPiPins::MotorClock, OUTPUT);
+
+    // Set pins for the GPIO Pulse width modulation controls
+    pinMode(wPiPins::PwmWheelRR, OUTPUT);
+    pinMode(wPiPins::PwmWheelRl, OUTPUT);
+    pinMode(wPiPins::PwmWheelFR, OUTPUT);
+    pinMode(wPiPins::PwmWheelFL, OUTPUT);
+
+    // Set pins for pan/tilt servos
+    pinMode(wPiPins::PanServo, OUTPUT);
+    pinMode(wPiPins::TiltServo, OUTPUT);
+
+    // Set pins/write low for the beeper/buzzer with wiringPi
+    pinMode(wPiPins::Beep, OUTPUT);
+
+    digitalWrite(wPiPins::Beep, LOW);
+}
+
+
 void MotorController::setWheelSpeed(PWM::pulseLength pLength)
 {
     m_RearLeft.setSpeed(pLength);

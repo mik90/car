@@ -40,36 +40,29 @@ namespace GPIO
     
 }
 
-/** @brief Common place for all of the UCTronics motor control
- *         board pin identities **/
-namespace UCTronicsPins 
-{
-    using pin_t = unsigned int;
-
-    /** @brief Middle line tracker sensor **/
-    constexpr pin_t LineTrackMiddle = 27;
-    /** @brief Leftmost line tracker sensor **/
-    constexpr pin_t LineTrackLeft = 17;
-    /** @brief Rightmost line tracker sensor **/
-    constexpr pin_t LineTrackRight = 22;
-
-    constexpr pin_t PwmWheelRR = 5;
-    constexpr pin_t PwmWheelRl = 6;
-    constexpr pin_t PwmWheelFR = 13;
-    constexpr pin_t PwmWheelFL = 19;
-    
-    /** @brief Camera pan servo **/
-    constexpr pin_t PanServo = 4;
-
-    /** @brief Camera tilt servo **/
-    constexpr pin_t TiltServo = 25;
-
-}
-
 /** @brief Common place for all of the WiringPi Pin identities **/
 namespace wPiPins 
 {
     using pin_t = unsigned int;
+
+    // Translated from BCM to WiringPi
+    /** @brief Middle line tracker sensor **/
+    constexpr pin_t LineTrackMiddle = 2;
+    /** @brief Leftmost line tracker sensor **/
+    constexpr pin_t LineTrackLeft = 0;
+    /** @brief Rightmost line tracker sensor **/
+    constexpr pin_t LineTrackRight = 3;
+
+    constexpr pin_t PwmWheelRR = 21;
+    constexpr pin_t PwmWheelRl = 22;
+    constexpr pin_t PwmWheelFR = 23;
+    constexpr pin_t PwmWheelFL = 24;
+    
+    /** @brief Camera pan servo **/
+    constexpr pin_t PanServo = 7;
+
+    /** @brief Camera tilt servo **/
+    constexpr pin_t TiltServo = 6;
     
     /** @brief Listen for ultrasonic sensor input **/
     constexpr pin_t Echo = 4;
@@ -93,12 +86,8 @@ class RpiInterface
         inline static std::unique_ptr<volatile uint32_t, memMapDeleter> m_gpioMmapPtr;
     public:
         RpiInterface();
-        static void setPinInput(const UCTronicsPins::pin_t pin);
-        static void setPinOutput(const UCTronicsPins::pin_t pin);
         static void writeToPullUpDown(uint32_t data);
         static void writeToPullUpDownClock(uint32_t data);
-        static void writeGpioBits(std::bitset<32> bits);
-        static void clearGpioBits(std::bitset<32> bits);
 };
 
 
