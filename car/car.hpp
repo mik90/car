@@ -25,9 +25,8 @@ std::ostream& operator<<(std::ostream& out, CarMovement_t dir);
 class Car
 {
     private:
-        RpiInterface    m_rpi; 
-        Sensors         m_sensors; 
         MotorController m_motors;
+        Sensors         m_sensors; 
         void parseIrCommand(uint16_t command);
     public:
         void moveCar(CarMovement_t carDir);

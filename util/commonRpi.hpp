@@ -19,26 +19,7 @@
 namespace Car
 {
 
-// Conventional size of memory block
-constexpr std::size_t BLOCK_SIZE = 4096;
-
-struct memMapDeleter
-{
-    void operator() (volatile uint32_t* gpioMmapPtr)
-    {
-        if (munmap((void*) gpioMmapPtr, BLOCK_SIZE) != 0)
-            std::cerr << "Cannot unmap GPIO map. errno:" << std::strerror(errno) << '\n';
-    }
-};
-
-namespace GPIO
-{
-    constexpr unsigned int PI_ZERO_W_BCM2708_PERI_BASE = 0x20000000;
-    constexpr unsigned int PI_3_B_BCM2708_PERI_BASE    = 0x3f000000;
-    constexpr unsigned int PI_4_B_BCM2708_PERI_BASE    = 0xfe000000;
-    constexpr unsigned int GPIO_BASE = PI_3_B_BCM2708_PERI_BASE + 0x200000;
-    
-}
+extern std::atomic<bool> wiringPiInitialized;
 
 /** @brief Common place for all of the WiringPi Pin identities **/
 namespace wPiPins 
@@ -79,17 +60,6 @@ namespace wPiPins
     constexpr pin_t MotorClock = 28;
     constexpr pin_t MotorLatch = 29;
 }
-
-class RpiInterface
-{
-    private:
-        inline static std::unique_ptr<volatile uint32_t, memMapDeleter> m_gpioMmapPtr;
-    public:
-        RpiInterface();
-        static void writeToPullUpDown(uint32_t data);
-        static void writeToPullUpDownClock(uint32_t data);
-};
-
 
 }
 #endif

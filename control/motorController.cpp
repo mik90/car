@@ -1,6 +1,7 @@
 #include <iostream>
 #include <bitset>
 #include <thread>
+#include <atomic>
 
 #include "wiringPi.h"
 
@@ -9,9 +10,15 @@
 namespace Car
 {
 
+std::atomic<bool> wiringPiInitialized{false};
 
 MotorController::MotorController()
 {
+    if (wiringPiInitialized.load() == false)
+    {
+        wiringPiInitialized = true;
+        wiringPiSetup();
+    }
     // Set pins for the UCTronics motor register with wiringPi
     pinMode(wPiPins::MotorLatch, OUTPUT);
     pinMode(wPiPins::MotorData,  OUTPUT);

@@ -1,15 +1,22 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
+#include <atomic>
 #include "wiringPi.h"
 #include "sensors.hpp"
+
+#include "commonRpi.hpp"
 
 namespace Car
 {
 
-
 Sensors::Sensors()
 {
+    if (wiringPiInitialized.load() == false)
+    {
+        wiringPiInitialized = true;
+        wiringPiSetup();
+    }
      // Once the memroy is mapped, we can init all of our periphials
     std::cout << "Initializing sensors..." << std::endl;
 
@@ -18,13 +25,17 @@ Sensors::Sensors()
     std::cout << "Ultrasonic sensor initialized\n";
 
     pinMode(wPiPins::LineTrackLeft, INPUT);
-    RpiInterface::writeToPullUpDown(1 << wPiPins::LineTrackLeft);
+    // TODO Pull-up direction might be wrong, 50/50 chance of being right
+    pullUpDnControl(wPiPins::LineTrackLeft, PUD_UP);
 
     pinMode(wPiPins::LineTrackMiddle, INPUT);
-    RpiInterface::writeToPullUpDown(1 << wPiPins::LineTrackMiddle);
+    // TODO Pull-up direction might be wrong, 50/50 chance of being right
+    pullUpDnControl(wPiPins::LineTrackMiddle, PUD_UP);
 
     pinMode(wPiPins::LineTrackRight, INPUT);
-    RpiInterface::writeToPullUpDown(1 << wPiPins::LineTrackRight);
+    // TODO Pull-up direction might be wrong, 50/50 chance of being right
+    pullUpDnControl(wPiPins::LineTrackRight, PUD_UP);
+
     std::cout << "Line reader initialized\n";
 
     pinMode(wPiPins::InfraredIn, INPUT);
