@@ -10,15 +10,8 @@
 namespace Car
 {
 
-std::atomic<bool> wiringPiInitialized{false};
-
 MotorController::MotorController()
 {
-    if (wiringPiInitialized.load() == false)
-    {
-        wiringPiInitialized = true;
-        wiringPiSetup();
-    }
     // Set pins for the UCTronics motor register with wiringPi
     pinMode(wPiPins::MotorLatch, OUTPUT);
     pinMode(wPiPins::MotorData,  OUTPUT);
@@ -94,13 +87,13 @@ void MotorController::outputAllWheelCommands(std::bitset<8> motorCommands)
     digitalWrite(wPiPins::MotorLatch, HIGH);
 }
 
-void MotorController::pan(Degrees angle)
+void MotorController::pan(dutyCycle angle)
 {
     m_panServo.m_angle = angle;
     m_panServo.turn(angle);
 }
 
-void MotorController::tilt(Degrees angle)
+void MotorController::tilt(dutyCycle angle)
 {
     m_tiltServo.m_angle = angle;
     m_tiltServo.turn(angle);

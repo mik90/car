@@ -12,41 +12,53 @@ namespace Car
 
 void Car::moveCar(CarMovement_t carDir)
 {
+    MotorDir_t leftSide, rightSide;
 
     switch(carDir)
     {
         case CarMovement_t::FORWARD:
-            m_motors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::FORWARD);
+            leftSide  = MotorDir_t::FORWARD;
+            rightSide = MotorDir_t::FORWARD;
             break;
         case CarMovement_t::FORWARD_LEFT:
-            m_motors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::FORWARD);
+            leftSide  = MotorDir_t::RELEASE;
+            rightSide = MotorDir_t::FORWARD;
             break;
         case CarMovement_t::FORWARD_RIGHT:
-            m_motors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::RELEASE);
+            leftSide  = MotorDir_t::FORWARD;
+            rightSide = MotorDir_t::RELEASE;
             break;
         case CarMovement_t::REVERSE:
-            m_motors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::REVERSE);
+            leftSide  = MotorDir_t::REVERSE;
+            rightSide = MotorDir_t::REVERSE;
             break;
         case CarMovement_t::REVERSE_LEFT:
-            m_motors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::REVERSE);
+            leftSide  = MotorDir_t::RELEASE;
+            rightSide = MotorDir_t::REVERSE;
             break;
         case CarMovement_t::REVERSE_RIGHT:
-            m_motors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::RELEASE);
+            leftSide  = MotorDir_t::REVERSE;
+            rightSide = MotorDir_t::RELEASE;
             break;
         case CarMovement_t::LEFT:
-            m_motors.turnWheels(MotorDir_t::REVERSE, MotorDir_t::FORWARD);
+            leftSide  = MotorDir_t::REVERSE;
+            rightSide = MotorDir_t::FORWARD;
             break;
         case CarMovement_t::RIGHT:
-            m_motors.turnWheels(MotorDir_t::FORWARD, MotorDir_t::REVERSE);
+            leftSide  = MotorDir_t::FORWARD;
+            rightSide = MotorDir_t::REVERSE;
             break;
         case CarMovement_t::STOP:
-            m_motors.turnWheels(MotorDir_t::RELEASE, MotorDir_t::RELEASE);
+            leftSide  = MotorDir_t::RELEASE;
+            rightSide = MotorDir_t::RELEASE;
             break;
         default:
             std::cerr << "moveCar() Invalid car direction:" 
                       << carDir << std::endl;
             return;
     }
+
+    m_motors.turnWheels(leftSide, rightSide);
 }
 
 
@@ -110,8 +122,8 @@ void Car::beep(std::chrono::seconds duration)
     std::this_thread::sleep_for(duration);
     digitalWrite(wPiPins::Beep, LOW);
 }
-void Car::pan(Degrees angle)  { m_motors.pan(angle);  }
-void Car::tilt(Degrees angle) { m_motors.tilt(angle); }
+void Car::pan(dutyCycle angle)  { m_motors.pan(angle);  }
+void Car::tilt(dutyCycle angle) { m_motors.tilt(angle); }
 
 std::ostream& operator<<(std::ostream& out, CarMovement_t dir)
 {

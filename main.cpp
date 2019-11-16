@@ -11,9 +11,15 @@ void runCliInput()
     using namespace std::chrono_literals;
 
     std::string input;
+
+    wiringPiSetup();
+
     Car::Car c;
     std::cout << "Starting CLI loop..." << std::endl;
     int i{0};
+
+
+
     while (1)
     {
         std::cin >> input;

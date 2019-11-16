@@ -6,8 +6,7 @@ namespace Car
 Servo::Servo(wPiPins::pin_t pin)
 {
     m_pin = pin;
-    // Starting angle is 1140
-    m_angle = 1140;
+    m_angle = 1500;
 
     // ---------------
     // For pan:
@@ -27,13 +26,11 @@ Servo::Servo(wPiPins::pin_t pin)
     turn(m_angle);
 }
 
-
-void Servo::turn(Degrees rotation)
+void Servo::turn(dutyCycle rotation)
 {
     // TODO wtf was this supposed to be? all these values are arbitrary
-    static constexpr unsigned int servoCycles{3};
+    static constexpr unsigned int servoCycles{15};
     static constexpr unsigned int fullDutyCycle{25000};
-    static constexpr unsigned int halfDutyCycle{fullDutyCycle / 2};
 
     // range 2 - 100
     for (auto i = 0; i < servoCycles; i++)

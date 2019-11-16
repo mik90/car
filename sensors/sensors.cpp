@@ -12,11 +12,7 @@ namespace Car
 
 Sensors::Sensors()
 {
-    if (wiringPiInitialized.load() == false)
-    {
-        wiringPiInitialized = true;
-        wiringPiSetup();
-    }
+ 
      // Once the memroy is mapped, we can init all of our periphials
     std::cout << "Initializing sensors..." << std::endl;
 
