@@ -7,7 +7,7 @@
 
 #include "commonRpi.hpp"
 
-#include "sensors.hpp"
+#include "sensorController.hpp"
 #include "motorController.hpp"
 
 
@@ -26,7 +26,7 @@ class Car
 {
     private:
         MotorController m_motors;
-        Sensors         m_sensors; 
+        SensorController         m_sensors; 
         void parseIrCommand(uint16_t command);
     public:
         void moveCar(CarMovement_t carDir);

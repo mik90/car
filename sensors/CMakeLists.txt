@@ -1,5 +1,6 @@
 # Build an object file from this
-add_library(obj_sensors OBJECT sensors.cpp)
+add_library(obj_sensors OBJECT camera.cpp
+                               sensorController.cpp)
 
 target_include_directories(obj_sensors PUBLIC ${car_include_dirs}
                                               ${wiringpi_SOURCE_DIR}/wiringPi

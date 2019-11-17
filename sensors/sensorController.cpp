@@ -1,18 +1,15 @@
 #include <cmath>
-#include <thread>
-#include <chrono>
 #include <atomic>
 #include "wiringPi.h"
-#include "sensors.hpp"
+#include "sensorController.hpp"
 
 #include "commonRpi.hpp"
 
 namespace Car
 {
 
-Sensors::Sensors()
+SensorController::SensorController()
 {
- 
      // Once the memroy is mapped, we can init all of our periphials
     std::cout << "Initializing sensors..." << std::endl;
 
@@ -43,14 +40,29 @@ Sensors::Sensors()
     std::cout << "Starting ultrasonic update loop..." << std::endl;
 
     // Update the ultrasonic sensor every 'ultraSonicInterval' milliseconds 
-    std::thread loopThread{&Sensors::updateLoopUltrasonic, this, ultrasonicInterval};
+    std::thread ultraThread{&SensorController::updateLoopUltrasonic, this,
+                            ultrasonicInterval};
     // Let this thread be independent
-    loopThread.detach();
+    ultraThread.detach();
+
+    std::filesystem::path logDirPath{cameraLogDirSv};
+    if(isLoggingDirReady(logDirPath) == true)
+    {
+        std::thread cameraThread{&SensorController::cameraLoop, this,
+                                 std::string{cameraCmdArgsSv}, logDirPath};
+        cameraThread.detach();
+    }
+    else
+    {
+        std::cerr << "Error: Could not set camera logging path at \"" << logDirPath 
+                  << "\", camera will not run because of this.\n";
+    }
+    
 }
 
 
 
-cm Sensors::calcDistanceUltrasonic()
+cm SensorController::calcDistanceUltrasonic()
 {
     // Pull ultrasonic sensor high for at least 10 us
     digitalWrite(wPiPins::Trig, HIGH);
@@ -80,7 +92,7 @@ cm Sensors::calcDistanceUltrasonic()
     return dist;
 }
 
-[[noreturn]] void Sensors::updateLoopUltrasonic(std::chrono::milliseconds loopInterval)
+[[noreturn]] void SensorController::updateLoopUltrasonic(std::chrono::milliseconds loopInterval)
 {
     using namespace std::chrono_literals;
 
