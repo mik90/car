@@ -1,6 +1,9 @@
 # Cmake build
 build/
 
+# Pictures from pi-cam
+rpiPics/
+
 # External git-submodules 
 extern/
 

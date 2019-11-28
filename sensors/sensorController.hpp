@@ -19,8 +19,8 @@ namespace Car
 
     constexpr std::chrono::milliseconds cameraInterval{3000};
 
-    constexpr std::string_view cameraLogDirSv{"/var/log/rpiCar"};
-    constexpr std::string_view cameraCmdArgsSv{""};
+    constexpr std::string_view cameraLogDirSv{"./rpiPics"};
+    constexpr std::string_view cameraCmdArgsSv{"--quality 75 --encoding jpg --width 800 --height 600"};
 
     /** @brief All of the functions and data types relating to sensor usage **/
     class SensorController
