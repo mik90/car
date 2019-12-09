@@ -5,7 +5,7 @@ build/
 rpiPics/
 
 # External git-submodules 
-extern/
+extern/tools
 
 # Doxygen output
 docs/html
