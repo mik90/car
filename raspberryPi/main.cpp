@@ -1,9 +1,7 @@
 #include <iostream>
 #include <string>
-#include <future>
 
 #include "wiringPi.h"
-#include "wiringPiI2C.h"
 
 #include "car.hpp"
 
@@ -14,14 +12,10 @@ void runCliInput()
     using namespace std::chrono_literals;
 
     std::string input;
-
     wiringPiSetup();
 
     Car::Car c;
     std::cout << "Starting CLI loop..." << std::endl;
-    int i{0};
-
-
 
     while (1)
     {
@@ -41,7 +35,7 @@ void runCliInput()
             std::cout << "panning..." << std::endl;
             std::cin >> input;
             std::string::size_type strSize{0};
-            unsigned int value = std::stoi(input, &strSize);
+            uint8_t value = std::stoi(input, &strSize);
             if  (strSize > 0)
                 c.pan(value);
             else
@@ -53,7 +47,7 @@ void runCliInput()
             std::cout << "tilting..." << std::endl;
             std::cin >> input;
             std::string::size_type strSize{0};
-            unsigned int value = std::stoi(input, &strSize);
+            uint8_t value = std::stoi(input, &strSize);
             if  (strSize > 0)
                 c.tilt(value);
             else
@@ -79,11 +73,6 @@ void runCliInput()
         {
             std::cout << "Reverse" << std::endl;
             c.moveCar(CarMovement_t::REVERSE);
-        }
-        else if (input == "b")
-        {
-            std::cout << "Beep for 1 sec" << std::endl;
-            c.beep(1s);
         }
         else if (input == "r")
         {

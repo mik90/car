@@ -9,7 +9,7 @@
                 "/home/mike/Arduino/libraries/Adafruit_Motor_Shield_V2_Library",
                 "/home/mike/.arduino15/packages/arduino/tools/**",
                 "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/**",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/extern/WiringPi/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

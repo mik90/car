@@ -1,8 +1,11 @@
-#include <Wire.h>
+#include <Serial.h>
 #include <Servo.h>
 #include <Adafruit_MotorShield.h>
 
-#include <math.h>
+#ifndef ARDUINO
+#define ARDUINO
+#endif
+#include "messages.ino"
 
 Adafruit_MotorShield shield;
 Servo panServo;
@@ -20,10 +23,14 @@ auto frontRightMotor = shield.getMotor(M1);
 auto frontLeftMotor  = shield.getMotor(M2);
 auto rearRightMotor  = shield.getMotor(M3);
 auto rearLeftMotor   = shield.getMotor(M4);
+void handleWheelControl(const std::array<uint8_t,messageSize>& msg);
+void handleServoControl(const std::array<uint8_t,messageSize>& msg);
+void handleServoRequest(const std::array<uint8_t,messageSize>& msg);
+uint32_t readUltrasonicSensor();
 
 void setup()
 {
-	shield.begin();
+    shield.begin();
 
     pinMode(UltrasonicEchoPin, INPUT);
     pinMode(UltrasonicTriggerPin, OUTPUT);
@@ -36,54 +43,117 @@ void setup()
     rearRightMotor->run(RELEASE); 
     rearLeftMotor->run(RELEASE); 
 
-    // Use address 8 on I2C bus
-    Wire.begin(8);
-    Wire.onReceive(handleI2cMessage);
-    Wire.onRequest(handleI2cRequest);
+    Serial.begin(baudRate);
+    while (!Serial)
+    {
+        // Wait for serial port to be available
+        delayMicroseconds(100);
+    }
 }
 
-void handleServoControl()
+void serialEvent()
 {
-    unsigned int panServoAngle =  Wire.read();
+    if (Serial.available() >= messageSize)
+    {
+        std::array<uint8_t, messageSize> inputBuf;
+        if (Serial.readBytes(inputBuf.data(), messageSize) != messageSize)
+            // Dropped some data, so ignore the message
+            return;
+
+        MessageId_t id = static_cast<MessageId_t>(inputBuf[0]);
+        switch(id)
+        {
+            case MessageId_t::SERVO_CONTROL:
+                handleServoControl(inputBuf);
+            break;
+
+            case MessageId_t::WHEEL_CONTROL:
+                handleWheelControl(inputBuf);
+            break;
+            case MessageId_t::ULTRASONIC_INFO:
+                handleUltrasonicRequest(inputBuf);
+            break;
+            default:
+                // Could not parse message
+            break;
+        }
+    }
+}
+
+void loop()
+{
+    // Only act during serial input
+    delay(100);
+}
+
+void handleServoControl(const std::array<uint8_t,messageSize>& msg)
+{
+    uint8_t panServoAngle = servoControl::deserializePanServoAngle(msg);
     if (panServoAngle != InvalidServoAngle)
     {
         // Clamped from 0-100 (unsigned so always positive)
-        uint8_t clampedAngle = max(100, panServoAngle);
+        panServoAngle = max(100, panServoAngle);
         panServo.write(panServoAngle);
     }
 
-    unsigned int tiltServoAngle = Wire.read();
+    uint8_t tiltServoAngle = servoControl::deserializeTiltServoAngle(msg);
     if (tiltServoAngle != InvalidServoAngle)
     {
-        uint8_t clampedAngle = max(100, tiltServoAngle);
+        tiltServoAngle = max(100, tiltServoAngle);
         tiltServo.write(tiltServoAngle);
     }
 }
 
-void handleWheelControl()
+void handleWheelControl(const std::array<uint8_t,messageSize>& msg)
 {
-    unsigned int wheelSpeed = Wire.read();
+    uint8_t wheelSpeed = wheelControl::deserializeWheelSpeed(msg);
     if (wheelSpeed != InvalidWheelSpeed)
     {
         // Adjust the PWM speed
         // Clamped from 0-255 (unsigned so always positive)
-        uint8_t clampedSpeed = max(255, wheelSpeed);
-        frontRightMotor->setSpeed(clampedSpeed);
-        frontLeftMotor->setSpeed(clampedSpeed);
-        rearRightMotor->setSpeed(clampedSpeed);
-        rearLeftMotor->setSpeed(clampedSpeed);
+        wheelSpeed = max(255, wheelSpeed);
+        frontRightMotor->setSpeed(wheelSpeed);
+        frontLeftMotor->setSpeed(wheelSpeed);
+        rearRightMotor->setSpeed(wheelSpeed);
+        rearLeftMotor->setSpeed(wheelSpeed);
     }
 
-    MotorDir_t leftSideDir = Wire.read();
-    frontLeftMotor->run(leftSideDir); 
-    rearLeftMotor->run(leftSideDir); 
+    auto leftAndRightDir = wheelControl::deserializeWheelDirs(msg);
+    MotorDir_t leftSideDir = leftAndRightDir.first;
+    if (leftSideDir != MotorDir_t::INVALID_DIR)
+    {
+        frontLeftMotor->run(static_cast<uint8_t>(leftSideDir)); 
+        rearLeftMotor->run(static_cast<uint8_t>(leftSideDir)); 
+    }
 
-    MotorDir_t rightSideDir = Wire.read();
-    frontRightMotor->run(rightSideDir);
-    rearRightMotor->run(rightSideDir); 
+    MotorDir_t rightSideDir = leftAndRightDir.second;
+    if (rightSideDir != MotorDir_t::INVALID_DIR)
+    {
+        frontLeftMotor->run(static_cast<uint8_t>(rightSideDir)); 
+        rearLeftMotor->run(static_cast<uint8_t>(rightSideDir)); 
+    }
 }
 
-unsigned long readUltrasonicSensor()
+void handleUltrasonicRequest(const std::array<uint8_t,messageSize>& msg)
+{
+    static uint32_t ultrasonicTimestamp_ms = 0;
+    static uint32_t distance_cm = 0;
+
+    // Trigger read of ultrasonic sensor, ensure it's been at least 60
+    // ms since the last reading
+    if (uint32_t now_ms = millis(); now_ms - ultrasonicTimestamp_ms > 60)
+    {
+        // It's been at least 60 ms since the last reading, update the distance
+        distance_cm = readUltrasonicSensor();
+        ultrasonicTimestamp_ms = now_ms;
+    }
+
+    // Respond to request regardless if the value is new or old
+    auto outputAr = ultrasonicInfo::serializeDistance(distance_cm);
+    Serial.write(outputAr.data(), outputAr.size());
+}
+
+uint32_t readUltrasonicSensor()
 {
     // Pull trigger high for at lesat 10 microseconds, then low
     digitalWrite(UltrasonicTriggerPin, HIGH);
@@ -96,7 +166,7 @@ unsigned long readUltrasonicSensor()
     }
     
     // Get wall clock time in microseconds
-    unsigned long start_us = micros();
+    uint32_t start_us = micros();
 
     while (digitalRead(UltrasonicEchoPin) == 1)
     {
@@ -104,58 +174,10 @@ unsigned long readUltrasonicSensor()
     }
 
     // Find difference between start and now
-    unsigned long pulseLength_us = micros() - start_us;
+    uint32_t pulseLength_us = micros() - start_us;
 
     // Calculate the distance in centimeters
     // Assumes that the speed of sound when at sea level (340 m/s)
-    unsigned long dist_cm = pulseLength_us / 58;
-}
-
-void handleI2cRequest()
-{
-    static unsigned long ultrasonicTimestamp_ms = 0;
-    static unsigned long distance_cm = 0;
-
-    // Trigger read of ultrasonic sensor, ensure it's been at least 60
-    // ms since the last reading
-    if (unsigned long now_ms = millis(); now_ms - ultrasonicTimestamp_ms > 60)
-    {
-        // It's been at least 60 ms since the last reading, update the distance
-        distance_cm = readUltrasonicSensor();
-        ultrasonicTimestamp_ms = now_ms;
-    }
-
-    // Respond to request regardless if the value is new or old
-    Wire.write(static_cast<uint8_t>(MessageId_t::ULTRASONIC_INFO));
-    Wire.write(distance_cm);
-    
-}
-
-void handleI2cMessage(int nBytes)
-{
-    if (Wire.available() > sizeof(MessageId_t))
-    {
-        // First byte is always the ID
-        MessageId_t id = Wire.read();
-        switch(id)
-        {
-            case MessageId_t::SERVO_CONTROL:
-                handleServoControl();
-            break;
-
-            case MessageId_t::WHEEL_CONTROL:
-                handleWheelControl();
-            break;
-
-            default:
-                // Could not parse message
-            break;
-        }
-    }
-}
-
-void loop()
-{
-    // Only act when receiving a messsage
-    delay(100);
+    uint32_t dist_cm = pulseLength_us / 58;
+    return dist_cm;
 }

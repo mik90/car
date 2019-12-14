@@ -5,6 +5,7 @@
 #include <memory>
 #include <chrono>
 
+#include "../common/messages.hpp"
 
 namespace Car
 {
@@ -20,13 +21,29 @@ class Car
 {
     private:
     public:
+        Car();
+        void setSpeed(uint8_t speed);
         void moveCar(CarMovement_t carDir);
-        void pan(int angle);
-        void tilt(int angle);
+        void pan(uint8_t angle);
+        void tilt(uint8_t angle);
 };
 
+class MotorController
+{
+  public:
+    static void init(const std::string& serialDevice, int baudRate);
+    static void cleanUp();
+    static void setPanServoAngle(uint8_t angle);
+    static void setTiltServoAngle(uint8_t angle);
+    static void setSpeed(uint8_t speed);
+    static void setDirection(motorControllerApi::MotorDir_t leftSideDir,
+                             motorControllerApi::MotorDir_t rightSideDir);
+    static uint16_t getUltrasonicDistance();
+  private:
+    static int  m_serialFd;
+    static bool m_initialized;
+};
 
 }
-
 
 #endif
