@@ -41,40 +41,40 @@ void Car::moveCar(CarMovement_t carDir)
     switch(carDir)
     {
         case CarMovement_t::FORWARD:
-            leftSide  = MotorDir_t::FORWARD;
-            rightSide = MotorDir_t::FORWARD;
+            leftSide  = MotorDir_t::M_FORWARD;
+            rightSide = MotorDir_t::M_FORWARD;
             break;
         case CarMovement_t::FORWARD_LEFT:
-            leftSide  = MotorDir_t::RELEASE;
-            rightSide = MotorDir_t::FORWARD;
+            leftSide  = MotorDir_t::M_RELEASE;
+            rightSide = MotorDir_t::M_FORWARD;
             break;
         case CarMovement_t::FORWARD_RIGHT:
-            leftSide  = MotorDir_t::FORWARD;
-            rightSide = MotorDir_t::RELEASE;
+            leftSide  = MotorDir_t::M_FORWARD;
+            rightSide = MotorDir_t::M_RELEASE;
             break;
         case CarMovement_t::REVERSE:
-            leftSide  = MotorDir_t::REVERSE;
-            rightSide = MotorDir_t::REVERSE;
+            leftSide  = MotorDir_t::M_REVERSE;
+            rightSide = MotorDir_t::M_REVERSE;
             break;
         case CarMovement_t::REVERSE_LEFT:
-            leftSide  = MotorDir_t::RELEASE;
-            rightSide = MotorDir_t::REVERSE;
+            leftSide  = MotorDir_t::M_RELEASE;
+            rightSide = MotorDir_t::M_REVERSE;
             break;
         case CarMovement_t::REVERSE_RIGHT:
-            leftSide  = MotorDir_t::REVERSE;
-            rightSide = MotorDir_t::RELEASE;
+            leftSide  = MotorDir_t::M_REVERSE;
+            rightSide = MotorDir_t::M_RELEASE;
             break;
         case CarMovement_t::LEFT:
-            leftSide  = MotorDir_t::REVERSE;
-            rightSide = MotorDir_t::FORWARD;
+            leftSide  = MotorDir_t::M_REVERSE;
+            rightSide = MotorDir_t::M_FORWARD;
             break;
         case CarMovement_t::RIGHT:
-            leftSide  = MotorDir_t::FORWARD;
-            rightSide = MotorDir_t::REVERSE;
+            leftSide  = MotorDir_t::M_FORWARD;
+            rightSide = MotorDir_t::M_REVERSE;
             break;
         case CarMovement_t::STOP:
-            leftSide  = MotorDir_t::RELEASE;
-            rightSide = MotorDir_t::RELEASE;
+            leftSide  = MotorDir_t::M_RELEASE;
+            rightSide = MotorDir_t::M_RELEASE;
             break;
         default:
             std::cerr << "moveCar() Invalid car direction:" 
