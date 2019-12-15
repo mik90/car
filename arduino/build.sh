@@ -12,6 +12,7 @@ DIRECTORIES+="-tools $ARDUINO_INSTALL/tools "
 DIRECTORIES+="-libraries $LIBRARIES_DIR "
 # This is how to include messages.hpp
 DIRECTORIES+="-libraries $(pwd)/motorController/libraries "
+DIRECTORIES+="-build-path $(pwd)/motorController/build "
 
 BOARD="-fqbn arduino:avr:uno"
 
