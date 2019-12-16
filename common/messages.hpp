@@ -55,7 +55,7 @@ namespace servoControl
         outputBuf[3] = 0x00; // Padding
     }
     
-    inline uint8_t serializeTiltServoAngle(uint8_t tiltServoAngle, uint8_t* outputBuf)
+    inline void serializeTiltServoAngle(uint8_t tiltServoAngle, uint8_t* outputBuf)
     {
         // Range is 0-100
         tiltServoAngle = min(tiltServoAngle, 100_uint8_t);

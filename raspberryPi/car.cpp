@@ -24,7 +24,7 @@ using std::uint32_t;
 
 Car::Car()
 {
-    MotorController::init("/dev/ttyACM0", baudRate);
+    MotorController::init("/dev/ttyAMA0", baudRate);
     std::cout << "Motor controller initialized\n";
     this->setSpeed(100);
 }
@@ -125,24 +125,27 @@ void MotorController::setPanServoAngle(uint8_t angle)
 {
     if(!m_initialized)
         return;
-    auto outputAr = servoControl::serializePanServoAngle(angle);
-    write(m_serialFd, outputAr.data(), messageSize); 
+    uint8_t outputBuf[messageSize];
+    servoControl::serializePanServoAngle(angle, outputBuf);
+    write(m_serialFd, outputBuf, messageSize); 
 }
 
 void MotorController::setTiltServoAngle(uint8_t angle)
 {
     if(!m_initialized)
         return;
-    auto outputAr = servoControl::serializeTiltServoAngle(angle);
-    write(m_serialFd, outputAr.data(), messageSize); 
+    uint8_t outputBuf[messageSize];
+    servoControl::serializeTiltServoAngle(angle, outputBuf);
+    write(m_serialFd, outputBuf, messageSize); 
 }
 
 void MotorController::setSpeed(uint8_t speed)
 {
     if(!m_initialized)
         return;
-    auto outputAr = wheelControl::serializeWheelSpeed(speed);
-    write(m_serialFd, outputAr.data(), messageSize); 
+    uint8_t outputBuf[messageSize];
+    wheelControl::serializeWheelSpeed(speed, outputBuf);
+    write(m_serialFd, outputBuf, messageSize); 
 }
 
 void MotorController::setDirection(MotorDir_t leftSideDir, MotorDir_t rightSideDir)
@@ -150,8 +153,9 @@ void MotorController::setDirection(MotorDir_t leftSideDir, MotorDir_t rightSideD
     if(!m_initialized)
         return;
 
-    auto outputAr = wheelControl::serializeWheelDirs(leftSideDir, rightSideDir);
-    write(m_serialFd, outputAr.data(), messageSize); 
+    uint8_t outputBuf[messageSize];
+    wheelControl::serializeWheelDirs(leftSideDir, rightSideDir, outputBuf);
+    write(m_serialFd, outputBuf, messageSize); 
 }
 
 uint16_t MotorController::getUltrasonicDistance()
@@ -159,19 +163,20 @@ uint16_t MotorController::getUltrasonicDistance()
     if(!m_initialized)
         return 0;
     // Send any value to request input from the sensor
-    auto requestAr = ultrasonicInfo::serializeDistance(0);
-    write(m_serialFd, requestAr.data(), messageSize); 
+    uint8_t outputBuf[messageSize];
+    ultrasonicInfo::serializeDistance(0, outputBuf);
+    write(m_serialFd, outputBuf, messageSize); 
 
-    while(serialDataAvail(m_serialFd) < messageSize)
+    while(serialDataAvail(m_serialFd) < static_cast<int>(messageSize))
     {
         // Wait until the Arduino has responded
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     // Data should be available
-    std::array<uint8_t, messageSize> inputAr;
-    if (read(m_serialFd, inputAr.data(), messageSize) == 0)
-        return ultrasonicInfo::deserializeDistance(inputAr);
+    uint8_t inputBuf[messageSize];
+    if (read(m_serialFd, inputBuf, messageSize) == 0)
+        return ultrasonicInfo::deserializeDistance(inputBuf);
     else
         return 0; // Default to 0
 }

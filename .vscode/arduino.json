@@ -1,5 +1,5 @@
 {
-    "sketch": "arduino/motorController.ino",
+    "sketch": "arduino/motorController/motorController.ino",
     "board": "arduino:avr:uno",
     "port": "/dev/ttyACM0"
 }

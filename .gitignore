@@ -25,7 +25,8 @@ docs/latex
 *.pch
 
 # Compiled Dynamic libraries
-*.so
+# Just distribute wiringPi, it's just one lib
+#*.so
 *.dylib
 *.dll
 
