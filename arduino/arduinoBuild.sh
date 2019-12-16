@@ -36,7 +36,3 @@ SOURCES="-compile motorController/motorController.ino"
 # Build arduino from command line
 echo "arduino-builder -verbose $DIRECTORIES $BOARD $SOURCES"
 arduino-builder -verbose $DIRECTORIES $BOARD $SOURCES
-
-# For uploading manually:
-# avrdude -V -F -C /etc/avrdude.conf -p atmega328p -P /dev/ttyACM0 -c arduino -b 115200 -U flash:w:sketch.hex
-# avrdude -V -F -C /etc/avrdude.conf -p atmega328p -P /dev/ttyACM0 -c arduino -b 115200 -U flash:w:sketch.hex
