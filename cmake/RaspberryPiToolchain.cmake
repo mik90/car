@@ -6,7 +6,7 @@ set(CMAKE_CXX_COMPILER ${CMAKE_CURRENT_SOURCE_DIR}/extern/tools/arm-bcm2708/arm-
 
 set(CMAKE_FIND_ROOTH_PATH ${CMAKE_CURRENT_SOURCE_DIR}/extern/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/sysroot)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0 -DDEBUG" CACHE STRING "Debug C++ flags")
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0 -DDEBUG=YES" CACHE STRING "Debug C++ flags")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2" CACHE STRING "Release C++ flags")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
