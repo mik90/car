@@ -1,11 +1,19 @@
 #!/bin/bash
-# Copies all needed source files to the Pi
-# Really just excludes build stuff and git history
+# Copies binaries to the pi
 
-SOURCE=./
+SOURCE=$(pwd)
+if [ ! -f $SOURCE/arduino/build/motorController.ino.hex ]; then
+    echo "motorController.ino.hex was not built! Exiting..."
+    exit
+elif [ ! -f $SOURCE/build/bin/carController ]; then
+    echo "carController was not built! Exiting..."
+    exit
+fi
 
-PI_IP_ADDR=192.168.0.169
-REMOTE_CAR_DIR=/home/pi/Repos/car/
-DEST=pi@$PI_IP_ADDR:$REMOTE_CAR_DIR
+SOURCE_FILES="$SOURCE/arduino/build/motorController.ino.hex $SOURCE/build/bin/carController $SOURCE/arduino/arduinoUpload.sh"
 
-rsync -zavh --exclude 'arduino' --exclude 'build' --exclude '.vscode' --exclude '.git' $SOURCE $DEST
+DEST="pi@192.168.0.169:/home/pi/Repos/Car/"
+
+echo "Sending files with command:"
+echo "rsync -zavh $SOURCE_FILES $DEST"
+rsync -zavh $SOURCE_FILES $DEST

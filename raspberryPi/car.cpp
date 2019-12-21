@@ -31,6 +31,9 @@ Car::Car()
 
 void Car::setSpeed(uint8_t speed)
 {
+#ifdef DEBUG
+    std::cout << __PRETTY_FUNCTION__ <<" - About to set speed of:" << speed << "\n";
+#endif
     MotorController::setSpeed(speed);
 }
 
