@@ -32,11 +32,11 @@ Car::Car()
 void Car::setSpeed(uint8_t speed)
 {
 #ifdef DEBUG
-    std::cout << __PRETTY_FUNCTION__ <<" - About to set speed of:" << speed << "\n";
+    std::cout << __PRETTY_FUNCTION__ << " - About to set speed of:" << speed << "\n";
 #endif
     MotorController::setSpeed(speed);
 #ifdef DEBUG
-    std::cout << __PRETTY_FUNCTION__ <<" - Post MotorController::setSpeed\n";
+    std::cout << __PRETTY_FUNCTION__ << " - Post MotorController::setSpeed\n";
 #endif
 }
 
@@ -45,7 +45,7 @@ void Car::moveCar(CarMovement_t carDir)
     MotorDir_t leftSide, rightSide;
 
 #ifdef DEBUG
-    std::cout << __PRETTY_FUNCTION__ <<" - carDir:" << carDir << "\n";
+    std::cout << __PRETTY_FUNCTION__ << " - carDir:" << carDir << "\n";
 #endif
 
     switch(carDir)
@@ -93,7 +93,8 @@ void Car::moveCar(CarMovement_t carDir)
     }
 
 #ifdef DEBUG
-    std::cout << __PRETTY_FUNCTION__ <<" - Pre MotorController::setDirection(" << leftSide << "," << rightSide << ")\n";
+    std::cout << __PRETTY_FUNCTION__ << " - Pre MotorController::setDirection(" 
+              << static_cast<uint8_t>(leftSide) << "," << static_cast<uint8_t>(rightSide) << ")\n";
 #endif
     MotorController::setDirection(leftSide, rightSide);
 #ifdef DEBUG

@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 3.13)
-SET(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/cmake/RaspberryPiToolchain.cmake)
+if (NOT UNIT_TESTS)
+    # Cross compiling for target
+    set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/cmake/RaspberryPiToolchain.cmake)
+endif()
 project(Car VERSION 0.0.1
         DESCRIPTION "Raspberry-pi and Arduino powered toy car"
         LANGUAGES C CXX)
@@ -21,4 +24,12 @@ find_package(Threads REQUIRED)
 
 set(extern_DIR GLOBAL ${CMAKE_SOURCE_DIR}/extern)
 
-add_subdirectory(raspberryPi)
+
+if (NOT UNIT_TESTS)
+  add_subdirectory(raspberryPi)
+else()
+enable_testing()
+  include(GoogleTest)
+  add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
+  add_subdirectory(tests)
+endif()
