@@ -1,5 +1,6 @@
 # Car
 
+Might start calling it Soccc: System on a Chip Controlled Car
 I bought a Pi-controlled RC car only to find that it didn't work, might as well rewrite it.
 
 Original product code: https://github.com/UCTRONICS/UCTRONICS_Smart_Robot_Car_RaspberryPi

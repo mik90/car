@@ -2,7 +2,12 @@
 #define MESSAGES_HPP
 
 // This is the interface between Arduino's motorController and Rpi's carController
-// It needs to be able to be parsed by Arduino's compiler and GCC
+// It needs to be able to be parsed by Arduino's compiler setup and GCC
+
+// AVR is little endian and ARM's default endianness is also little endian.
+// ARM can switch between little and big endian, but for this purpose, I won't
+// convert anything to network-byte order, which is big endian, or a native-byte
+// order since they should both be little endian.
 
 #ifndef ARDUINO
 // For building with GCC, we need cstdint for uint_8
@@ -102,6 +107,7 @@ namespace wheelControl
     // ---
     inline uint8_t deserializeWheelSpeed(const uint8_t* msg)
     {
+        // Return the wheel speed
         return msg[1];
     }
 
