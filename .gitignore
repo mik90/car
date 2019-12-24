@@ -4,9 +4,6 @@ build/
 # Pictures from pi-cam
 rpiPics/
 
-# External git-submodules 
-extern/tools
-
 # Doxygen output
 docs/html
 docs/latex

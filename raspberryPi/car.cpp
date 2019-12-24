@@ -31,11 +31,11 @@ Car::Car()
 
 void Car::setSpeed(uint8_t speed)
 {
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ << " - About to set speed of:" << speed << "\n";
 #endif
     MotorController::setSpeed(speed);
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ << " - Post MotorController::setSpeed\n";
 #endif
 }
@@ -44,7 +44,7 @@ void Car::moveCar(CarMovement_t carDir)
 {
     MotorDir_t leftSide, rightSide;
 
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ << " - carDir:" << carDir << "\n";
 #endif
 
@@ -92,33 +92,33 @@ void Car::moveCar(CarMovement_t carDir)
             return;
     }
 
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ << " - Pre MotorController::setDirection(" 
               << static_cast<uint8_t>(leftSide) << "," << static_cast<uint8_t>(rightSide) << ")\n";
 #endif
     MotorController::setDirection(leftSide, rightSide);
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ <<" - Post MotorController::setDirection()\n";
 #endif
 }
 
 void Car::pan(uint8_t angle)
 {
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ <<" - Pre MotorController::setPanServoAngle(" << angle << ")\n";
 #endif
     MotorController::setPanServoAngle(angle);
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ <<" - Post MotorController::setPanServoAngle()\n";
 #endif
 }
 void Car::tilt(uint8_t angle)
 {
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ <<" - Pre MotorController::setTiltServoAngle(" << angle << ")\n";
 #endif
     MotorController::setTiltServoAngle(angle);
-#ifdef DEBUG
+#if DEBUG == YES
     std::cout << __PRETTY_FUNCTION__ <<" - Post MotorController::setTiltServoAngle()\n";
 #endif
 }

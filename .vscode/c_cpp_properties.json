@@ -13,11 +13,9 @@
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
-            "configurationProvider": "vector-of-bool.cmake-tools",
+            "configurationProvider": "",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
-            "forcedInclude": [
-                "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/cores/arduino/Arduino.h"
-            ]
+            "forcedInclude": []
         }
     ],
     "version": 4
