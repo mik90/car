@@ -40,8 +40,7 @@ class MotorController
                              motorControllerApi::MotorDir_t rightSideDir);
     static uint16_t getUltrasonicDistance();
   private:
-    static int  m_serialFd;
-    static bool m_initialized;
+    static int serialPortFd;
 };
 
 }

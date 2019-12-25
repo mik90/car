@@ -11,11 +11,7 @@
                 "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/**",
                 "${workspaceFolder}/extern/WiringPi/include"
             ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "configurationProvider": "",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
-            "forcedInclude": []
+            "configurationProvider": "vector-of-bool.cmake-tools"
         }
     ],
     "version": 4

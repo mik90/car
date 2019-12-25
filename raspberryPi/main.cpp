@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 
-#include "wiringPi.h"
-
 #include "car.hpp"
 
 
@@ -11,12 +9,10 @@ void runCliInput()
     using namespace Car;
     using namespace std::chrono_literals;
 
-    std::string input;
-    wiringPiSetup();
-
     Car::Car c;
     std::cout << "Starting CLI loop..." << std::endl;
 
+    std::string input;
     while (1)
     {
         std::cin >> input;
@@ -28,8 +24,7 @@ void runCliInput()
             c.moveCar(CarMovement_t::STOP);
             return;
         }
-
-        if (input == "pan")
+        else if (input == "pan")
         {
             // pan <target_value>
             std::cout << "panning..." << std::endl;
