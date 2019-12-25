@@ -39,16 +39,12 @@ void MotorController::init(const std::string& serialDevice, int baudRate)
                   << "Errno:" << std::strerror(errno) << "\n";
         std::exit(1);
     }
-    if (fcntl(MotorController::serialPortFd, F_SETFL, 0) == -1)
-    {
-        std::cerr << "ERROR: fcntl() returned -1\n"
-                  << "Errno:" << std::strerror(errno) << "\n";
-        std::exit(1);
-    }
 
+    std::cout << "Waiting for Arduino to restart..." << std::endl;
     // Adruino resets when the serial port is connected, so we have to
     // give it some time before sending commmands
     std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout << "Arduino should be ready" << std::endl;
 }
 
 void MotorController::cleanUp()

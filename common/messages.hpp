@@ -20,7 +20,7 @@ using std::max;
 namespace motorControllerApi
 {
 constexpr size_t messageSize = 4;
-constexpr uint8_t InvalidServoAngle = 101;
+constexpr uint8_t InvalidServoAngle = 255;
 constexpr uint8_t InvalidWheelSpeed = 255;
 constexpr uint16_t maxDistance_cm = 65535;
 constexpr uint32_t baudRate = 9600;
@@ -54,10 +54,10 @@ namespace servoControl
 
     inline void serializePanServoAngle(uint8_t panServoAngle, uint8_t* outputBuf)
     {
-        // Range is 0-100
-        panServoAngle = min(panServoAngle, 100_uint8_t);
-
         outputBuf[0] = id;
+        // Cap it at 200
+        if (panServoAngle > 200)
+            panServoAngle = 200;
         outputBuf[1] = panServoAngle;
         outputBuf[2] = InvalidServoAngle;
         outputBuf[3] = 0x00; // Padding
@@ -65,11 +65,11 @@ namespace servoControl
     
     inline void serializeTiltServoAngle(uint8_t tiltServoAngle, uint8_t* outputBuf)
     {
-        // Range is 0-100
-        tiltServoAngle = min(tiltServoAngle, 100_uint8_t);
-
         outputBuf[0] = id;
         outputBuf[1] = InvalidServoAngle;
+        // Cap it at 200
+        if (tiltServoAngle > 200)
+            tiltServoAngle = 200;
         outputBuf[2] = tiltServoAngle;
         outputBuf[3] = 0x00; // Padding
     }

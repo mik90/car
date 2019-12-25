@@ -15,6 +15,7 @@ Car::Car()
     MotorController::init("/dev/ttyACM0", baudRate);
     std::cout << "Motor controller initialized\n";
     std::cout << "Ensure that user is part of the dialout group\n";
+    this->moveCar(CarMovement_t::STOP);
     this->setSpeed(100);
 }
 

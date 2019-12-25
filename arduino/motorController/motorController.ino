@@ -36,8 +36,7 @@ void setup()
     tiltServo.attach(10); // D10
 
     Serial.begin(baudRate);
-    
-    
+
     frontLeftMotor->setSpeed(0);
     rearLeftMotor->setSpeed(0);
     frontRightMotor->setSpeed(0);
@@ -48,8 +47,10 @@ void setup()
     frontRightMotor->run(RELEASE); 
     rearRightMotor->run(RELEASE); 
 
+    // 100 is about centerline
     panServo.write(100);
-    tiltServo.write(100);
+    // 200 is straight up and down
+    tiltServo.write(200);
 }
 
 void serialEvent()
@@ -65,7 +66,6 @@ void serialEvent()
         case MessageId_t::SERVO_CONTROL:
             handleServoControl(inputBuf);
         break;
-
         case MessageId_t::WHEEL_CONTROL:
             handleWheelControl(inputBuf);
         break;
@@ -88,18 +88,11 @@ void handleServoControl(const uint8_t* msg)
 {
     uint8_t panServoAngle = servoControl::deserializePanServoAngle(msg);
     if (panServoAngle != InvalidServoAngle)
-    {
-        // Clamped from 0-100 (unsigned so always positive)
-        panServoAngle = max(100, panServoAngle);
         panServo.write(panServoAngle);
-    }
 
     uint8_t tiltServoAngle = servoControl::deserializeTiltServoAngle(msg);
     if (tiltServoAngle != InvalidServoAngle)
-    {
-        tiltServoAngle = max(100, tiltServoAngle);
         tiltServo.write(tiltServoAngle);
-    }
 }
 
 void handleWheelControl(const uint8_t* msg)
