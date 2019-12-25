@@ -1,18 +1,8 @@
 # Car
 
-Might start calling it Soccc: System on a Chip Controlled Car
 I bought a Pi-controlled RC car only to find that it didn't work, might as well rewrite it.
 
 Original product code: https://github.com/UCTRONICS/UCTRONICS_Smart_Robot_Car_RaspberryPi
-
-### Todo:
-1. Trigger motor controller from laptop with a serial connection
-2. Figure out how to connect the Arduino and Pi with I2C
-3. Test motor controller out with I2C connection and a messaging system
-4. Make the wiring all nice and pretty
-5. Figure out a clean way to attach the Pi, Arduino, and the power supply onto the car.
-At this point, the Pi should be able to control the motors via a messaging interface.
-No need for a CLI or whatever, it can be a simple test cycle in a test main().
 
 ### Later TODO: Test out OpenCV and see what data I can get from it
 - Figuring out distance and then using that and the ultrasonic sensor's distance could be a starting point.

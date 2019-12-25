@@ -6,7 +6,7 @@
 #define ARDUINO
 #endif
 
-#include <messages.hpp>
+#include "messages.hpp"
 
 Adafruit_MotorShield shield;
 Servo panServo;
@@ -34,52 +34,53 @@ void setup()
 
     panServo.attach(9);   // D9
     tiltServo.attach(10); // D10
-    
-    frontRightMotor->run(RELEASE);
-    frontLeftMotor->run(RELEASE); 
-    rearRightMotor->run(RELEASE); 
-    rearLeftMotor->run(RELEASE); 
 
     Serial.begin(baudRate);
-    while (!Serial)
-    {
-        // Wait for serial port to be available
-        delayMicroseconds(100);
-    }
+    
+    
+    frontLeftMotor->setSpeed(0);
+    rearLeftMotor->setSpeed(0);
+    frontRightMotor->setSpeed(0);
+    rearRightMotor->setSpeed(0);
+
+    frontLeftMotor->run(RELEASE); 
+    rearLeftMotor->run(RELEASE); 
+    frontRightMotor->run(RELEASE); 
+    rearRightMotor->run(RELEASE); 
+
+    panServo.write(100);
+    tiltServo.write(100);
 }
 
 void serialEvent()
 {
-    if (Serial.available() >= messageSize)
+    uint8_t inputBuf[messageSize];
+    if (Serial.readBytes(inputBuf, messageSize) != messageSize)
+        // Dropped some data, so ignore the message
+        return;
+    
+    MessageId_t id = static_cast<MessageId_t>(inputBuf[0]);
+    switch(id)
     {
-        uint8_t inputBuf[messageSize];
-        if (Serial.readBytes(inputBuf, messageSize) != messageSize)
-            // Dropped some data, so ignore the message
-            return;
+        case MessageId_t::SERVO_CONTROL:
+            handleServoControl(inputBuf);
+        break;
 
-        MessageId_t id = static_cast<MessageId_t>(inputBuf[0]);
-        switch(id)
-        {
-            case MessageId_t::SERVO_CONTROL:
-                handleServoControl(inputBuf);
-            break;
-
-            case MessageId_t::WHEEL_CONTROL:
-                handleWheelControl(inputBuf);
-            break;
-            case MessageId_t::ULTRASONIC_INFO:
-                handleUltrasonicRequest(inputBuf);
-            break;
-            default:
-                // Could not parse message
-            break;
-        }
+        case MessageId_t::WHEEL_CONTROL:
+            handleWheelControl(inputBuf);
+        break;
+        case MessageId_t::ULTRASONIC_INFO:
+            handleUltrasonicRequest(inputBuf);
+        break;
+        default:
+            // Could not parse message
+        break;
     }
 }
 
 void loop()
 {
-    // Only act during serial input
+    // Delay 100ms if we don't have serial input
     delay(100);
 }
 

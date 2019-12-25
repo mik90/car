@@ -39,10 +39,13 @@ enum class MessageId_t : uint8_t {SERVO_CONTROL   = 0,
                                   ULTRASONIC_INFO = 2};
 
 // Need the "M_" since macros will overwrite these otherwise
+// These values are defined in Adafruit_MotorShield.h, i just didn't
+// want to use more macros
 enum class MotorDir_t : uint8_t {M_INVALID_DIR = 0,
                                  M_FORWARD     = 1,
                                  M_REVERSE     = 2,
-                                 M_RELEASE     = 3};
+                                 M_BRAKE       = 3,
+                                 M_RELEASE     = 4};
 
 // Pi -> Arduino --------------------
 namespace servoControl

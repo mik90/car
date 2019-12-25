@@ -7,6 +7,9 @@
 
 #include "../common/messages.hpp"
 
+#ifndef DEBUG
+#define DEBUG YES
+#endif
 namespace Car
 {
 
