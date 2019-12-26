@@ -14,11 +14,11 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
-# Get external dependencies
-find_package(Threads REQUIRED)
-
 enable_testing()
 include(GoogleTest)
 add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 add_subdirectory(tests)
+
 add_subdirectory(raspberryPi)
+
+add_subdirectory(opencv)
