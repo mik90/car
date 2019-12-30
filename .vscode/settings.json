@@ -64,7 +64,9 @@
         "future": "cpp",
         "bitset": "cpp",
         "typeindex": "cpp",
-        "forward_list": "cpp"
+        "forward_list": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled",
     "C_Cpp.errorSquiggles": "Enabled"

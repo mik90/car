@@ -20,5 +20,3 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 add_subdirectory(tests)
 
 add_subdirectory(raspberryPi)
-
-add_subdirectory(opencv)
