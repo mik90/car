@@ -85,6 +85,11 @@ void detectAndDisplay(Mat frame)
     {
         Point center(faces[i].x + faces[i].width / 2,   // x
                      faces[i].y + faces[i].height / 2); // y
+
+        auto sz =  Size(faces[i].width / 2, faces[i].height / 2);
+        auto purple = Scalar(255, 0, 255);
+        // Create an ellipse around the face
+        ellipse(frame, center, sz, 0, 0, 360, purple, 4);
         Mat faceROI = frame_gray(faces[i]);
 
         // In each faces, detect the eyes
