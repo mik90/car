@@ -23,8 +23,8 @@ int main(int argc, const char** argv)
     parser.about("This program detects face/eyes in a video stream using cv::CascadeClassifier\n");
     parser.printMessage();
 
-    String face_cascade_name(samples::findFile(parser.get<String>("face_casecade")));
-    String eyes_cascade_name(samples::findFile(parser.get<String>("eyes_casecade")));
+    String face_cascade_name = samples::findFile(parser.get<String>("face_cascade"));
+    String eyes_cascade_name = samples::findFile(parser.get<String>("eyes_cascade"));
 
     // Load cascades from files
     if (!face_cascade.load(face_cascade_name))
@@ -32,6 +32,7 @@ int main(int argc, const char** argv)
         std::cerr << "ERROR: Could not load face cascade\n";
         return -1;
     }
+
     if (!eyes_cascade.load(eyes_cascade_name))
     {
         std::cerr << "ERROR: Could not load eyes cascade\n";
