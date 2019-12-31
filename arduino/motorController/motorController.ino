@@ -50,7 +50,9 @@ void setup()
     // 100 is about centerline
     panServo.write(100);
     // 200 is straight up and down
-    tiltServo.write(200);
+    // If it's aimed too far upwards, the lights in the ceiling mess with the
+    // camera's exposure settings
+    tiltServo.write(160);
 }
 
 void serialEvent()

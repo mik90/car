@@ -9,7 +9,7 @@ using namespace cv;
 namespace Car
 {
 
-FaceDetector::FaceDetector(const String& faceFilename, const String& eyesFilename)
+FaceDetector::FaceDetector(const String& faceFilename)
 {
     // Note: if these classifiers are too slow, try out the LBP classifiers
     // instead of the Haar classifiers
@@ -18,12 +18,6 @@ FaceDetector::FaceDetector(const String& faceFilename, const String& eyesFilenam
     if (!m_faceCascade.load(samples::findFile(faceFilename)))
     {
         std::cerr << "ERROR: Could not load face cascade\n";
-        std::exit(1);
-    }
-
-    if (!m_eyeCascade.load(samples::findFile(eyesFilename)))
-    {
-        std::cerr << "ERROR: Could not load eye cascade\n";
         std::exit(1);
     }
 
@@ -56,30 +50,10 @@ bool FaceDetector::areFacesAndEyesVisible()
     m_faceCascade.detectMultiScale(frame_gray, faces);
 
     if (!faces.empty())
-    {
         // We've detected at least once face
-
-        for(size_t i = 0; i < faces.size(); ++i)
-        {
-            // For each face, figure out if there are eyes
-            // It's harder to get a false positive if there are
-            // eyes along with the face
-
-            // ROI - Region Of Interest
-            Mat faceROI = frame_gray(faces[i]);
-
-            // In each faces, detect the eyes
-            std::vector<Rect> eyes;
-            m_eyeCascade.detectMultiScale(faceROI, eyes);
-
-            if (!eyes.empty())
-                // I could specify the amount of eyes, but glasses
-                // and hair can obscure them so I'll just let it be
-                return true;
-        }
-    }
-
-    return false;
+        return true;
+    else
+        return false;
 }
 
 }

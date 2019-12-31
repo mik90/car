@@ -10,8 +10,7 @@ namespace Car
 {
 using namespace motorControllerApi;
 
-Car::Car() : m_faceDetector(cv::String("haarcascade_eye_tree_eyeglasses.xml"),
-                            cv::String("haarcascade_frontalface_alt.xml"))
+Car::Car() : m_faceDetector(cv::String("lbpcascade_frontalface_improved.xml"))
 {
     ArduinoInterface::init("/dev/ttyACM0", baudRate);
     std::cout << "Motor controller initialized\n";

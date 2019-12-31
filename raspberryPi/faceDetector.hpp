@@ -13,13 +13,11 @@ class FaceDetector
 {
     public:
         // Loads the classifier data
-        FaceDetector(const cv::String& faceFilename,
-                     const cv::String& eyesFilename);
+        FaceDetector(const cv::String& faceFilename);
         // Checks the capture device to see if face/eyes are visible
         bool areFacesAndEyesVisible();
     private:
         cv::CascadeClassifier m_faceCascade;
-        cv::CascadeClassifier m_eyeCascade;
         cv::VideoCapture      m_captureDevice;
 };
 

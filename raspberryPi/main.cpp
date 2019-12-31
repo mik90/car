@@ -23,8 +23,6 @@ void runFaceDetectorLoop()
             std::this_thread::sleep_for(1s);
             c.moveCar(CarMovement_t::STOP);
         }
-
-        std::this_thread::sleep_for(2s);
     }
 }
 
