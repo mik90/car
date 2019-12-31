@@ -85,7 +85,6 @@ void ArduinoInterface::setSpeed(uint8_t speed)
 
 void ArduinoInterface::setDirection(MotorDir_t leftSideDir, MotorDir_t rightSideDir)
 {
-    std::cout << "ArduinoInterface::setDirection(leftSideDir=" << leftSideDir << ", rightSideDir=" << rightSideDir<< ")\n";
     uint8_t outputBuf[messageSize];
     wheelControl::serializeWheelDirs(leftSideDir, rightSideDir, outputBuf);
     ssize_t nBytes = write(ArduinoInterface::serialPortFd, outputBuf, messageSize); 

@@ -1,50 +1,38 @@
 # Car
 
-I bought a Pi-controlled RC car only to find that it didn't work, might as well rewrite it.
+I bought a Pi-controlled RC car only to find that it didn't work, might as well rewrite it and play around.
 
-Original product code: https://github.com/UCTRONICS/UCTRONICS_Smart_Robot_Car_RaspberryPi
+Original product: https://github.com/UCTRONICS/UCTRONICS_Smart_Robot_Car_RaspberryPi
 
-### Later TODO: Test out OpenCV and see what data I can get from it
-- Figuring out distance and then using that and the ultrasonic sensor's distance could be a starting point.
-- Recognizing certain objects/images could be another task.
-- Generating an internal representation of the area (mapping) would be cool
+After re-writing it multiple times and adding an Adruino board, I have it (somewhat) working.
 
+Its main feature is that it starts moving forward once it sees a face. Face detection is done using OpenCV
+with a LBP Cascade classifier. The camera is the Raspberry Pi Camera attachment which is plugged-in by a flat cable.
+The motor control is done on a Arduino UNO which has a Motor Shield V2 from
+Adafruit. Communication between the two is done by a USB-to-serial cable that plugs into the Pi's usb slot and
+connects to the Arduino's serial port.
 
-#### New plan: 
-Arduino UNO with the Adafruit motor shield V2 can run the periphial controls.
-This includes:
-* Ultrasonic sensor
-* All four wheel motors
-* Pan and tilt servos
+There's still plenty of issues to be ironed out but I just want to put this aside for now as I've spent way too much
+time playing around with it.
+* I think it's a bit too heavy now and doesn't exactly move very well. 
+* The left-side motors have recently stopped working and I haven't checked if it's a software or hardware issue.
+* I could iron-out the serial interface and make it cleaner and less buggy
 
-Raspberry Pi will take pictures and somehow interpret information from them with OpenCV.
-Unsure if this will be done on the Pi itself or farmed out to another computer via Wifi.
+![Picture of the car](https://github.com/mik90/car/CarPic.jpg)
 
-The two boards can communicate either via serial or I2C, I haven't decided yet. The Pi will
-have to be the one sending commands to the Arduino for movement and will be reading in data
-from the ultrasonic sensor.
 -----------------------------------
 
 Raspberry pi dependencies:
-* WiringPi: https://github.com/WiringPi/WiringPi
-
-* ws2811 library: https://github.com/jgarff/rpi_ws281x
-
-I should probably use some of CMake's dependency management for these but
-it's just easier to grab the built libs from the Pi. The ws2811 lib was built
-from source on the pi.
-
-
-OpenCV may be a dependency but I have not made use of it yet.
-
------------------------------------
+* OpenCV 4.2.0, fork of the rasperrypi/tools repo: https://github.com/mik90/tools
+    - I built this from source since the version in the Raspbian Buster repos is only 3.2.0. It's a bit
+      more annoying to add and certainly isn't going to be as stable as 3.2.0 but cross-compiling it with
+      CMake isn't all that hard. On the pi, I just had the libraries in a folder and appended to the LD_LIBRARY_PATH
+      as a temporary way to get it working.
 
 Arduino dependencies:
 * Adafruit Arduino Motor shield v2 library: https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
 
 * Arduino servo library: https://github.com/arduino-libraries/Servo
 
-The easiest way for me to deal with compilation is to use the Arduino Extension for VS-Code which is being
-maintained by Microsoft. I could also just use the Arduino IDE itself but that's a bit more annoying. As for
-managing these Arduino dependencies, I'd rather just let the extension run all of the dependency management
-and build management.
+The easiest way for me to deal with compilation was to use the Arduino Extension for VS-Code which is being
+maintained by Microsoft.
