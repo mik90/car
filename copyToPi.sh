@@ -15,9 +15,19 @@ SOURCE_FILES+="$SOURCE/build/raspberryPi/carController "
 SOURCE_FILES+="$SOURCE/arduino/arduinoUpload.sh "
 SOURCE_FILES+="$SOURCE/raspberryPi/haarcascade_eye_tree_eyeglasses.xml "
 SOURCE_FILES+="$SOURCE/raspberryPi/haarcascade_frontalface_alt.xml "
+SOURCE_FILES+="$SOURCE/raspberryPi/lbpcascade_frontalface_improved.xml "
 
 DEST="pi@192.168.0.169:/home/pi/Repos/Car/"
 
 echo "Sending files with command:"
+echo "rsync -zavh $SOURCE_FILES $DEST"
+rsync -zavh $SOURCE_FILES $DEST
+
+
+echo "--------------------------------"
+SOURCE_FILES="$SOURCE/raspberryPi/cameraTest/startTest.sh "
+SOURCE_FILES+="$SOURCE/raspberryPi/cameraTest/cameraTest.cpp "
+SOURCE_FILES+="$SOURCE/raspberryPi/cameraTest/CMakeLists.txt "
+DEST="pi@192.168.0.169:/home/pi/Repos/Car/test"
 echo "rsync -zavh $SOURCE_FILES $DEST"
 rsync -zavh $SOURCE_FILES $DEST
