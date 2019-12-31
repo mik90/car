@@ -1,6 +1,3 @@
-#include "opencv2/objdetect.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/videoio.hpp"
 #include <iostream>
 
 #include "faceDetector.hpp"
@@ -36,6 +33,8 @@ FaceDetector::FaceDetector(const String& faceFilename, const String& eyesFilenam
         std::cerr << "ERROR: Could not open video capture\n";
         std::exit(1);
     }
+
+    std::cout << "Initialized FaceDetector\n";
 }
 
 

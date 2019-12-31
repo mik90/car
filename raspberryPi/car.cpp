@@ -10,18 +10,24 @@ namespace Car
 {
 using namespace motorControllerApi;
 
-Car::Car()
+Car::Car() : m_faceDetector(cv::String("haarcascade_eye_tree_eyeglasses.xml"),
+                            cv::String("haarcascade_frontalface_alt.xml"))
 {
-    MotorController::init("/dev/ttyACM0", baudRate);
+    ArduinoInterface::init("/dev/ttyACM0", baudRate);
     std::cout << "Motor controller initialized\n";
     std::cout << "Ensure that user is part of the dialout group\n";
+    this->setSpeed(0);
     this->moveCar(CarMovement_t::STOP);
-    this->setSpeed(100);
+}
+
+FaceDetector& Car::getFaceDetector()
+{
+    return m_faceDetector;
 }
 
 void Car::setSpeed(std::uint8_t speed)
 {
-    MotorController::setSpeed(speed);
+    ArduinoInterface::setSpeed(speed);
 }
 
 void Car::moveCar(CarMovement_t carDir)
@@ -74,16 +80,17 @@ void Car::moveCar(CarMovement_t carDir)
             return;
     }
 
-    MotorController::setDirection(leftSide, rightSide);
+    std::cout << "moveCar(" << carDir << ")\n";
+    ArduinoInterface::setDirection(leftSide, rightSide);
 }
 
 void Car::pan(std::uint8_t angle)
 {
-    MotorController::setPanServoAngle(angle);
+    ArduinoInterface::setPanServoAngle(angle);
 }
 void Car::tilt(std::uint8_t angle)
 {
-    MotorController::setTiltServoAngle(angle);
+    ArduinoInterface::setTiltServoAngle(angle);
 }
 
 std::ostream& operator<<(std::ostream& out, CarMovement_t dir)

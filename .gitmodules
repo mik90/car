@@ -3,4 +3,4 @@
 	url = git@github.com:google/googletest.git
 [submodule "extern/tools"]
 	path = extern/tools
-	url = git@github.com:raspberrypi/tools.git
+	url = git@github.com:mik90/tools.git

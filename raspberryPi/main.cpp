@@ -1,10 +1,41 @@
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include "car.hpp"
 
 
-void runCliInput()
+void runFaceDetectorLoop()
+{
+    using namespace Car;
+    using namespace std::chrono_literals;
+
+    Car::Car c;
+    std::cout << "Starting face detector loop..." << std::endl;
+
+    while(true)
+    {
+        if (c.getFaceDetector().areFacesAndEyesVisible() == true)
+        {
+            std::cout << "I saw a face!" << std::endl;
+            c.setSpeed(50);
+            c.moveCar(CarMovement_t::FORWARD);
+            std::this_thread::sleep_for(1s);
+            c.moveCar(CarMovement_t::STOP);
+        }
+
+        std::this_thread::sleep_for(2s);
+    }
+}
+
+int main(int argc, char** argv)
+{
+    runFaceDetectorLoop();
+    return 0;
+}
+
+// Unused
+void runCliLoop()
 {
     using namespace Car;
     using namespace std::chrono_literals;
@@ -13,7 +44,7 @@ void runCliInput()
     std::cout << "Starting CLI loop..." << std::endl;
 
     std::string input;
-    while (1)
+    while (true)
     {
         std::cin >> input;
 
@@ -84,10 +115,4 @@ void runCliInput()
 
         // Parse stream from stdin again
     }
-}
-
-int main(int argc, char** argv)
-{
-    runCliInput();
-    return 0;
 }

@@ -37,15 +37,15 @@ void setup()
 
     Serial.begin(baudRate);
 
-    frontLeftMotor->setSpeed(0);
-    rearLeftMotor->setSpeed(0);
-    frontRightMotor->setSpeed(0);
-    rearRightMotor->setSpeed(0);
-
     frontLeftMotor->run(RELEASE); 
     rearLeftMotor->run(RELEASE); 
     frontRightMotor->run(RELEASE); 
     rearRightMotor->run(RELEASE); 
+
+    frontLeftMotor->setSpeed(0);
+    rearLeftMotor->setSpeed(0);
+    frontRightMotor->setSpeed(0);
+    rearRightMotor->setSpeed(0);
 
     // 100 is about centerline
     panServo.write(100);

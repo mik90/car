@@ -5,6 +5,7 @@
 #include <memory>
 #include <chrono>
 
+#include "faceDetector.hpp"
 #include "../common/messages.hpp"
 
 #ifndef DEBUG
@@ -23,15 +24,17 @@ std::ostream& operator<<(std::ostream& out, CarMovement_t dir);
 class Car
 {
     private:
+      FaceDetector m_faceDetector;
     public:
-        Car();
-        void setSpeed(uint8_t speed);
-        void moveCar(CarMovement_t carDir);
-        void pan(uint8_t angle);
-        void tilt(uint8_t angle);
+      Car();
+      void setSpeed(uint8_t speed);
+      void moveCar(CarMovement_t carDir);
+      void pan(uint8_t angle);
+      void tilt(uint8_t angle);
+      FaceDetector& getFaceDetector();
 };
 
-class MotorController
+class ArduinoInterface
 {
   public:
     static void init(const std::string& serialDevice, int baudRate);

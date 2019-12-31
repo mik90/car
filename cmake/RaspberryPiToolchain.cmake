@@ -2,6 +2,7 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_SYSTEM_Version 1)
 
+# This only works as a full path sadly
 set(tools /home/mike/Repos/Car/extern/tools)
 
 set(CMAKE_SYSROOT ${tools}/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot)
@@ -13,3 +14,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0 -DDEBUG=YES" CACHE STRING "Debug C++ flags")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2" CACHE STRING "Release C++ flags")

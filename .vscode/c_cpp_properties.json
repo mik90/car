@@ -3,6 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
+                "/home/mike/Repos/Car/extern/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/include/opencv4/**",
                 "/home/mike/Arduino/libraries/ArduinoJson/src",
                 "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/libraries/Wire/src",
                 "/home/mike/Arduino/libraries/Servo/src",
