@@ -5,13 +5,17 @@ SOURCE=$(pwd)
 if [ ! -f $SOURCE/arduino/build/motorController.ino.hex ]; then
     echo "motorController.ino.hex was not built! Exiting..."
     exit
-elif [ ! -f $SOURCE/build/raspberryPi/carController ]; then
-    echo "carController was not built! Exiting..."
+elif [ ! -f $SOURCE/build/raspberryPi/cliCarController ]; then
+    echo "cliCarController was not built! Exiting..."
+    exit
+elif [ ! -f $SOURCE/build/raspberryPi/faceCarController ]; then
+    echo "faceCarController was not built! Exiting..."
     exit
 fi
 
 SOURCE_FILES="$SOURCE/arduino/build/motorController.ino.hex "
-SOURCE_FILES+="$SOURCE/build/raspberryPi/carController "
+SOURCE_FILES+="$SOURCE/build/raspberryPi/cliCarController "
+SOURCE_FILES+="$SOURCE/build/raspberryPi/faceCarController "
 SOURCE_FILES+="$SOURCE/arduino/arduinoUpload.sh "
 SOURCE_FILES+="$SOURCE/raspberryPi/lbpcascade_frontalface_improved.xml "
 

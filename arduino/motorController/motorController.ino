@@ -116,14 +116,10 @@ void handleWheelControl(const uint8_t* msg)
 
     wheelControl::deserializeWheelDirs(msg, &leftSideDir, &rightSideDir);
     
-    if (leftSideDir != MotorDir_t::M_INVALID_DIR)
+    if (leftSideDir != MotorDir_t::M_INVALID_DIR && rightSideDir != MotorDir_t::M_INVALID_DIR)
     {
         frontLeftMotor->run(static_cast<uint8_t>(leftSideDir)); 
         rearLeftMotor->run(static_cast<uint8_t>(leftSideDir)); 
-    }
-
-    if (rightSideDir != MotorDir_t::M_INVALID_DIR)
-    {
         frontLeftMotor->run(static_cast<uint8_t>(rightSideDir)); 
         rearLeftMotor->run(static_cast<uint8_t>(rightSideDir)); 
     }

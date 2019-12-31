@@ -4,35 +4,6 @@
 
 #include "car.hpp"
 
-
-void runFaceDetectorLoop()
-{
-    using namespace Car;
-    using namespace std::chrono_literals;
-
-    Car::Car c;
-    std::cout << "Starting face detector loop..." << std::endl;
-
-    while(true)
-    {
-        if (c.getFaceDetector().areFacesAndEyesVisible() == true)
-        {
-            std::cout << "I saw a face!" << std::endl;
-            c.setSpeed(50);
-            c.moveCar(CarMovement_t::FORWARD);
-            std::this_thread::sleep_for(1s);
-            c.moveCar(CarMovement_t::STOP);
-        }
-    }
-}
-
-int main(int argc, char** argv)
-{
-    runFaceDetectorLoop();
-    return 0;
-}
-
-// Unused
 void runCliLoop()
 {
     using namespace Car;
@@ -53,6 +24,17 @@ void runCliLoop()
             c.moveCar(CarMovement_t::STOP);
             return;
         }
+        else if (input == "speed")
+        {
+            std::cout << "changing speed..." << std::endl;
+            std::cin >> input;
+            std::string::size_type strSize{0};
+            uint8_t value = std::stoi(input, &strSize);
+            if (strSize > 0)
+                c.setSpeed(value);
+            else
+                std::cerr << "Could not parse into unsigned int:" << input << std::endl;
+        }
         else if (input == "pan")
         {
             // pan <target_value>
@@ -60,7 +42,7 @@ void runCliLoop()
             std::cin >> input;
             std::string::size_type strSize{0};
             uint8_t value = std::stoi(input, &strSize);
-            if  (strSize > 0)
+            if (strSize > 0)
                 c.pan(value);
             else
                 std::cerr << "Could not parse into unsigned int:" << input << std::endl;
@@ -98,7 +80,7 @@ void runCliLoop()
             std::cout << "Reverse" << std::endl;
             c.moveCar(CarMovement_t::REVERSE);
         }
-        else if (input == "r")
+        else if (input == "stop")
         {
             std::cout << "Stop" << std::endl;
             c.moveCar(CarMovement_t::STOP);
@@ -113,4 +95,10 @@ void runCliLoop()
 
         // Parse stream from stdin again
     }
+}
+
+int main(int argc, char** argv)
+{
+    runCliLoop();
+    return 0;
 }

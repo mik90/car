@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<!-- This file describes the calibration of the raspberry pi camera which helps mitigate distortion.
+<!-- Currently unused
+     This file describes the calibration of the raspberry pi camera which helps mitigate distortion.
      Link to tutorial: https://docs.opencv.org/master/d4/d94/tutorial_camera_calibration.html -->
 <calibration_time>"Sat 28 Dec 2019 02:38:30 PM EST"</calibration_time>
 <nr_of_frames>8</nr_of_frames>
