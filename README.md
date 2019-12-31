@@ -18,7 +18,7 @@ time playing around with it.
 * The left-side motors have recently stopped working and I haven't checked if it's a software or hardware issue.
 * I could iron-out the serial interface and make it cleaner and less buggy
 
-![Picture of the car](https://github.com/mik90/car/CarPic.jpg)
+![Picture of the car](CarPic.jpg)
 
 -----------------------------------
 
