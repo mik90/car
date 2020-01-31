@@ -2,8 +2,7 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_SYSTEM_Version 1)
 
-# This only works as a full path sadly
-set(tools /home/mike/Repos/Car/extern/tools)
+set(tools /home/mike/Development/Car/extern/tools)
 
 set(CMAKE_SYSROOT ${tools}/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot)
 
