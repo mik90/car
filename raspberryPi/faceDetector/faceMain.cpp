@@ -2,7 +2,7 @@
 #include <string>
 #include <thread>
 
-#include "car.hpp"
+#include "../car.hpp"
 
 
 void runFaceDetectorLoop()

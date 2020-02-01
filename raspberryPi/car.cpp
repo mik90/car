@@ -8,9 +8,12 @@
 
 namespace Car
 {
-using namespace motorControllerApi;
+using namespace msg;
 
-Car::Car() : m_faceDetector(cv::String("lbpcascade_frontalface_improved.xml"))
+Car::Car()
+#ifdef USE_FACE_DETECTION
+             : m_faceDetector(cv::String("lbpcascade_frontalface_improved.xml"))
+#endif
 {
     ArduinoInterface::init("/dev/ttyACM0", baudRate);
     std::cout << "Motor controller initialized\n";
@@ -19,10 +22,12 @@ Car::Car() : m_faceDetector(cv::String("lbpcascade_frontalface_improved.xml"))
     this->moveCar(CarMovement_t::STOP);
 }
 
+#ifdef USE_FACE_DETETCTION
 FaceDetector& Car::getFaceDetector()
 {
     return m_faceDetector;
 }
+#endif
 
 void Car::setSpeed(std::uint8_t speed)
 {
@@ -31,6 +36,7 @@ void Car::setSpeed(std::uint8_t speed)
 
 void Car::moveCar(CarMovement_t carDir)
 {
+    using namespace msg;
     MotorDir_t leftSide  = MotorDir_t::M_INVALID_DIR;
     MotorDir_t rightSide = MotorDir_t::M_INVALID_DIR;
 

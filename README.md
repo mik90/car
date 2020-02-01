@@ -33,6 +33,3 @@ Arduino dependencies:
 * Adafruit Arduino Motor shield v2 library: https://github.com/adafruit/Adafruit_Motor_Shield_V2_Library
 
 * Arduino servo library: https://github.com/arduino-libraries/Servo
-
-The easiest way for me to deal with compilation was to use the Arduino Extension for VS-Code which is being
-maintained by Microsoft.

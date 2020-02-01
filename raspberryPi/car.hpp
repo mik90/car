@@ -5,12 +5,11 @@
 #include <memory>
 #include <chrono>
 
+#ifdef USE_FACE_DETECTION
 #include "faceDetector.hpp"
+#endif
 #include "../common/messages.hpp"
 
-#ifndef DEBUG
-#define DEBUG YES
-#endif
 namespace Car
 {
 
@@ -24,14 +23,18 @@ std::ostream& operator<<(std::ostream& out, CarMovement_t dir);
 class Car
 {
     private:
+#ifdef USE_FACE_DETECTION
       FaceDetector m_faceDetector;
+#endif
     public:
       Car();
       void setSpeed(uint8_t speed);
       void moveCar(CarMovement_t carDir);
       void pan(uint8_t angle);
       void tilt(uint8_t angle);
+#ifdef USE_FACE_DETECTION
       FaceDetector& getFaceDetector();
+#endif
 };
 
 class ArduinoInterface
@@ -42,8 +45,8 @@ class ArduinoInterface
     static void setPanServoAngle(uint8_t angle);
     static void setTiltServoAngle(uint8_t angle);
     static void setSpeed(uint8_t speed);
-    static void setDirection(motorControllerApi::MotorDir_t leftSideDir,
-                             motorControllerApi::MotorDir_t rightSideDir);
+    static void setDirection(msg::MotorDir_t leftSideDir,
+                             msg::MotorDir_t rightSideDir);
     static uint16_t getUltrasonicDistance();
   private:
     static int serialPortFd;

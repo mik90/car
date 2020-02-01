@@ -17,7 +17,7 @@ namespace Car
 // Initialize the private static member variables
 int ArduinoInterface::serialPortFd = -1;
 
-using namespace motorControllerApi;
+using namespace msg;
 
 std::ostream& operator<<(std::ostream& out, MotorDir_t dir);
 
@@ -57,7 +57,7 @@ void ArduinoInterface::cleanUp()
 void ArduinoInterface::setPanServoAngle(uint8_t angle)
 {
     uint8_t outputBuf[messageSize];
-    servoControl::serializePanServoAngle(angle, outputBuf);
+    serializePanServoAngle(angle, outputBuf);
     ssize_t nBytes = write(ArduinoInterface::serialPortFd, outputBuf, messageSize); 
     if (nBytes != messageSize)
         handleMotorControllerError(__PRETTY_FUNCTION__, "write()", nBytes);
@@ -66,7 +66,7 @@ void ArduinoInterface::setPanServoAngle(uint8_t angle)
 void ArduinoInterface::setTiltServoAngle(uint8_t angle)
 {
     uint8_t outputBuf[messageSize];
-    servoControl::serializeTiltServoAngle(angle, outputBuf);
+    serializeTiltServoAngle(angle, outputBuf);
     ssize_t nBytes = write(ArduinoInterface::serialPortFd, outputBuf, messageSize); 
 
     if (nBytes != messageSize)
@@ -76,17 +76,17 @@ void ArduinoInterface::setTiltServoAngle(uint8_t angle)
 void ArduinoInterface::setSpeed(uint8_t speed)
 {
     uint8_t outputBuf[messageSize];
-    wheelControl::serializeWheelSpeed(speed, outputBuf);
+    serializeWheelSpeed(speed, outputBuf);
     ssize_t nBytes = write(ArduinoInterface::serialPortFd, outputBuf, messageSize); 
     
     if (nBytes != messageSize)
         handleMotorControllerError(__PRETTY_FUNCTION__, "write()", nBytes);
 }
 
-void ArduinoInterface::setDirection(MotorDir_t leftSideDir, MotorDir_t rightSideDir)
+void ArduinoInterface::setDirection(msg::MotorDir_t leftSideDir, msg::MotorDir_t rightSideDir)
 {
     uint8_t outputBuf[messageSize];
-    wheelControl::serializeWheelDirs(leftSideDir, rightSideDir, outputBuf);
+    serializeWheelDirs(leftSideDir, rightSideDir, outputBuf);
     ssize_t nBytes = write(ArduinoInterface::serialPortFd, outputBuf, messageSize); 
     
     if (nBytes != messageSize)
@@ -97,7 +97,7 @@ uint16_t ArduinoInterface::getUltrasonicDistance()
 {
     // Send any value to request input from the sensor
     uint8_t outputBuf[messageSize];
-    ultrasonicInfo::serializeDistance(0, outputBuf);
+    serializeDistance(0, outputBuf);
     ssize_t nBytesWritten = write(ArduinoInterface::serialPortFd, outputBuf, messageSize); 
     
     if (nBytesWritten != messageSize)
@@ -123,7 +123,7 @@ uint16_t ArduinoInterface::getUltrasonicDistance()
     uint8_t inputBuf[messageSize];
     ssize_t nBytesRead = read(ArduinoInterface::serialPortFd, inputBuf, messageSize);
     if (nBytesRead == messageSize)
-        return ultrasonicInfo::deserializeDistance(inputBuf);
+        return deserializeDistance(inputBuf);
     else
         handleMotorControllerError(__PRETTY_FUNCTION__, "read()", nBytesRead);
 

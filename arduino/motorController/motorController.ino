@@ -3,9 +3,8 @@
 #include <Adafruit_MotorShield.h>
 
 #ifndef ARDUINO
-#define ARDUINO
+#define ARDUINO // Used in messages.hpp
 #endif
-
 #include "messages.hpp"
 
 Adafruit_MotorShield shield;
@@ -23,7 +22,7 @@ void handleServoControl(const uint8_t* msg);
 void handleServoRequest(const uint8_t* msg);
 uint32_t readUltrasonicSensor();
 
-using namespace motorControllerApi;
+using namespace msg;
 
 void setup()
 {
@@ -62,7 +61,7 @@ void serialEvent()
         // Dropped some data, so ignore the message
         return;
     
-    MessageId_t id = static_cast<MessageId_t>(inputBuf[0]);
+    const MessageId_t id = getIdFromBuffer(inputBuf);
     switch(id)
     {
         case MessageId_t::SERVO_CONTROL:
@@ -88,18 +87,18 @@ void loop()
 
 void handleServoControl(const uint8_t* msg)
 {
-    uint8_t panServoAngle = servoControl::deserializePanServoAngle(msg);
+    const uint8_t panServoAngle = msg::deserializePanServoAngle(msg);
     if (panServoAngle != InvalidServoAngle)
         panServo.write(panServoAngle);
 
-    uint8_t tiltServoAngle = servoControl::deserializeTiltServoAngle(msg);
+    const uint8_t tiltServoAngle = msg::deserializeTiltServoAngle(msg);
     if (tiltServoAngle != InvalidServoAngle)
         tiltServo.write(tiltServoAngle);
 }
 
 void handleWheelControl(const uint8_t* msg)
 {
-    uint8_t wheelSpeed = wheelControl::deserializeWheelSpeed(msg);
+    uint8_t wheelSpeed = msg::deserializeWheelSpeed(msg);
     if (wheelSpeed != InvalidWheelSpeed)
     {
         // Adjust the PWM speed
@@ -114,7 +113,7 @@ void handleWheelControl(const uint8_t* msg)
     MotorDir_t leftSideDir  = MotorDir_t::M_INVALID_DIR;
     MotorDir_t rightSideDir = MotorDir_t::M_INVALID_DIR;
 
-    wheelControl::deserializeWheelDirs(msg, &leftSideDir, &rightSideDir);
+    msg::deserializeWheelDirs(msg, &leftSideDir, &rightSideDir);
     
     if (leftSideDir != MotorDir_t::M_INVALID_DIR && rightSideDir != MotorDir_t::M_INVALID_DIR)
     {
@@ -132,7 +131,7 @@ void handleUltrasonicRequest(const uint8_t* msg)
 
     // Trigger read of ultrasonic sensor, ensure it's been at least 60
     // ms since the last reading
-    if (uint32_t now_ms = millis(); now_ms - ultrasonicTimestamp_ms > 60)
+    if (const uint32_t now_ms = millis(); now_ms - ultrasonicTimestamp_ms > 60)
     {
         // It's been at least 60 ms since the last reading, update the distance
         distance_cm = readUltrasonicSensor();
@@ -140,7 +139,7 @@ void handleUltrasonicRequest(const uint8_t* msg)
     }
 
     // Respond to request regardless if the value is new or old
-    ultrasonicInfo::serializeDistance(distance_cm, msg);
+    msg::serializeDistance(distance_cm, msg);
     Serial.write(msg, messageSize);
 }
 
@@ -157,7 +156,7 @@ uint32_t readUltrasonicSensor()
     }
     
     // Get wall clock time in microseconds
-    uint32_t start_us = micros();
+    const uint32_t start_us = micros();
 
     while (digitalRead(UltrasonicEchoPin) == 1)
     {
@@ -165,10 +164,10 @@ uint32_t readUltrasonicSensor()
     }
 
     // Find difference between start and now
-    uint32_t pulseLength_us = micros() - start_us;
+    const uint32_t pulseLength_us = micros() - start_us;
 
     // Calculate the distance in centimeters
     // Assumes that the speed of sound when at sea level (340 m/s)
-    uint32_t dist_cm = pulseLength_us / 58;
+    const uint32_t dist_cm = pulseLength_us / 58;
     return dist_cm;
 }

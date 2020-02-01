@@ -4,7 +4,7 @@
 
 #include "car.hpp"
 
-void runCliLoop()
+int runCliLoop()
 {
     using namespace Car;
     using namespace std::chrono_literals;
@@ -17,12 +17,11 @@ void runCliLoop()
     {
         std::cin >> input;
 
-        // Big ol if/else so i can test each motor
         if (input == "end")
         {
             std::cout << "Returning..." << std::endl;
             c.moveCar(CarMovement_t::STOP);
-            return;
+            return 0;
         }
         else if (input == "speed")
         {
@@ -90,15 +89,16 @@ void runCliLoop()
             std::cerr << "Invalid input:" << input << std::endl;
             std::cout << "Stopping..." << std::endl;
             c.moveCar(CarMovement_t::STOP);
-            return;
+            return 1;
         }
 
         // Parse stream from stdin again
     }
+    
+    return 1;
 }
 
 int main(int argc, char** argv)
 {
-    runCliLoop();
-    return 0;
+    return runCliLoop();
 }

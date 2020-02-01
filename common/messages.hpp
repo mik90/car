@@ -17,7 +17,7 @@ using std::min;
 using std::max;
 #endif
 
-namespace motorControllerApi
+namespace msg
 {
 constexpr size_t messageSize = 4;
 constexpr uint8_t InvalidServoAngle = 255;
@@ -48,108 +48,85 @@ enum class MotorDir_t : uint8_t {M_INVALID_DIR = 0,
                                  M_RELEASE     = 4};
 
 // Pi -> Arduino --------------------
-namespace servoControl
+inline MessageId_t getIdFromBuffer(const uint8_t* buf) { return static_cast<MessageId_t>(buf[0]); }
+
+inline void serializePanServoAngle(uint8_t panServoAngle, uint8_t* outputBuf)
 {
-    static constexpr uint8_t id = static_cast<uint8_t>(MessageId_t::SERVO_CONTROL);
+    outputBuf[0] = static_cast<uint8_t>(MessageId_t::SERVO_CONTROL);
+    // Cap it at 200
+    if (panServoAngle > 200)
+        panServoAngle = 200;
+    outputBuf[1] = panServoAngle;
+    outputBuf[2] = InvalidServoAngle;
+    outputBuf[3] = 0x00; // Padding
+}
 
-    inline void serializePanServoAngle(uint8_t panServoAngle, uint8_t* outputBuf)
-    {
-        outputBuf[0] = id;
-        // Cap it at 200
-        if (panServoAngle > 200)
-            panServoAngle = 200;
-        outputBuf[1] = panServoAngle;
-        outputBuf[2] = InvalidServoAngle;
-        outputBuf[3] = 0x00; // Padding
-    }
-    
-    inline void serializeTiltServoAngle(uint8_t tiltServoAngle, uint8_t* outputBuf)
-    {
-        outputBuf[0] = id;
-        outputBuf[1] = InvalidServoAngle;
-        // Cap it at 200
-        if (tiltServoAngle > 200)
-            tiltServoAngle = 200;
-        outputBuf[2] = tiltServoAngle;
-        outputBuf[3] = 0x00; // Padding
-    }
-
-    // ---
-    inline uint8_t deserializePanServoAngle(const uint8_t* msg)
-    {
-        return msg[1];
-    }
-
-    inline uint8_t deserializeTiltServoAngle(const uint8_t* msg)
-    {
-        return msg[2];
-    }
-};
-
-namespace wheelControl
+inline void serializeTiltServoAngle(uint8_t tiltServoAngle, uint8_t* outputBuf)
 {
-    static constexpr uint8_t id = static_cast<uint8_t>(MessageId_t::WHEEL_CONTROL);
+    outputBuf[0] = static_cast<uint8_t>(MessageId_t::SERVO_CONTROL);
+    outputBuf[1] = InvalidServoAngle;
+    // Cap it at 200
+    if (tiltServoAngle > 200)
+        tiltServoAngle = 200;
+    outputBuf[2] = tiltServoAngle;
+    outputBuf[3] = 0x00; // Padding
+}
 
-    inline void serializeWheelSpeed(uint8_t wheelSpeed, uint8_t* outputBuf)
-    {
-        // Speed range is 0-255
-        wheelSpeed = min(wheelSpeed, InvalidWheelSpeed);
-        outputBuf[0] = id;
-        outputBuf[1] = wheelSpeed;
-        outputBuf[3] = static_cast<uint8_t>(MotorDir_t::M_INVALID_DIR);
-        outputBuf[4] = static_cast<uint8_t>(MotorDir_t::M_INVALID_DIR);
-    }
+// ---
+inline uint8_t deserializePanServoAngle(const uint8_t* msg) { return msg[1]; }
 
-    inline void serializeWheelDirs(MotorDir_t leftSideDir, MotorDir_t rightSideDir, uint8_t* outputBuf)
-    {
-        outputBuf[0] = id;
-        outputBuf[1] = InvalidWheelSpeed;
-        outputBuf[2] = static_cast<uint8_t>(leftSideDir);
-        outputBuf[3] = static_cast<uint8_t>(rightSideDir);
-    }
-    // ---
-    inline uint8_t deserializeWheelSpeed(const uint8_t* msg)
-    {
-        // Return the wheel speed
-        return msg[1];
-    }
+inline uint8_t deserializeTiltServoAngle(const uint8_t* msg) { return msg[2]; }
 
-    inline void deserializeWheelDirs(const uint8_t* msg,
-                                     MotorDir_t* outLeftDir, MotorDir_t* outRightDir)
-    {
+inline void serializeWheelSpeed(uint8_t wheelSpeed, uint8_t* outputBuf)
+{
+    // Speed range is 0-255
+    wheelSpeed = min(wheelSpeed, InvalidWheelSpeed);
+    outputBuf[0] = static_cast<uint8_t>(MessageId_t::WHEEL_CONTROL);
+    outputBuf[1] = wheelSpeed;
+    outputBuf[3] = static_cast<uint8_t>(MotorDir_t::M_INVALID_DIR);
+    outputBuf[4] = static_cast<uint8_t>(MotorDir_t::M_INVALID_DIR);
+}
 
-        *outLeftDir  = static_cast<MotorDir_t>(msg[2]);
-        *outRightDir = static_cast<MotorDir_t>(msg[3]);
-    }
-};
+inline void serializeWheelDirs(MotorDir_t leftSideDir, MotorDir_t rightSideDir, uint8_t* outputBuf)
+{
+    outputBuf[0] = static_cast<uint8_t>(MessageId_t::WHEEL_CONTROL);
+    outputBuf[1] = InvalidWheelSpeed;
+    outputBuf[2] = static_cast<uint8_t>(leftSideDir);
+    outputBuf[3] = static_cast<uint8_t>(rightSideDir);
+}
+// ---
+inline uint8_t deserializeWheelSpeed(const uint8_t* msg) { return msg[1]; }
+
+inline void deserializeWheelDirs(const uint8_t* msg, MotorDir_t* outLeftDir,
+                                                     MotorDir_t* outRightDir)
+{
+    *outLeftDir  = static_cast<MotorDir_t>(msg[2]);
+    *outRightDir = static_cast<MotorDir_t>(msg[3]);
+}
 
 
 // Arduino -> Pi --------------------
-namespace ultrasonicInfo
+inline void serializeDistance(uint32_t distance_cm, uint8_t* outputBuf)
 {
-    static constexpr uint8_t id = static_cast<uint8_t>(MessageId_t::ULTRASONIC_INFO);
+    // Clamp it to uint16 max
+    uint16_t distanceClamped = min(65535_uint32_t, distance_cm);
+    // Serialize into bytes
+    uint8_t distanceUpper = distanceClamped >> 1; 
+    uint8_t distanceLower = distanceClamped & 0x00ff; 
+    outputBuf[0] = static_cast<uint8_t>(MessageId_t::ULTRASONIC_INFO);
+    outputBuf[1] = 0x00;
+    outputBuf[2] = distanceUpper;
+    outputBuf[3] = distanceLower;
+}
 
-    inline void serializeDistance(uint32_t distance_cm, uint8_t* outputBuf)
-    {
-        // Clamp it to uint16 max
-        uint16_t distanceClamped = min(65535_uint32_t, distance_cm);
-        // Serialize into bytes
-        uint8_t distanceUpper = distanceClamped >> 1; 
-        uint8_t distanceLower = distanceClamped & 0x00ff; 
-        outputBuf[0] = id;
-        outputBuf[1] = 0x00;
-        outputBuf[2] = distanceUpper;
-        outputBuf[3] = distanceLower;
-    }
-    // ---
-    inline uint16_t deserializeDistance(const uint8_t* msg)
-    {
-        // Shift left by a byte
-        uint16_t distanceUpper = static_cast<uint16_t>(msg[2]) << 1;
-        uint16_t distanceLower = static_cast<uint16_t>(msg[3]);
-        return distanceUpper | distanceLower;
-    }
+inline uint16_t deserializeDistance(const uint8_t* msg)
+{
+    // Shift left by a byte
+    uint16_t distanceUpper = static_cast<uint16_t>(msg[2]) << 1;
+    uint16_t distanceLower = static_cast<uint16_t>(msg[3]);
+    return distanceUpper | distanceLower;
+}
+
 };
 
-}
 #endif
