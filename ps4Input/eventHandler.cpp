@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <cerrno>
 #include <cstring>
@@ -8,6 +9,8 @@
 #include <iostream>
 #include <string>
 #include <optional>
+#include <thread>
+#include <chrono>
 
 #include <libevdev/libevdev.h>
 
@@ -24,17 +27,19 @@
 // event-mouse is the touchpad
 
 static struct libevdev* dev = nullptr;
+int fd = -1;
 
 void interruptHandler(int signal)
 {
+    std::cout << "\nCaught signal:" << signal << std::endl;
     libevdev_free(dev);
-    std::cout << "Caught signal:" << signal << std::endl;
+    close(fd);
 }
 
 void initLibEvDev()
 {
     constexpr char eventFilePath[] = "/dev/input/by-id/usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick";
-    int fd = open(eventFilePath, O_RDONLY);
+    fd = open(eventFilePath, O_RDONLY);
     if (fd < 0)
     {
         std::cerr << "Could not open \"" << eventFilePath << "\"\n";
@@ -89,6 +94,7 @@ std::ostream& operator<<(std::ostream& os, const controllerStatus& cStat)
 
 int main(int argc, char** argv)
 {
+    std::cout << "Initializing libevdev..\n";
     initLibEvDev();
     std::cout << "Initialized libevdev\n";
 
@@ -104,7 +110,7 @@ int main(int argc, char** argv)
         if (evdevStatus == LIBEVDEV_READ_STATUS_SUCCESS && ev.type == EV_ABS)
         {
             controllerStatus cStat{};
-            std::cout << "Saw EV_ABS event\n";
+
             // These events are all EV_ABS
             // give or take ~20 due to sensitivity
             // joystick x axis: 0(left) - 127 (middle) - 255 (right)
@@ -134,7 +140,11 @@ int main(int argc, char** argv)
             if (rightTrigger.has_value())
                 cStat.rightTrigger = rightTrigger.value();
 
-            std::cout << cStat << std::endl;
+            // Only print to the screen every X milliseconds
+            static auto lastTime = std::chrono::steady_clock::now();
+            auto now = std::chrono::steady_clock::now();
+            if (now - lastTime > std::chrono::milliseconds(350))
+                std::cout << cStat << std::endl;
         }
     } while (evdevStatus == LIBEVDEV_READ_STATUS_SYNC
              || evdevStatus == LIBEVDEV_READ_STATUS_SUCCESS 
