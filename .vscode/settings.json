@@ -69,5 +69,8 @@
         "fstream": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled",
-    "C_Cpp.errorSquiggles": "Enabled"
+    "C_Cpp.errorSquiggles": "Enabled",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.pythonPath": "ps4Controller/venv/bin/python"
 }
