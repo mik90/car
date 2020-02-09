@@ -1,9 +1,0 @@
-[submodule "extern/googletest"]
-	path = extern/googletest
-	url = git@github.com:google/googletest.git
-[submodule "extern/tools"]
-	path = extern/tools
-	url = git@github.com:mik90/tools.git
-[submodule "arduino/arduino-cmake"]
-	path = cmake/arduino-cmake
-	url = git@github.com:queezythegreat/arduino-cmake.git

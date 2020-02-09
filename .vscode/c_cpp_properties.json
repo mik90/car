@@ -3,6 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
+                "/home/mike/.arduino15/packages/arduino/tools/**",
+                "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/**",
                 "/home/mike/Arduino/libraries/ArduinoJson/src",
                 "/usr/share/arduino/hardware/arduino/avr/cores/arduino",
                 "/usr/share/arduino/hardware/arduino/avr/libraries/**",
@@ -14,7 +16,7 @@
             "configurationProvider": "vector-of-bool.cmake-tools",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "forcedInclude": [
-                "/home/mike/.arduino15/packages/arduino/hardware/samd/1.8.4/cores/arduino/Arduino.h",
+                "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/cores/arduino/Arduino.h",
                 "/usr/share/arduino/**",
                 "/usr/share/arduino/libraries/**",
                 "/usr/share/arduino/hardware/arduino/avr/cores/arduino/**"

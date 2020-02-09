@@ -1,4 +1,6 @@
 {
-    "board": "arduino:samd:arduino_zero_native",
-    "programmer": "ArduinoISP"
+    "board": "arduino:avr:uno",
+    "programmer": "ArduinoISP",
+    "port": "/dev/ttyACM0",
+    "sketch": "arduino/motorController/motorController.ino"
 }

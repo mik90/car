@@ -56,9 +56,22 @@ void setup() {
 
 void loop() {
     auto json = Serial.readString();
+    //char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
     DeserializationError error = deserializeJson(doc, json);
 
-    setMotorSpeeds(doc["wheelSpeed"]);
-    setLeftSideDir(doc["leftSideDir"]);
-    setRightSideDir(doc["rightSideDir"]);
+    if (error) {
+        //Serial.print("Could not deserialize JSON. ");
+        //Serial.println(error.c_str());
+        // Just wait
+        return;
+    }
+
+    String speed = doc["wheel_speed"];
+    setMotorSpeeds(speed.toInt());
+    
+    String left_side_dir = doc["left_side_dir"];
+    setLeftSideDir(stringToCommand(left_side_dir));
+
+    String right_side_dir = doc["right_side_dir"];
+    setRightSideDir(stringToCommand(right_side_dir));
 }
