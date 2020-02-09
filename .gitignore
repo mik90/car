@@ -1,6 +1,9 @@
 # Cmake build
 build/
 
+# Arduino dependencies
+arduino/extern
+
 # Pictures from pi-cam
 rpiPics/
 

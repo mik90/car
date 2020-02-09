@@ -4,3 +4,6 @@
 [submodule "extern/tools"]
 	path = extern/tools
 	url = git@github.com:mik90/tools.git
+[submodule "arduino/arduino-cmake"]
+	path = arduino/arduino-cmake
+	url = git@github.com:queezythegreat/arduino-cmake.git
