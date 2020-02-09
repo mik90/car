@@ -1,12 +1,12 @@
 #!/bin/bash
-if [ -f build/motorController.ino.hex ]; then
-    HEX_FILE="build/motorController.ino.hex"
+if [ -f .build/motorController.ino.hex ]; then
+    HEX_FILE=".build/motorController.ino.hex"
 elif [ -f motorController.ino.hex ]; then
     HEX_FILE="motorController.ino.hex"
 else
-    echo "motorController.ino.hex was in expected locations: build/, ./"
+    echo "cannot find motorController.ino.hex"
     echo "Exiting..."
-    exit
+    exit 1
 fi
 
 avrdude -V -F -C /etc/avrdude.conf \

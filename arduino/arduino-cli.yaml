@@ -1,0 +1,12 @@
+board_manager:
+  additional_urls: []
+daemon:
+  port: "50051"
+directories:
+  data: extern/data
+  downloads: extern/downloads 
+  user: extern/libraries
+logging:
+  file: ""
+  format: text
+  level: info

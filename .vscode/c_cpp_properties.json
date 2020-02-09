@@ -3,17 +3,22 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/mike/Repos/Car/extern/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/sysroot/usr/include/opencv4/**",
                 "/home/mike/Arduino/libraries/ArduinoJson/src",
-                "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/libraries/Wire/src",
-                "/home/mike/Arduino/libraries/Servo/src",
-                "/home/mike/Arduino/libraries/Adafruit_Motor_Shield_V2_Library",
-                "/home/mike/.arduino15/packages/arduino/tools/**",
-                "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/**",
+                "/usr/share/arduino/hardware/arduino/avr/cores/arduino",
+                "/usr/share/arduino/hardware/arduino/avr/libraries/**",
+                "/usr/share/arduino/libraries/**",
+                "/usr/share/arduino/tools/**",
+                "/usr/share/arduino/**",
                 "/usr/include/libevdev-1.0/**"
             ],
             "configurationProvider": "vector-of-bool.cmake-tools",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "forcedInclude": [
+                "/home/mike/.arduino15/packages/arduino/hardware/samd/1.8.4/cores/arduino/Arduino.h",
+                "/usr/share/arduino/**",
+                "/usr/share/arduino/libraries/**",
+                "/usr/share/arduino/hardware/arduino/avr/cores/arduino/**"
+            ]
         }
     ],
     "version": 4

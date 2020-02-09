@@ -14,10 +14,11 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
+add_subdirectory(arduino)
+
 enable_testing()
 include(GoogleTest)
 add_subdirectory("${PROJECT_SOURCE_DIR}/extern/googletest" "extern/googletest")
 add_subdirectory(tests)
 
-add_subdirectory(ds4_input)
 add_subdirectory(raspberryPi)

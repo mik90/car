@@ -2,5 +2,9 @@
     {
         "name": "RaspberryPi",
         "toolchainFile": "cmake/RaspberryPiToolchain.cmake"
+    },
+    {
+        "name": "Arduino",
+        "toolchainFile": "cmake/arduino-cmake/cmake/ArduinoToolchain.cmake"
     }
 ]

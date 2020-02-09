@@ -1,6 +1,3 @@
-// This will do the same thing as eventHandler.cpp except using
-// the rust libevdev implementation
-
 extern crate evdev_rs as evdev;
 extern crate nix;
 
@@ -9,33 +6,32 @@ use evdev::enums::*;
 use nix::errno::Errno;
 use std::fs::File;
 
-fn event_code_to_usage(ec: &EventCode) -> String
-{
+// Kind of difficult to match an event code to the EV_ABS enum, it could be my
+// infamliarity with rust.
+fn event_code_to_usage(ec: &EventCode) -> String {
     use evdev::enums::EV_ABS::*;
-    match ec
-    {
+    match ec {
+        // Turn each EV_ABS::* enum into an EventCode
         EventCode::EV_ABS(ABS_X)  => "left_stick_x_axis".to_string(),
         EventCode::EV_ABS(ABS_Y)  => "left_stick_y_axis".to_string(),
         EventCode::EV_ABS(ABS_Z)  => "right_stick_x_axis".to_string(),
         EventCode::EV_ABS(ABS_RZ) => "right_stick_y_axis".to_string(),
         EventCode::EV_ABS(ABS_RX) => "left_trigger".to_string(),
         EventCode::EV_ABS(ABS_RY) => "right_trigger".to_string(),
-        _ => "".to_string(),
+                                _ => "".to_string(),
     }
 }
 
-fn handle_event(ev: &InputEvent)
-{
-
-    match ev.event_type
-    {
-        EventType::EV_ABS => 
-        {
+fn handle_event(ev: &InputEvent) {
+    match ev.event_type {
+        // Currently only care about ABS events
+        EventType::EV_ABS => {
             println!("Event:: code:{}, value:{}, usage:{}",
                       ev.event_code,
                       ev.value, 
                       event_code_to_usage(&ev.event_code));
         } ,
+        // Discard others
         _ => return,
     }
 }
@@ -43,41 +39,33 @@ fn handle_event(ev: &InputEvent)
 fn main()
 {
     let mut args = std::env::args();
-
-    if args.len() != 2
-    {
-        println!("Usage: ps4Input /path/to/event/device");
+    if args.len() != 2 {
+        println!("Usage: ds4_input /path/to/event/device");
         std::process::exit(1);
     }
 
-    println!("DEBUG: args:{:?}", args);
 
     let dev_path = &args.nth(1).unwrap(); // Grab the device path
-    println!("DEBUG: devPath: {:?}:", dev_path);
+    println!("Device path: {:?}:", dev_path);
 
     let dev_file = File::open(dev_path).unwrap();
     let mut dev = evdev::Device::new().unwrap();
     dev.set_fd(dev_file).unwrap();
-    println!("DEBUG: Device created");
+    println!("Device created");
 
+    // Main event loop
     let mut a: Result<(ReadStatus, InputEvent), Errno>;
-    loop
-    {
+    loop {
         a = dev.next_event(evdev::ReadFlag::NORMAL | evdev::ReadFlag::BLOCKING);
-        if a.is_ok()
-        {
+        if a.is_ok() {
             let result = a.ok().unwrap();
-            match result.0
-            {
+            match result.0 {
                 ReadStatus::Sync => continue,
                 ReadStatus::Success => handle_event(&result.1),
-
             }
         }
-        else
-        {
-            match a.err().unwrap()
-            {
+        else {
+            match a.err().unwrap() {
                 Errno::EAGAIN => continue,
                 err => { println!("{}", err); break;}
             }
