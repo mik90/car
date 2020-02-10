@@ -7,54 +7,47 @@ use evdev::*;
 use evdev::enums::*;
 use nix::errno::Errno;
 use std::fs::File;
+use std::{thread, time};
 
 mod json_interface;
 
-// Kind of difficult to match an event code to the EV_ABS enum, it could be my
-// infamliarity with rust.
-fn event_code_to_usage(ec: &EventCode) -> String {
-    use evdev::enums::EV_ABS::*;
-    match ec {
-        // Turn each EV_ABS::* enum into an EventCode
-        // Should give axes around 20 of wiggle room
-        EventCode::EV_ABS(ABS_X)  => "left_stick_x_axis".to_string(),  // 0 is left, 127 is middle, 255 is right
-        EventCode::EV_ABS(ABS_Y)  => "left_stick_y_axis".to_string(),  // 0 is up,   127 is middle, 255 is down
-        EventCode::EV_ABS(ABS_RX) => "right_stick_x_axis".to_string(), // 0 is left, 127 is middle, 255 is right
-        EventCode::EV_ABS(ABS_RY) => "right_stick_y_axis".to_string(), // 0 is up,   127 is middle, 255 is down
-        EventCode::EV_ABS(ABS_Z)  => "left_trigger".to_string(),       // 0 is none, 255 is fully pressed
-        EventCode::EV_ABS(ABS_RZ) => "right_trigger".to_string(),      // 0 is none, 255 is fully pressed
-                                _ => "unknown".to_string(),
+fn x_axis_to_dirs(x: i32) -> Option<(String, String)> {
+    // Significant enough to use
+    if x > 147 {// Greater than the mid-point + 20 is right
+        // Tank tread so make the left go forward and the right reverse
+        // TODO This is awfully messy, fix it
+        Some(("Forward".to_owned(), "Reverse".to_owned()))
+    }
+    else if x < 107 {
+        Some(("Reverse".to_owned(), "Forward".to_owned()))
+    }
+    else {
+        None
     }
 }
 
-fn update_msg_struct(ev: &InputEvent, mut lastMsg: &json_interface::Msg ) {
-    match ev.event_code {
+fn update_msg_struct(ev: &InputEvent, last_msg: &mut json_interface::Msg ) {
+    match &ev.event_code {
         // Update left/right dir if beyond bounds
-        EventCode::EV_ABS(ABS_X) => {
-            let difference = ev.value - 127;
-            if abs(difference) > 20
-                // TODO Translate the value to a direction
-
+       EventCode::EV_ABS(EV_ABS::ABS_X) => {
+            if let Some(dir_pair) = x_axis_to_dirs(ev.value) {
+                last_msg.left_side_dir = dir_pair.0;
+                last_msg.right_side_dir = dir_pair.1;
+            }
         },
         // Set reverse, variable speed
-        EventCode::EV_ABS(ABS_Z) =>
+        EventCode::EV_ABS(EV_ABS::ABS_Z) => {
+            last_msg.left_side_dir = "Reverse".to_owned();
+            last_msg.right_side_dir = "Reverse".to_owned();
+            last_msg.wheel_speed = ev.value as u8;
+        }
         // Set forward, variable speed
-        EventCode::EV_ABS(ABS_RZ) => 
+        EventCode::EV_ABS(EV_ABS::ABS_RZ) => {
+            last_msg.left_side_dir = "Forward".to_owned();
+            last_msg.right_side_dir = "Forward".to_owned();
+            last_msg.wheel_speed = ev.value as u8;
+        }
         _ => return, // Do nothing
-    }
-}
-
-fn handle_event(ev: &InputEvent) {
-    match ev.event_type {
-        // Currently only care about ABS events
-        EventType::EV_ABS => {
-            println!("Event:: code:{}, value:{}, usage:{}",
-                      ev.event_code,
-                      ev.value, 
-                      event_code_to_usage(&ev.event_code));
-        } ,
-        // Discard others
-        _ => return,
     }
 }
 
@@ -80,7 +73,12 @@ fn main()
     let mut settings: SerialPortSettings = Default::default();
     settings.baud_rate = 9600;
 
-    let port = serialport::open_with_settings(&port_path, &settings).unwrap();
+    let mut port = serialport::open_with_settings(&port_path, &settings).unwrap();
+
+    // Sleep while the arduino reboots
+    println!("Sleeping for 3 seconds...");
+    thread::sleep(time::Duration::from_secs(3));
+    println!("Awake");
 
     // Main event loop
     let mut a: Result<(ReadStatus, InputEvent), Errno>;
@@ -91,9 +89,10 @@ fn main()
             match result.0 {
                 ReadStatus::Sync => continue,
                 ReadStatus::Success => { 
-                    update_msg_struct(&result.1, &msg);
+                    update_msg_struct(&result.1, &mut msg);
                     let json_string = serde_json::to_string(&msg).unwrap();
-                    port.write(&json_string.as_bytes());
+                    port.write(&json_string.as_bytes())
+                        .expect("Unable to write bytes");
                 }
             }
         }

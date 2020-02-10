@@ -1,5 +1,5 @@
 use serde_derive::{Deserialize, Serialize};
-
+/*
 pub enum MotorCommands {
     Forward,
     Reverse,
@@ -23,6 +23,7 @@ impl MotorCommands {
         }
     }
 }
+*/
 
 #[derive(Serialize, Deserialize)]
 pub struct Msg {
@@ -40,7 +41,7 @@ impl Msg {
         }
     }
 }
-
+/*
 pub enum Ds4Controls {
     // Should give stick axes around 20 of wiggle room
     LeftStickXAxis  { x : u8 }, // 0 is left, 127 is middle, 255 is right
@@ -50,4 +51,4 @@ pub enum Ds4Controls {
     LeftTrigger { val : u8 }, // 0 is none, 255 is fully pressed
     RightTrigger{ val : u8 }, // 0 is none, 255 is fully pressed
 }
-
+*/
