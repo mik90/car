@@ -72,8 +72,15 @@ fn main()
     let port_path = "/dev/ttyACM0";
     let mut settings: SerialPortSettings = Default::default();
     settings.baud_rate = 9600;
+    settings.timeout = time::Duration::from_secs(2);
 
-    let mut port = serialport::open_with_settings(&port_path, &settings).unwrap();
+    //let mut port = serialport::open_with_settings(&port_path, &settings).unwrap();
+    let mut port;
+    match serialport::open_with_settings(&port_path, &settings) {
+        Ok(v) => port = v,
+        Err(e) => panic!(e),
+    }
+    println!("Serial timeout is {:?}", port.timeout());
 
     // Sleep while the arduino reboots
     println!("Sleeping for 3 seconds...");
@@ -90,9 +97,19 @@ fn main()
                 ReadStatus::Sync => continue,
                 ReadStatus::Success => { 
                     update_msg_struct(&result.1, &mut msg);
-                    let json_string = serde_json::to_string(&msg).unwrap();
-                    port.write(&json_string.as_bytes())
-                        .expect("Unable to write bytes");
+                    let json_string;
+                    match serde_json::to_string(&msg) {
+                        Ok(v) => {
+                            println!("Ok: created json string:{}", v);
+                            json_string = v;
+                        },
+                        Err(e) => panic!(e),
+                    }
+                    match port.write(&json_string.as_bytes()) {
+                        Ok(v) => println!("Ok: printed {} bytes to {}", v, port_path),
+                        Err(e) => panic!(e),
+                    }
+                    
                 }
             }
         }
