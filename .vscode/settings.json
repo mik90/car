@@ -12,6 +12,7 @@
         "**/extern/tools/**" : true
     },
     "files.associations": {
+        "*.ino": "cpp",
         "iostream": "cpp",
         "memory": "cpp",
         "cctype": "cpp",
@@ -66,7 +67,9 @@
         "typeindex": "cpp",
         "forward_list": "cpp",
         "*.tcc": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "*.ipp": "cpp",
+        "istream": "cpp"
     },
     "C_Cpp.configurationWarnings": "Disabled",
     "C_Cpp.errorSquiggles": "Enabled",

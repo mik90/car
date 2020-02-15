@@ -54,7 +54,7 @@ void setup() {
 
 }
 
-void loop() {
+void serialEvent () {
     auto json = Serial.readString();
     //char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
     DeserializationError error = deserializeJson(doc, json);
@@ -74,4 +74,8 @@ void loop() {
 
     String right_side_dir = doc["right_side_dir"];
     setRightSideDir(stringToCommand(right_side_dir));
+}
+
+void loop() {
+    delayMicroseconds(1000);
 }
