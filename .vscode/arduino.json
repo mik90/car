@@ -1,6 +1,5 @@
 {
-    "board": "arduino:avr:uno",
-    "programmer": "ArduinoISP",
     "port": "/dev/ttyACM0",
-    "sketch": "arduino/motorController/motorController.ino"
+    "sketch": "arduino/netController/netController.ino",
+    "board": "arduino:samd:nano_33_iot"
 }
