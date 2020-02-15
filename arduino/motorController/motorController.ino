@@ -10,8 +10,7 @@ auto frontLeftMotor  = shield.getMotor(2); // M2
 auto rearRightMotor  = shield.getMotor(3); // M3
 auto rearLeftMotor   = shield.getMotor(4); // M4
 uint32_t readUltrasonicSensor();
-
-StaticJsonDocument<200> doc;
+constexpr int baudRate = 9600;
 
 int stringToCommand(const String& str) {
     if (str.equalsIgnoreCase("Forward")) {
@@ -42,7 +41,7 @@ void setRightSideDir(int dir) {
 
 void setup() {
     shield.begin();
-    Serial.begin(9600);
+    Serial.begin(baudRate);
 
     frontLeftMotor->run(RELEASE); 
     rearLeftMotor->run(RELEASE); 
@@ -50,32 +49,32 @@ void setup() {
     rearRightMotor->run(RELEASE); 
 
     setMotorSpeeds(0);
-    while (!Serial) continue;
-
+    while (!Serial) {
+        // Wait
+    }
 }
 
-void serialEvent () {
-    auto json = Serial.readString();
-    //char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
+void loop () {
+    // Example data:
+    // char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
+
+    StaticJsonDocument<200> doc;
+    auto json = Serial.readStringUntil('\n');
     DeserializationError error = deserializeJson(doc, json);
 
     if (error) {
-        //Serial.print("Could not deserialize JSON. ");
-        //Serial.println(error.c_str());
-        // Just wait
+        /*Serial.print("Could not deserialize JSON. ");
+        Serial.println(error.c_str());
+        Serial.flush();*/
+        // Just wait for the next iteration
         return;
     }
 
     String speed = doc["wheel_speed"];
     setMotorSpeeds(speed.toInt());
-    
     String left_side_dir = doc["left_side_dir"];
     setLeftSideDir(stringToCommand(left_side_dir));
 
     String right_side_dir = doc["right_side_dir"];
     setRightSideDir(stringToCommand(right_side_dir));
-}
-
-void loop() {
-    delayMicroseconds(1000);
 }

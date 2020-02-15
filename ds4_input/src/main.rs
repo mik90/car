@@ -41,7 +41,7 @@ fn main()
     thread::sleep(time::Duration::from_secs(3));
 
     println!("Awake");
-    let interval = time::Duration::from_millis(500);
+    let interval = time::Duration::from_millis(100);
     println!("Updating values every {:?} milliseconds", interval);
     let mut iteration = 0;
     let mut time_since_last_update = time::Instant::now();
@@ -58,7 +58,7 @@ fn main()
         if now - time_since_last_update > interval {
             time_since_last_update = now;
 
-            let json = ds4_device_to_msg_json(&ds4_dev);
+            let json = ds4_device_to_msg_json(&ds4_dev) + "\n";
             match port.write(json.as_bytes()) {
                 Ok(v) => println!("Wrote {} bytes to {}", v, port.name().unwrap()),
                 Err(e) => eprintln!("Error:{}, couldn't write to {}", e, port.name().unwrap()),
