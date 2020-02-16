@@ -4,6 +4,7 @@
 #include <WiFiNINA.h>
 #include <Wire.h>
 
+#include "netUtility.hpp"
 #include "wifiInfo.h"
 
 int status = WL_IDLE_STATUS;
@@ -37,7 +38,10 @@ void setup() {
         // Wait 10 seconds to connect
         delay(10000);
     }
-
+    Serial.print("Connected.");
+    printWifiData();
+    server.begin();
+    Serial.print("Started server.");
 }
 
 void loop() {
@@ -62,8 +66,8 @@ void loop() {
             client.println();
 
             // the content of the HTTP response follows the header:
-            client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
-            client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
+            client.print("Click <a href=\"/H\">here</a> to make the car go<br>");
+            client.print("Click <a href=\"/L\">here</a> to make the car stop<br>");
 
             // The HTTP response ends with another blank line:
             client.println();
@@ -85,7 +89,11 @@ void loop() {
           Wire.endTransmission();
         }
         if (currentLine.endsWith("GET /L")) {
-          digitalWrite(9, LOW);                // GET /L turns the LED off
+          Wire.beginTransmission(motorControllerAddress);
+          Wire.write(0); // Speed
+          Wire.write(0); // Left dir
+          Wire.write(0); // Right dir
+          Wire.endTransmission();
         }
       }
     }

@@ -12,6 +12,7 @@ auto rearLeftMotor   = shield.getMotor(4); // M4
 uint32_t readUltrasonicSensor();
 constexpr int baudRate = 9600;
 TwoWire i2c;
+constexpr int myI2cAddress = 2;
 
 void setMotorSpeeds(int speed) {
     frontLeftMotor->setSpeed(speed);
@@ -29,7 +30,7 @@ void setRightSideDir(int dir) {
 }
 
 void setup() {
-    i2c.begin(2);
+    i2c.begin(myI2cAddress);
     i2c.onReceive(receiveEvent);
     shield.begin(1600, &i2c);
     Serial.begin(baudRate);
@@ -43,6 +44,7 @@ void setup() {
     while (!Serial) {
         // Wait
     }
+    Serial.println("motorController initialized.");
 }
 
 void loop() {
@@ -62,6 +64,8 @@ void receiveEvent(int nBytes) {
         
         String right_side_dir = i2c.readStringUntil('\0');
         setRightSideDir(right_side_dir.toInt());
+        Serial.println("Received I2C data: " + speed + "," + left_side_dir
+                        + "," + right_side_dir);
     }
 }
 #if 0
