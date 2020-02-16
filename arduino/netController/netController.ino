@@ -1,12 +1,18 @@
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <SPI.h>
 #include <WiFiNINA.h>
+#include <Wire.h>
 
 #include "wifiInfo.h"
 
 int status = WL_IDLE_STATUS;
+WiFiServer server(80);
+constexpr int myI2cAddress = 1;
+constexpr int motorControllerAddress = 2;
 
 void setup() {
+    Wire.begin(myI2cAddress);
     Serial.begin(9600);
     while (!Serial) {
         // Wait until serial port is connected
@@ -32,63 +38,60 @@ void setup() {
         delay(10000);
     }
 
-    Serial.println("Connected.");
-    printCurrentNet();
-    printWifiData();
 }
 
 void loop() {
-  // check the network connection once every 10 seconds:
-  delay(10000);
-  printCurrentNet();
-}
+  WiFiClient client = server.available();   // listen for incoming clients
 
-void printWifiData() {
-  // print your board's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-  Serial.println(ip);
+  if (client) {
+    Serial.println("Client available");
+    String currentLine = "";
+    while (client.connected()) {
+      if (client.available()) {
+        const char c = client.read();
+        Serial.write(c);
+        if (c == '\n') {
 
-  // print your MAC address:
-  byte mac[6];
-  WiFi.macAddress(mac);
-  Serial.print("MAC address: ");
-  printMacAddress(mac);
-}
+          // if the current line is blank, you got two newline characters in a row.
+          // that's the end of the client HTTP request, so send a response:
+          if (currentLine.length() == 0) {
+            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+            // and a content-type so the client knows what's coming, then a blank line:
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type:text/html");
+            client.println();
 
-void printCurrentNet() {
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
+            // the content of the HTTP response follows the header:
+            client.print("Click <a href=\"/H\">here</a> turn the LED on pin 9 on<br>");
+            client.print("Click <a href=\"/L\">here</a> turn the LED on pin 9 off<br>");
 
-  // print the MAC address of the router you're attached to:
-  byte bssid[6];
-  WiFi.BSSID(bssid);
-  Serial.print("BSSID: ");
-  printMacAddress(bssid);
+            // The HTTP response ends with another blank line:
+            client.println();
+            // break out of the while loop:
+            break;
+          } else {    // if you got a newline, then clear currentLine:
+            currentLine = "";
+          }
+        } else if (c != '\r') {  // if you got anything else but a carriage return character,
+          currentLine += c;      // add it to the end of the currentLine
+        }
 
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.println(rssi);
-
-  // print the encryption type:
-  byte encryption = WiFi.encryptionType();
-  Serial.print("Encryption Type:");
-  Serial.println(encryption, HEX);
-  Serial.println();
-}
-
-void printMacAddress(byte mac[]) {
-  for (int i = 5; i >= 0; i--) {
-    if (mac[i] < 16) {
-      Serial.print("0");
+        // Check to see if the client request was "GET /H" or "GET /L":
+        if (currentLine.endsWith("GET /H")) {
+          Wire.beginTransmission(motorControllerAddress);
+          Wire.write(150); // Speed
+          Wire.write(1); // Left dir
+          Wire.write(1); // Right dir
+          Wire.endTransmission();
+        }
+        if (currentLine.endsWith("GET /L")) {
+          digitalWrite(9, LOW);                // GET /L turns the LED off
+        }
+      }
     }
-    Serial.print(mac[i], HEX);
-    if (i > 0) {
-      Serial.print(":");
-    }
+    // close the connection:
+    client.stop();
+    Serial.println("client disonnected");
   }
-  Serial.println();
 }
+

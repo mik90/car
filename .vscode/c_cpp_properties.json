@@ -3,7 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
+                "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.2/**",
                 "/home/mike/.arduino15/packages/arduino/hardware/samd/1.8.4/**",
+                "/home/mike/Arduino/libraries/Adafruit_Motor_Shield_V2_Library/**",
                 "/home/mike/Arduino/libraries/WiFiNINA/src",
                 "/home/mike/.arduino15/packages/arduino/tools/**",
                 "/home/mike/.arduino15/packages/arduino/hardware/avr/1.8.1/**",
@@ -19,6 +21,7 @@
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "forcedInclude": [
                 "/home/mike/.arduino15/packages/arduino/hardware/samd/1.8.4/cores/arduino/Arduino.h",
+                "/home/mike/Arduino/libraries/**",
                 "/usr/share/arduino/**",
                 "/usr/share/arduino/libraries/**",
                 "/usr/share/arduino/hardware/arduino/avr/cores/arduino/**"

@@ -11,18 +11,7 @@ auto rearRightMotor  = shield.getMotor(3); // M3
 auto rearLeftMotor   = shield.getMotor(4); // M4
 uint32_t readUltrasonicSensor();
 constexpr int baudRate = 9600;
-
-int stringToCommand(const String& str) {
-    if (str.equalsIgnoreCase("Forward")) {
-        return FORWARD;
-    }
-    else if (str.equalsIgnoreCase("Reverse")) {
-        return BACKWARD;
-    }
-    else {
-        return RELEASE;
-    }
-}
+TwoWire i2c;
 
 void setMotorSpeeds(int speed) {
     frontLeftMotor->setSpeed(speed);
@@ -40,7 +29,9 @@ void setRightSideDir(int dir) {
 }
 
 void setup() {
-    shield.begin();
+    i2c.begin(2);
+    i2c.onReceive(receiveEvent);
+    shield.begin(1600, &i2c);
     Serial.begin(baudRate);
 
     frontLeftMotor->run(RELEASE); 
@@ -54,12 +45,45 @@ void setup() {
     }
 }
 
-void loop () {
+void loop() {
+    delay(100);
+}
+
+void receiveEvent(int nBytes) {
+    // Example data: 150,0,0\0
+
+    while (i2c.available()) {
+        // 0 - 255
+        String speed = i2c.readStringUntil(',');
+        setMotorSpeeds(speed.toInt());
+       
+        String left_side_dir = i2c.readStringUntil(',');
+        setLeftSideDir(left_side_dir.toInt());
+        
+        String right_side_dir = i2c.readStringUntil('\0');
+        setRightSideDir(right_side_dir.toInt());
+    }
+}
+#if 0
+// Example data:
+// char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
+int stringToCommand(const String& str) {
+    if (str.equalsIgnoreCase("Forward")) {
+        return FORWARD;
+    }
+    else if (str.equalsIgnoreCase("Reverse")) {
+        return BACKWARD;
+    }
+    else {
+        return RELEASE;
+    }
+}
+void loop() {
     // Example data:
     // char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
 
     StaticJsonDocument<200> doc;
-    auto json = Serial.readStringUntil('\n');
+    auto json = Serial.readStringUntil('\0');
     DeserializationError error = deserializeJson(doc, json);
 
     if (error) {
@@ -78,3 +102,4 @@ void loop () {
     String right_side_dir = doc["right_side_dir"];
     setRightSideDir(stringToCommand(right_side_dir));
 }
+#endif
