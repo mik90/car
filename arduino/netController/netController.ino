@@ -2,15 +2,25 @@
 #include <ArduinoJson.h>
 #include <SPI.h>
 #include <WiFiNINA.h>
+#include <WiFiUdp.h>
 #include <Wire.h>
 
 #include "netUtility.hpp"
 #include "wifiInfo.h"
 
+// FRom Adafruit_MotorShield.h
+#define FORWARD 1
+#define BACKWARD 2
+#define BRAKE 3
+#define RELEASE 4
+
 int status = WL_IDLE_STATUS;
-WiFiServer server(80);
+WiFiUDP Udp;
+constexpr int localPort = 50001;
 constexpr int myI2cAddress = 1;
 constexpr int motorControllerAddress = 2;
+
+char packetBuffer[255];
 
 void setup() {
     Wire.begin(myI2cAddress);
@@ -40,66 +50,57 @@ void setup() {
     }
     Serial.print("Connected.");
     printWifiData();
-    server.begin();
+    Udp.begin(localPort);
     Serial.print("Started server.");
+}
+int stringToCommand(const String& str) {
+    if (str.equalsIgnoreCase("Forward")) {
+        return FORWARD;
+    }
+    else if (str.equalsIgnoreCase("Reverse")) {
+        return BACKWARD;
+    }
+    else {
+        return RELEASE;
+    }
 }
 
 void loop() {
-  WiFiClient client = server.available();   // listen for incoming clients
+    const int packetSize = Udp.parsePacket();
+    if (packetSize > 0) {
 
-  if (client) {
-    Serial.println("Client available");
-    String currentLine = "";
-    while (client.connected()) {
-      if (client.available()) {
-        const char c = client.read();
-        Serial.write(c);
-        if (c == '\n') {
+        Serial.println("Received UDP packet of size:" + String(packetSize));
+        Serial.print("from " + String(Udp.remoteIP()) + ":" + String(Udp.remotePort()) + "\n");
 
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
-          if (currentLine.length() == 0) {
-            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-            // and a content-type so the client knows what's coming, then a blank line:
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
 
-            // the content of the HTTP response follows the header:
-            client.print("Click <a href=\"/H\">here</a> to make the car go<br>");
-            client.print("Click <a href=\"/L\">here</a> to make the car stop<br>");
+        const int bytesRead = Udp.read(packetBuffer, 255);
+        if (bytesRead > 0) {
+            // Ensure that the buffer is null-terminated
+            packetBuffer[bytesRead] = '\0';
+        }
+        const String json(packetBuffer);
 
-            // The HTTP response ends with another blank line:
-            client.println();
-            // break out of the while loop:
-            break;
-          } else {    // if you got a newline, then clear currentLine:
-            currentLine = "";
-          }
-        } else if (c != '\r') {  // if you got anything else but a carriage return character,
-          currentLine += c;      // add it to the end of the currentLine
+        Serial.println("Message:" + json);
+        StaticJsonDocument<200> doc;
+        DeserializationError error = deserializeJson(doc, json);
+
+        if (error) {
+            /*Serial.print("Could not deserialize JSON. ");
+            Serial.println(error.c_str());
+            Serial.flush();*/
+            // Just wait for the next iteration
+            return;
         }
 
-        // Check to see if the client request was "GET /H" or "GET /L":
-        if (currentLine.endsWith("GET /H")) {
-          Wire.beginTransmission(motorControllerAddress);
-          Wire.write(150); // Speed
-          Wire.write(1); // Left dir
-          Wire.write(1); // Right dir
-          Wire.endTransmission();
-        }
-        if (currentLine.endsWith("GET /L")) {
-          Wire.beginTransmission(motorControllerAddress);
-          Wire.write(0); // Speed
-          Wire.write(0); // Left dir
-          Wire.write(0); // Right dir
-          Wire.endTransmission();
-        }
-      }
+        String speed = doc["wheel_speed"];
+        String left_side_dir = doc["left_side_dir"];
+        String right_side_dir = doc["right_side_dir"];
+
+        Wire.beginTransmission(motorControllerAddress);
+        Wire.write(speed.toInt());
+        Wire.write(stringToCommand(left_side_dir));
+        Wire.write(stringToCommand(right_side_dir));
+        Wire.endTransmission();
     }
-    // close the connection:
-    client.stop();
-    Serial.println("client disonnected");
-  }
 }
 
