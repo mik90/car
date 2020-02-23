@@ -17,14 +17,15 @@
 int status = WL_IDLE_STATUS;
 WiFiUDP Udp;
 constexpr int localPort = 50001;
-constexpr int myI2cAddress = 1;
-constexpr int motorControllerAddress = 2;
+constexpr int netI2cAddress = 0x1A;
+constexpr int motorI2cAddress = 0x1B;
 
 char packetBuffer[255];
 
 void setup() {
-    Wire.begin(myI2cAddress);
     Serial.begin(9600);
+    // RX and TX1
+    Serial1.begin(9600);
     while (!Serial) {
         // Wait until serial port is connected
     }
@@ -53,6 +54,7 @@ void setup() {
     Udp.begin(localPort);
     Serial.print("Started server.");
 }
+
 int stringToCommand(const String& str) {
     if (str.equalsIgnoreCase("Forward")) {
         return FORWARD;
@@ -82,25 +84,44 @@ void loop() {
 
         Serial.println("Message:" + json);
         StaticJsonDocument<200> doc;
+        Serial.println("Allocated Doc");
         DeserializationError error = deserializeJson(doc, json);
+        Serial.println("Attempted deserialization");
 
         if (error) {
-            /*Serial.print("Could not deserialize JSON. ");
+            Serial.print("Could not deserialize JSON. ");
             Serial.println(error.c_str());
-            Serial.flush();*/
-            // Just wait for the next iteration
+            Serial.flush();
             return;
         }
+        Serial.println("No error");
 
         String speed = doc["wheel_speed"];
         String left_side_dir = doc["left_side_dir"];
         String right_side_dir = doc["right_side_dir"];
 
-        Wire.beginTransmission(motorControllerAddress);
-        Wire.write(speed.toInt());
-        Wire.write(stringToCommand(left_side_dir));
-        Wire.write(stringToCommand(right_side_dir));
-        Wire.endTransmission();
-    }
-}
 
+        Serial.println("Beginning transmission");
+        uint8_t speedBuf = speed.toInt();
+        Serial.println("Writing:" + speed);
+        Serial1.write(speedBuf);
+        Serial1.write(',');
+
+        uint8_t leftBuf = stringToCommand(left_side_dir);
+        Serial.println("Writing:" + left_side_dir);
+        Serial1.write(leftBuf);
+        Serial1.write(',');
+
+        uint8_t rightBuf = stringToCommand(right_side_dir);
+        Serial.println("Writing:" + right_side_dir);
+        Serial1.write(rightBuf);
+        Serial.println("Writing null char");
+        Serial1.write("\0");
+        Serial.println("Wrote null char");
+        
+        Serial.println("Send to wire:" + speed + "," 
+                        + left_side_dir + "," + right_side_dir + "\0");
+    }
+  delay(100);
+
+}

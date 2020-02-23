@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Adafruit_MotorShield.h>
 #include <ArduinoJson.h>
-
+#include <SoftwareSerial.h>
 
 Adafruit_MotorShield shield;
 
@@ -11,8 +11,7 @@ auto rearRightMotor  = shield.getMotor(3); // M3
 auto rearLeftMotor   = shield.getMotor(4); // M4
 uint32_t readUltrasonicSensor();
 constexpr int baudRate = 9600;
-TwoWire i2c;
-constexpr int myI2cAddress = 2;
+SoftwareSerial controlSerial(2, 3); // RX, TX Digital Pins
 
 void setMotorSpeeds(int speed) {
     frontLeftMotor->setSpeed(speed);
@@ -30,44 +29,46 @@ void setRightSideDir(int dir) {
 }
 
 void setup() {
-    i2c.begin(myI2cAddress);
-    i2c.onReceive(receiveEvent);
-    shield.begin(1600, &i2c);
     Serial.begin(baudRate);
 
+    shield.begin();
     frontLeftMotor->run(RELEASE); 
     rearLeftMotor->run(RELEASE); 
     frontRightMotor->run(RELEASE); 
     rearRightMotor->run(RELEASE); 
 
-    setMotorSpeeds(0);
+    //setMotorSpeeds(0);
     while (!Serial) {
         // Wait
     }
     Serial.println("motorController initialized.");
+    Serial.flush();
 }
-
 void loop() {
-    delay(100);
-}
+      // Example data: 150,0,0\0
 
-void receiveEvent(int nBytes) {
-    // Example data: 150,0,0\0
-
-    while (i2c.available()) {
+    if (controlSerial.available() > 0) {
+        Serial.println("Received " + String(controlSerial.available()) + " bytes");
+        Serial.flush();
         // 0 - 255
-        String speed = i2c.readStringUntil(',');
-        setMotorSpeeds(speed.toInt());
-       
-        String left_side_dir = i2c.readStringUntil(',');
-        setLeftSideDir(left_side_dir.toInt());
+        uint8_t speed = controlSerial.read();
+        controlSerial.read();
+        uint8_t left_side_dir = controlSerial.read();
+        controlSerial.read();
+        uint8_t right_side_dir = controlSerial.read();
+        controlSerial.read();
         
-        String right_side_dir = i2c.readStringUntil('\0');
-        setRightSideDir(right_side_dir.toInt());
-        Serial.println("Received I2C data: " + speed + "," + left_side_dir
-                        + "," + right_side_dir);
+        Serial.println("Received control data: " + String(speed) + "," + String(left_side_dir)
+                        + "," + String(right_side_dir));
+        setMotorSpeeds(speed);
+        setLeftSideDir(left_side_dir);
+        setRightSideDir(right_side_dir);
+        Serial.println("Sent commands to motors");
     }
+    delay(100);
+  
 }
+
 #if 0
 // Example data:
 // char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";

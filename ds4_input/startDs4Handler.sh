@@ -4,7 +4,7 @@ BY_ID=/dev/input/by-id/usb-Sony_Computer_Entertainment_Wireless_Controller-event
 # Hard-coded PCI path since the id doesn't pop up on my Gentoo thinkpad for some reason
 BY_PATH=/dev/input/by-path/pci-0000:00:14.0-usb-0:1:1.0-event-joystick
 
-# export RUST_BACKTRACE=full
+export RUST_BACKTRACE=full
 
 if [ -e $BY_ID ]; then
     ./target/debug/ds4_input $BY_ID

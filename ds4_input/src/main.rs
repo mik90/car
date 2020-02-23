@@ -2,26 +2,13 @@ extern crate evdev_rs as evdev;
 extern crate nix;
 extern crate serialport;
 
-use serialport::prelude::*;
 use std::{thread, time};
 use std::net::UdpSocket;
 
 mod ds4_device;
 use ds4_device::Ds4Device;
 mod json_interface;
-use json_interface::ds4_device_to_msg_json;
-
-fn create_port() -> Box<dyn SerialPort> {
-    let port_path = "/dev/ttyACM0";
-    let mut settings: SerialPortSettings = Default::default();
-    settings.baud_rate = 9600;
-    settings.timeout = time::Duration::from_secs(2);
-
-    match serialport::open_with_settings(&port_path, &settings) {
-        Ok(v) => v,
-        Err(e) => panic!(e),
-    }
-}
+use json_interface::*;
 
 fn main()
 {
@@ -36,7 +23,7 @@ fn main()
 
     let mut ds4_dev = Ds4Device::new(dev_path).unwrap();
 
-    let mut port = create_port();
+    //let mut port = create_port();
     // Sleep while the arduino reboots
     println!("Sleeping for 3 seconds...");
     thread::sleep(time::Duration::from_secs(3));
@@ -48,8 +35,8 @@ fn main()
     let mut time_since_last_update = time::Instant::now();
 
     let socket = UdpSocket::bind("192.168.1.111:50001").expect("Couldn't bind UDP socket");
-    let dest = "192.168.1.167:50001";
-
+    // TODO Update router's static IP assignments with new Arduino MAC address
+    let dest = "192.168.1.166:50001";
     // Main event loop
     loop {
         println!("Iteration:{}    ---------------------------------------------------------",
@@ -64,16 +51,13 @@ fn main()
             time_since_last_update = now;
 
             let json = ds4_device_to_msg_json(&ds4_dev) + "\n";
+            // TODO filter out duplicated values
+            // Only send message if there's a new value that's significantly different
+            // This will avoid saturating the interfaces with useless messages
             match socket.send_to(json.as_bytes(), dest) {
                 Ok(v) => println!("Wrote {} bytes to {}", v, dest),
                 Err(e) => eprintln!("Error:{}, couldn't write to {}", e, dest),
             }
-            /*
-            match port.write(json.as_bytes()) {
-                Ok(v) => println!("Wrote {} bytes to {}", v, port.name().unwrap()),
-                Err(e) => eprintln!("Error:{}, couldn't write to {}", e, port.name().unwrap()),
-            }
-            */
 
         }
     }

@@ -1,5 +1,6 @@
 {
     "port": "/dev/ttyACM0",
     "sketch": "arduino/netController/netController.ino",
-    "board": "arduino:samd:nano_33_iot"
+    "board": "arduino:samd:nano_33_iot",
+    "programmer": "ArduinoISP"
 }
