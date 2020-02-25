@@ -41,6 +41,7 @@ void setup() {
     while (!Serial) {
         // Wait
     }
+    controlSerial.begin(9600);
     Serial.println("motorController initialized.");
     Serial.flush();
 }

@@ -8,7 +8,7 @@
 #include "netUtility.hpp"
 #include "wifiInfo.h"
 
-// FRom Adafruit_MotorShield.h
+// From Adafruit_MotorShield.h
 #define FORWARD 1
 #define BACKWARD 2
 #define BRAKE 3
@@ -24,8 +24,7 @@ char packetBuffer[255];
 
 void setup() {
     Serial.begin(9600);
-    // RX and TX1
-    Serial1.begin(9600);
+
     while (!Serial) {
         // Wait until serial port is connected
     }
@@ -52,7 +51,9 @@ void setup() {
     Serial.print("Connected.");
     printWifiData();
     Udp.begin(localPort);
-    Serial.print("Started server.");
+    // RX and TX1
+    Serial1.begin(9600);
+    Serial.print("Started server."); 
 }
 
 int stringToCommand(const String& str) {
