@@ -35,8 +35,7 @@ fn main()
     let mut time_since_last_update = time::Instant::now();
 
     let socket = UdpSocket::bind("192.168.1.111:50001").expect("Couldn't bind UDP socket");
-    // TODO Update router's static IP assignments with new Arduino MAC address
-    let dest = "192.168.1.166:50001";
+    let dest = "192.168.1.167:50001";
     // Main event loop
     loop {
         println!("Iteration:{}    ---------------------------------------------------------",
