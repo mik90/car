@@ -25,10 +25,6 @@ char packetBuffer[255];
 void setup() {
     Serial.begin(9600);
 
-    while (!Serial) {
-        // Wait until serial port is connected
-    }
-
     if (WiFi.status() == WL_NO_MODULE) {
         Serial.println("Could not communicate with WiFi Nina module");
         while(true);

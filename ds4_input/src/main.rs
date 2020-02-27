@@ -34,7 +34,7 @@ fn main()
     let mut iteration = 0;
     let mut time_since_last_update = time::Instant::now();
 
-    let socket = UdpSocket::bind("192.168.1.111:50001").expect("Couldn't bind UDP socket");
+    let socket = UdpSocket::bind("192.168.1.105:50001").expect("Couldn't bind UDP socket");
     let dest = "192.168.1.167:50001";
     // Main event loop
     loop {

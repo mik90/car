@@ -37,11 +37,9 @@ void setup() {
     frontRightMotor->run(RELEASE); 
     rearRightMotor->run(RELEASE); 
 
-    //setMotorSpeeds(0);
-    while (!Serial) {
-        // Wait
-    }
-    controlSerial.begin(9600);
+    setMotorSpeeds(0);
+    
+	controlSerial.begin(9600);
     Serial.println("motorController initialized.");
     Serial.flush();
 }
