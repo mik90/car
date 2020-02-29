@@ -10,6 +10,16 @@ use ds4_device::Ds4Device;
 mod json_interface;
 use json_interface::*;
 
+fn get_interface_addr_str() -> Option<nix::sys::socket::SockAddr> {
+    let mut addrs = nix::ifaddrs::getifaddrs().unwrap();
+    match addrs.find(|x| x.interface_name == "wlp3s0" 
+                        && x.address.unwrap().family() == nix::sys::socket::AddressFamily::Inet)
+                         {
+        Some(interface) => interface.address,
+        None => None,
+    }
+}
+
 fn main()
 {
     let mut args = std::env::args();
@@ -34,8 +44,15 @@ fn main()
     let mut iteration = 0;
     let mut time_since_last_update = time::Instant::now();
 
-    let socket = UdpSocket::bind("192.168.1.105:50001").expect("Couldn't bind UDP socket");
+    let mut addr_str = get_interface_addr_str()
+                        .unwrap()
+                        .to_str();
+    addr_str.pop(); // The normal port is :0 and we want :50001
+    addr_str.push_str("50001");
+    println!("Trying to bind to {}", addr_str);
+    let socket = UdpSocket::bind(addr_str).expect("Couldn't bind UDP socket");
     let dest = "192.168.1.167:50001";
+    println!("Bind() succeeded.");
     // Main event loop
     loop {
         println!("Iteration:{}    ---------------------------------------------------------",

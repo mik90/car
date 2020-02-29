@@ -24,7 +24,7 @@ char packetBuffer[255];
 
 void setup() {
     Serial.begin(9600);
-
+    
     if (WiFi.status() == WL_NO_MODULE) {
         Serial.println("Could not communicate with WiFi Nina module");
         while(true);
@@ -34,6 +34,7 @@ void setup() {
     if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
         Serial.println("Please upgrade the WiFi module firmware");
     }
+    
 
     while (status != WL_CONNECTED) {
         Serial.print("Attempting to connect to WPA2 Personal SSID:");
@@ -41,7 +42,7 @@ void setup() {
 
         status = WiFi.begin(ssid, pass);
 
-        // Wait 10 seconds to connect
+        //Wait 10 seconds to connect
         delay(10000);
     }
     Serial.print("Connected.");
@@ -51,7 +52,6 @@ void setup() {
     Serial1.begin(9600);
     Serial.print("Started server."); 
 }
-
 int stringToCommand(const String& str) {
     if (str.equalsIgnoreCase("Forward")) {
         return FORWARD;
@@ -69,7 +69,7 @@ void loop() {
     if (packetSize > 0) {
 
         Serial.println("Received UDP packet of size:" + String(packetSize));
-        Serial.print("from " + String(Udp.remoteIP()) + ":" + String(Udp.remotePort()) + "\n");
+        //Serial.print("from " + String(Udp.remoteIP()) + ":" + String(Udp.remotePort()) + "\n");
 
 
         const int bytesRead = Udp.read(packetBuffer, 255);
@@ -79,16 +79,15 @@ void loop() {
         }
         const String json(packetBuffer);
 
-        Serial.println("Message:" + json);
+        //Serial.println("Message:" + json);
         StaticJsonDocument<200> doc;
-        Serial.println("Allocated Doc");
+        //Serial.println("Allocated Doc");
         DeserializationError error = deserializeJson(doc, json);
-        Serial.println("Attempted deserialization");
+        //Serial.println("Attempted deserialization");
 
         if (error) {
             Serial.print("Could not deserialize JSON. ");
             Serial.println(error.c_str());
-            Serial.flush();
             return;
         }
         Serial.println("No error");
@@ -100,24 +99,24 @@ void loop() {
 
         Serial.println("Beginning transmission");
         uint8_t speedBuf = speed.toInt();
-        Serial.println("Writing:" + speed);
+        //Serial.println("Writing:" + speed);
         Serial1.write(speedBuf);
         Serial1.write(',');
 
         uint8_t leftBuf = stringToCommand(left_side_dir);
-        Serial.println("Writing:" + left_side_dir);
+        //Serial.println("Writing:" + left_side_dir);
         Serial1.write(leftBuf);
         Serial1.write(',');
 
         uint8_t rightBuf = stringToCommand(right_side_dir);
-        Serial.println("Writing:" + right_side_dir);
+        //Serial.println("Writing:" + right_side_dir);
         Serial1.write(rightBuf);
-        Serial.println("Writing null char");
+        //Serial.println("Writing null char");
         Serial1.write("\0");
-        Serial.println("Wrote null char");
+        //Serial.println("Wrote null char");
         
-        Serial.println("Send to wire:" + speed + "," 
-                        + left_side_dir + "," + right_side_dir + "\0");
+       Serial.println("Send to wire:" + speed + "," 
+                       + left_side_dir + "," + right_side_dir + "\0");
     }
   delay(100);
 

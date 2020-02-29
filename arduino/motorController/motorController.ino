@@ -41,14 +41,12 @@ void setup() {
     
 	controlSerial.begin(9600);
     Serial.println("motorController initialized.");
-    Serial.flush();
 }
 void loop() {
       // Example data: 150,0,0\0
 
     if (controlSerial.available() > 0) {
         Serial.println("Received " + String(controlSerial.available()) + " bytes");
-        Serial.flush();
         // 0 - 255
         uint8_t speed = controlSerial.read();
         controlSerial.read();
