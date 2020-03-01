@@ -2,8 +2,18 @@ use serde_derive::{Deserialize, Serialize};
 use crate::ds4_device::Ds4Device;
 
 
-pub fn ds4_device_to_msg_json(dev : &Ds4Device) -> String {
-    msg_to_json_string(ds4_device_to_msg(dev))
+pub fn msg_is_duplicate(msg: &Msg, last_msg: &Msg) -> bool {
+    // A new 
+    if msg.left_side_dir != last_msg.left_side_dir
+        ||  msg.right_side_dir != last_msg.right_side_dir {
+        return false
+    }
+
+    let speed_fuzz = 20;
+    use std::cmp::{max, min};
+    let difference = max(msg.wheel_speed, last_msg.wheel_speed)
+                        - min(msg.wheel_speed, last_msg.wheel_speed);
+    difference < speed_fuzz
 }
 
 #[derive(Serialize, Deserialize)]
@@ -13,7 +23,6 @@ pub struct Msg {
     pub right_side_dir: MotorCommand,
 }
 impl Msg {
-    /*
     pub fn new() -> Msg {
         // Init to some default values
         Msg {
@@ -22,10 +31,9 @@ impl Msg {
             right_side_dir: MotorCommand::Release,
         }
     }
-    */
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub enum MotorCommand {
     Forward,
     Reverse,
@@ -56,7 +64,7 @@ fn left_stick_x_axis_to_dirs(x: u8, go_forward: bool) -> (MotorCommand, MotorCom
     use MotorCommand::*;
     // Tank-tread style controls
     match x {
-        0..=77   => (Reverse, Forward), // Left
+        0..=77    => (Reverse, Forward), // Left
         78..=107  => (Release, Forward), // Kinda left
         108..=147 => {
             // Not left or right, this is the fuzzy area in the middle.
@@ -72,7 +80,7 @@ fn left_stick_x_axis_to_dirs(x: u8, go_forward: bool) -> (MotorCommand, MotorCom
     }
 }
 
-fn ds4_device_to_msg(dev : &Ds4Device) -> Msg  {
+pub fn ds4_device_to_msg(dev: &Ds4Device) -> Msg  {
     // Can be negative, negativity implies reverse
     let speed_signed = dev.right_trigger as i16 - dev.left_trigger as i16;
     let go_forward;
@@ -95,11 +103,11 @@ fn ds4_device_to_msg(dev : &Ds4Device) -> Msg  {
     }
 }
 
-fn msg_to_json_string(msg : Msg) -> String {
-    match serde_json::to_string(&msg) {
+pub fn msg_to_json_string(msg: &Msg) -> String {
+    match serde_json::to_string(msg) {
         Ok(v) => {
             println!("Ok: created json string:{}", v);
-            v
+            v + "\n"
         },
         Err(e) => {
             eprintln!("Couldn't create json string:{}", e);
