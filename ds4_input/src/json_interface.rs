@@ -64,8 +64,8 @@ fn left_stick_x_axis_to_dirs(x: u8, go_forward: bool) -> (MotorCommand, MotorCom
     use MotorCommand::*;
     // Tank-tread style controls
     match x {
-        0..=77    => (Reverse, Forward), // Left
-        78..=107  => (Release, Forward), // Kinda left
+        0..=24    => (Reverse, Forward), // Left
+        25..=107  => (Release, Forward), // Kinda left
         108..=147 => {
             // Not left or right, this is the fuzzy area in the middle.
             match go_forward {
@@ -75,8 +75,8 @@ fn left_stick_x_axis_to_dirs(x: u8, go_forward: bool) -> (MotorCommand, MotorCom
                 false => (Reverse, Reverse), 
             }
         }
-        148..=187 => (Forward, Release), // Kinda right
-        188..=255 => (Forward, Reverse), // Right
+        148..=230 => (Forward, Release), // Kinda right
+        231..=255 => (Forward, Reverse), // Right
     }
 }
 

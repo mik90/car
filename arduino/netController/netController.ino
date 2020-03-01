@@ -17,8 +17,6 @@
 int status = WL_IDLE_STATUS;
 WiFiUDP Udp;
 constexpr int localPort = 50001;
-constexpr int netI2cAddress = 0x1A;
-constexpr int motorI2cAddress = 0x1B;
 
 char packetBuffer[255];
 

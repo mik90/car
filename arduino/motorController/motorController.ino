@@ -9,7 +9,6 @@ auto frontRightMotor = shield.getMotor(1); // M1
 auto frontLeftMotor  = shield.getMotor(2); // M2
 auto rearRightMotor  = shield.getMotor(3); // M3
 auto rearLeftMotor   = shield.getMotor(4); // M4
-uint32_t readUltrasonicSensor();
 constexpr int baudRate = 9600;
 SoftwareSerial controlSerial(2, 3); // RX, TX Digital Pins
 
@@ -65,43 +64,3 @@ void loop() {
     delay(100);
   
 }
-
-#if 0
-// Example data:
-// char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
-int stringToCommand(const String& str) {
-    if (str.equalsIgnoreCase("Forward")) {
-        return FORWARD;
-    }
-    else if (str.equalsIgnoreCase("Reverse")) {
-        return BACKWARD;
-    }
-    else {
-        return RELEASE;
-    }
-}
-void loop() {
-    // Example data:
-    // char json[] = "{\"wheel_speed\":100,\"left_side_dir\":\"Forward\",\"right_side_dir\":\"Forward\"}";
-
-    StaticJsonDocument<200> doc;
-    auto json = Serial.readStringUntil('\0');
-    DeserializationError error = deserializeJson(doc, json);
-
-    if (error) {
-        /*Serial.print("Could not deserialize JSON. ");
-        Serial.println(error.c_str());
-        Serial.flush();*/
-        // Just wait for the next iteration
-        return;
-    }
-
-    String speed = doc["wheel_speed"];
-    setMotorSpeeds(speed.toInt());
-    String left_side_dir = doc["left_side_dir"];
-    setLeftSideDir(stringToCommand(left_side_dir));
-
-    String right_side_dir = doc["right_side_dir"];
-    setRightSideDir(stringToCommand(right_side_dir));
-}
-#endif
