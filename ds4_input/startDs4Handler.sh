@@ -1,9 +1,4 @@
 #!/bin/bash
-# Look for the DS4 joystick event in /dev/input
-
-BY_ID=/dev/input/by-id/usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick
-# Hard-coded PCI path since the id doesn't pop up on my Gentoo thinkpad for some reason
-BY_PATH=/dev/input/by-path/pci-0000:00:14.0-usb-0:1:1.0-event-joystick
 
 #export RUST_BACKTRACE=full
 
@@ -13,12 +8,24 @@ else
     BUILD_TYPE=debug
 fi
 
-if [ -e $BY_ID ]; then
-    ./target/$BUILD_TYPE/ds4_input $BY_ID
-elif [ -e $BY_PATH ]; then
-    ./target/$BUILD_TYPE/ds4_input $BY_PATH
+# Look for the device ID before searching for it in by-path
+DEFAULT_PATH=/dev/input/by-id/usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick
+
+if [ ! -e $DEFAULT_PATH ]; then
+    search_result=$(find /dev/input/by-path/*event-joystick)
+    result_count=$(wc -w <<< $search_result)
+    # Found only a single result and it's a file
+    if [ $result_count == 1 ] && [ -e $search_result ]; then
+        EVENT_FILE=$search_result
+    else
+        # Couldn't find anything :(
+        SCRIPT_NAME=`basename "$0"`
+        echo "${SCRIPT_NAME}: Could not find Dualshock 4 device, exiting..."
+        exit 1
+    fi
 else
-    SCRIPT_NAME=`basename "$0"`
-    echo "${SCRIPT_NAME}: Could not find Dualshock 4 device, exiting..."
-    exit 1
+    # The default path is a file
+    EVENT_FILE=$DEFAULT_PATH
 fi
+
+./target/$BUILD_TYPE/ds4_input $EVENT_FILE
