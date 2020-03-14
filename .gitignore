@@ -1,6 +1,9 @@
 # Cmake build
 build/
 
+# Cross-tool ng 
+pizeroToolchain/.build
+
 # Arduino dependencies
 arduino/extern
 
