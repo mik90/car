@@ -4,7 +4,7 @@
         "toolchainFile": "cmake/RaspberryPiToolchain.cmake"
     },
     {
-        "name": "Arduino",
-        "toolchainFile": "cmake/arduino-cmake/cmake/ArduinoToolchain.cmake"
+        "name": "PiZeroW",
+        "toolchainFile": "cmake/PiZeroWToolchain.cmake"
     }
 ]
